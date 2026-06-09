@@ -4,3 +4,5 @@ Basically, it's small project, which is related to real office "The backstreets 
 ## Goal
 I guess, make something interesting and cool for my office members and make people bond to each other even more.
 Most importantly is to make lore for our office and wrap it up in interesting and cool form.
+## Roadmap
+There is no roadmap yet lmao. Anyway, it's make guide of how to add new documents to this webpage
