@@ -30,7 +30,7 @@
             background-size: 100% 4px, 3px 100%;
             margin: 0;
             min-height: 100vh;
-            overflow: hidden; /* Запрещаем скролл всей страницы */
+            overflow: hidden;
         }
 
         .font-mono-custom { font-family: 'JetBrains Mono', monospace; }
@@ -48,7 +48,7 @@
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* Экраны загрузки */
-        #init-screen, #boot-screen {
+        #boot-screen {
             position: fixed;
             inset: 0;
             background-color: #000;
@@ -143,7 +143,7 @@
         }
         .stat-segment {
             flex: 1;
-            background-color: #1f2937; /* Empty state */
+            background-color: #1f2937;
         }
         .stat-fortitude.filled { background-color: #dc2626; box-shadow: 0 0 5px #dc2626; }
         .stat-prudence.filled { background-color: #f8fafc; box-shadow: 0 0 5px #f8fafc; }
@@ -153,23 +153,17 @@
 </head>
 <body class="p-2 md:p-6 h-screen flex flex-col">
 
-    <!-- Экран инициализации (Браузер требует клик для аудио) -->
-    <div id="init-screen" class="cursor-pointer">
-        <div class="text-emerald-500 font-mono-custom text-xl blinking-cursor" style="color: #10b981; text-align: center;">SYSTEM OFFLINE. CLICK TO INITIATE</div>
-    </div>
-
     <!-- Экран загрузки терминала -->
-    <div id="boot-screen" class="hidden">
+    <div id="boot-screen">
         <div id="boot-text" class="text-emerald-500 font-mono-custom text-sm md:text-base space-y-2"></div>
     </div>
 
-    <!-- Основной интерфейс (Скрыт до загрузки) -->
+    <!-- Основной интерфейс -->
     <div id="main-ui" class="hidden w-full h-full flex flex-col opacity-0 transition-opacity duration-1000">
         <!-- Header -->
         <header class="w-full mb-6 border-b border-gray-800 pb-4 shrink-0">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4 hover-sound">
-                    <!-- Флаг -->
+                <div class="flex items-center gap-4">
                     <div class="w-16 h-10 border border-gray-700 bg-gray-900 flex items-center justify-center relative overflow-hidden group" title="TBCW Flag">
                         <span class="text-[8px] text-gray-600 font-mono-custom absolute z-10 group-hover:hidden">FLAG_IMG</span>
                         <img src="https://placehold.co/100x60/0a0a0c/eab308?text=+" alt="TBCW Flag" class="absolute inset-0 w-full h-full object-cover opacity-50">
@@ -177,7 +171,7 @@
                     
                     <div>
                         <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor">
-                            TBCW_DATABANK // V.3.2
+                            TBCW_DATABANK // V.3.4
                         </h1>
                         <p class="text-xs text-gray-500 font-mono-custom mt-1">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
@@ -189,7 +183,7 @@
             </div>
         </header>
 
-        <!-- Main Layout (Sidebar + Grid) -->
+        <!-- Main Layout -->
         <main class="w-full flex-1 flex gap-6 overflow-hidden">
             <!-- Sidebar -->
             <aside class="hidden lg:flex w-72 flex-col gap-4 shrink-0 h-full overflow-y-auto pr-2 custom-scrollbar">
@@ -199,11 +193,11 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] text-gray-500 block mb-1">SEARCH IDENTIFIER</label>
-                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors hover-sound">
+                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors">
                         </div>
                         <div>
                             <label class="text-[10px] text-gray-500 block mb-1">DISTRICT FILTER</label>
-                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none hover-sound cursor-pointer">
+                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer">
                                 <option>ALL DISTRICTS</option>
                                 <option>District 4</option>
                                 <option>District 12</option>
@@ -218,10 +212,10 @@
                 <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom flex-1">
                     <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase">System Logs</h2>
                     <ul class="text-[10px] space-y-2 text-gray-600">
-                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[14:02]</span> <span>Access granted to TBCW-001</span></li>
-                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[13:45]</span> <span>Data sync with Hana Assoc.</span></li>
-                        <li class="flex gap-2 glitch-hover cursor-pointer click-sound"><span class="text-red-900">[ERR]</span> <span class="text-red-800">FILE_CORRUPTED_ID_000</span></li>
-                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[11:20]</span> <span>Archive backup complete</span></li>
+                        <li class="flex gap-2"><span class="text-gray-500">[14:02]</span> <span>Access granted to TBCW-001</span></li>
+                        <li class="flex gap-2"><span class="text-gray-500">[13:45]</span> <span>Data sync with Hana Assoc.</span></li>
+                        <li class="flex gap-2 glitch-hover cursor-pointer"><span class="text-red-900">[ERR]</span> <span class="text-red-800">FILE_CORRUPTED_ID_000</span></li>
+                        <li class="flex gap-2"><span class="text-gray-500">[11:20]</span> <span>Archive backup complete</span></li>
                     </ul>
                 </div>
             </aside>
@@ -240,7 +234,7 @@
         <div id="modal-backdrop" class="absolute inset-0" onclick="closeModal()"></div>
         
         <div class="modal-content relative z-10 w-full max-w-5xl max-h-[95vh] overflow-hidden m-4 flex flex-col md:flex-row rounded-sm">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 click-sound">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20">
                 [X]
             </button>
 
@@ -297,46 +291,6 @@
 
     <!-- Data & Logic -->
     <script>
-        // --- SOUND SYSTEM (Web Audio API) ---
-        let audioCtx = null;
-        
-        function initAudio() {
-            if (!audioCtx) {
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    if (AudioContext) audioCtx = new AudioContext();
-                } catch (e) {
-                    console.warn("Audio initialization failed", e);
-                }
-            }
-        }
-        
-        function playTone(freq, type, duration, vol) {
-            if (!audioCtx || audioCtx.state === 'suspended') return;
-            try {
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch(e) {}
-        }
-
-        const soundManager = {
-            hover: () => playTone(800, 'sine', 0.05, 0.02),
-            click: () => playTone(400, 'square', 0.1, 0.03),
-            bootBeep: () => playTone(600, 'square', 0.05, 0.03),
-            accessGranted: () => {
-                playTone(400, 'sine', 0.1, 0.05);
-                setTimeout(() => playTone(600, 'sine', 0.3, 0.05), 100);
-            }
-        };
-
         // --- DATABASE ---
         const statusConfig = {
             "Active": { bg: "bg-emerald-900/10", text: "text-emerald-500", border: "border-emerald-800/50" },
@@ -356,7 +310,7 @@
                 status: "Active",
                 lastUpdate: "2024.11.02 14:00",
                 photo: "https://placehold.co/400x400/0a0a0c/10b981?text=AR",
-                stats: { fortitude: 4, prudence: 3, temperance: 5, justice: 3 }, // Шкала от 1 до 5
+                stats: { fortitude: 4, prudence: 3, temperance: 5, justice: 3 },
                 reports: [
                     { title: "Psychological Evaluation", content: "Subject demonstrates high stress tolerance. Assigned to containment block after Incident 44-B. Mental stability metrics are within acceptable parameters, though minor signs of <span class='redacted'>cognitive degradation</span> have been noted after exposure to Abnormality T-01-XX." },
                     { title: "Combat Effectiveness", content: "Completed advanced training with Suppression weaponry. Primarily utilizes a customized halberd." }
@@ -397,17 +351,24 @@
 
         // --- LOGIC & RENDERING ---
         
-        // Генерация шкал характеристик (до 5 блоков)
         function generateStatBar(statName, value, cssClass) {
             let blocks = '';
             for(let i = 1; i <= 5; i++) {
                 blocks += `<div class="stat-segment ${cssClass} ${i <= value ? 'filled' : ''}"></div>`;
             }
+            
+            let valueTicks = '';
+            if (value > 0) {
+                for(let j = 0; j < value; j++) { valueTicks += 'I'; }
+            } else {
+                valueTicks = '-';
+            }
+
             return `
                 <div>
                     <div class="flex justify-between text-[10px] text-gray-500 mb-1 font-bold">
                         <span class="uppercase">${statName}</span>
-                        <span>${value > 0 ? Array(value).fill('I').join('') : '-'}</span>
+                        <span>${valueTicks}</span>
                     </div>
                     <div class="stat-bar-container">${blocks}</div>
                 </div>
@@ -421,11 +382,9 @@
             dossiers.forEach((person, index) => {
                 const conf = statusConfig[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
                 const card = document.createElement('div');
-                card.className = `dossier-card p-4 flex flex-col h-full hover-sound click-sound`;
+                card.className = `dossier-card p-4 flex flex-col h-full`;
                 
-                // Звуки при взаимодействии с карточкой
-                card.addEventListener('mouseenter', soundManager.hover);
-                card.addEventListener('click', () => { soundManager.click(); openModal(index); });
+                card.addEventListener('click', () => { openModal(index); });
                 
                 card.innerHTML = `
                     <div class="flex gap-4 mb-4 relative z-10">
@@ -465,7 +424,6 @@
             document.getElementById('modal-name').textContent = person.name;
             document.getElementById('modal-date').textContent = "LAST_MODIFIED: " + person.lastUpdate;
 
-            // Рендер характеристик (Stats)
             const statsContainer = document.getElementById('modal-stats-container');
             statsContainer.innerHTML = 
                 generateStatBar("Fortitude (Instinct)", person.stats.fortitude, "stat-fortitude") +
@@ -493,7 +451,6 @@
         }
 
         function closeModal() {
-            soundManager.click();
             modal.classList.add('opacity-0');
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
@@ -502,16 +459,8 @@
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) { closeModal(); }
         });
 
-        // --- BOOT SEQUENCE LOGIC ---
-        document.getElementById('init-screen').addEventListener('click', async () => {
-            initAudio();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                try { await audioCtx.resume(); } catch(e) {}
-            }
-            
-            document.getElementById('init-screen').classList.add('opacity-0');
-            setTimeout(() => { document.getElementById('init-screen').classList.add('hidden'); }, 500);
-            
+        // --- AUTO BOOT SEQUENCE ---
+        window.onload = async () => {
             const bootScreen = document.getElementById('boot-screen');
             const bootText = document.getElementById('boot-text');
             bootScreen.classList.remove('hidden');
@@ -524,17 +473,17 @@
                 "> ACCESS GRANTED."
             ];
 
+            // Печатаем строки
             for (let i = 0; i < lines.length; i++) {
-                await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 400));
-                soundManager.bootBeep();
+                await new Promise(resolve => setTimeout(resolve, 300));
                 const p = document.createElement('p');
                 p.textContent = lines[i];
                 bootText.appendChild(p);
             }
 
-            soundManager.accessGranted();
-            await new Promise(resolve => setTimeout(resolve, 800));
+            await new Promise(resolve => setTimeout(resolve, 600));
 
+            // Показываем интерфейс
             bootScreen.classList.add('opacity-0');
             const mainUI = document.getElementById('main-ui');
             mainUI.classList.remove('hidden');
@@ -543,13 +492,8 @@
                 bootScreen.classList.add('hidden');
                 mainUI.classList.remove('opacity-0');
                 renderCards();
-                
-                // Привязываем звуки наведения к элементам UI после загрузки
-                document.querySelectorAll('.hover-sound').forEach(el => {
-                    el.addEventListener('mouseenter', soundManager.hover);
-                });
             }, 500);
-        });
+        };
 
     </script>
 </body>
