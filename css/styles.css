@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap');
 
 :root {
-/* дальше код оставляй как есть */
     --bg-color: #050505;
     --panel-bg: #0a0a0c;
     --border-color: #2dd4bf;
@@ -186,4 +185,22 @@ body {
 #great-lake-waves {
     animation: subtleWave 8s ease-in-out infinite;
     transform-origin: bottom;
+}
+
+/* --- АНИМАЦИИ И ЭФФЕКТЫ ДЛЯ V.0.4.3 --- */
+
+@keyframes terminalExpand {
+    0% { transform: scaleX(0.01) scaleY(0.005); opacity: 0; }
+    40% { transform: scaleX(1) scaleY(0.005); opacity: 0.8; }
+    100% { transform: scaleX(1) scaleY(1); opacity: 1; }
+}
+
+.window-open-active {
+    animation: terminalExpand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+#boot-text p {
+    border-right: 2px solid #10b981;
+    white-space: nowrap;
+    overflow: hidden;
 }

@@ -6,23 +6,24 @@
     <title>TBCW // The Backstreets Commonwealth</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="p-2 md:p-6 h-screen flex flex-col">
 
-    <!-- Экран загрузки терминала -->
-    <div id="boot-screen" class="flex flex-col justify-center items-center">
+    <div id="init-screen" class="fixed inset-0 bg-black z-[200] flex items-center justify-center cursor-pointer transition-opacity duration-500">
+        <div class="text-emerald-500 font-mono-custom text-xl blinking-cursor border border-emerald-500 p-4 hover:bg-emerald-900/30 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            [ SYSTEM OFFLINE. CLICK TO BOOT ]
+        </div>
+    </div>
+
+    <div id="boot-screen" class="fixed inset-0 bg-black flex flex-col justify-center items-center z-[100] transition-opacity duration-500">
         <div id="boot-text" class="text-emerald-500 font-mono-custom text-sm md:text-base space-y-2"></div>
     </div>
 
-    <!-- Основной интерфейс -->
     <div id="main-ui" class="hidden w-full h-full flex flex-col opacity-0 transition-opacity duration-1000">
-        <!-- Header -->
-        <header class="w-full mb-6 border-b border-gray-800 pb-4 shrink-0">
+        <header class="w-full mb-6 border-b border-gray-800 pb-4 shrink-0 hover-sound">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <!-- Сгенерированный Флаг TBCW -->
                     <div class="w-16 h-10 border border-gray-700 bg-[#050505] flex items-center justify-center overflow-hidden shadow-sm" title="TBCW Flag">
                         <svg viewBox="0 0 100 60" class="w-full h-full opacity-90 hover:opacity-100 transition-opacity">
                             <polygon points="0,0 50,30 0,60" fill="#000000"/>
@@ -38,7 +39,7 @@
                     
                     <div>
                         <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor">
-                            TBCW_DATABANK // PROTOTYPE V.0.5.4
+                            TBCW_DATABANK // PROTOTYPE V.0.5.9
                         </h1>
                         <p class="text-xs text-gray-500 font-mono-custom mt-1">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
@@ -50,21 +51,18 @@
             </div>
         </header>
 
-        <!-- Main Layout -->
         <main class="w-full flex-1 flex gap-6 overflow-hidden">
-            <!-- Sidebar -->
             <aside class="hidden lg:flex w-72 flex-col gap-4 shrink-0 h-full overflow-y-auto pr-2 custom-scrollbar">
-                <!-- Search & Filters -->
                 <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom">
                     <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase">Query Parameters</h2>
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] text-gray-500 block mb-1">SEARCH IDENTIFIER</label>
-                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors">
+                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors hover-sound">
                         </div>
                         <div>
                             <label class="text-[10px] text-gray-500 block mb-1">DISTRICT FILTER</label>
-                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer">
+                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer hover-sound">
                                 <option>ALL DISTRICTS</option>
                                 <option>District 4</option>
                                 <option>District 12</option>
@@ -75,8 +73,7 @@
                     </div>
                 </div>
 
-                <!-- Кнопка карты -->
-                <div class="border border-red-900/50 bg-red-950/10 p-4 font-mono-custom relative overflow-hidden group">
+                <div class="border border-red-900/50 bg-red-950/10 p-4 font-mono-custom relative overflow-hidden group hover-sound">
                     <div class="absolute inset-0 bg-red-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     <button id="btn-open-map" class="relative w-full border border-red-800 text-red-500 py-3 text-sm font-bold tracking-widest hover:text-red-400 transition-colors uppercase shadow-[0_0_15px_rgba(220,20,20,0.2)]">
                         [ Access City Map ]
@@ -84,36 +81,32 @@
                     <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-red-500/80 transition-colors">TBCW BRANCH RADAR SYSTEM</p>
                 </div>
 
-                <!-- System Logs -->
                 <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom flex-1">
                     <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase">System Logs</h2>
                     <ul class="text-[10px] space-y-2 text-gray-600">
-                        <li class="flex gap-2"><span class="text-gray-500">[14:02]</span> <span>Access granted to TBCW-001</span></li>
-                        <li class="flex gap-2"><span class="text-gray-500">[13:45]</span> <span>Data sync with Hana Assoc.</span></li>
-                        <li class="flex gap-2 text-red-900 cursor-pointer hover:text-red-500"><span class="text-red-900">[ERR]</span> <span class="text-red-800">FILE_CORRUPTED_ID_000</span></li>
-                        <li class="flex gap-2"><span class="text-gray-500">[11:20]</span> <span>Archive backup complete</span></li>
+                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[14:02]</span> <span>Access granted to TBCW-001</span></li>
+                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[13:45]</span> <span>Data sync with Hana Assoc.</span></li>
+                        <li class="flex gap-2 text-red-900 cursor-pointer hover:text-red-500 hover-sound"><span class="text-red-900">[ERR]</span> <span class="text-red-800">FILE_CORRUPTED_ID_000</span></li>
+                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[11:20]</span> <span>Archive backup complete</span></li>
                     </ul>
                 </div>
             </aside>
 
-            <!-- Dossier Grid -->
             <div class="flex-1 h-full overflow-y-auto pr-2 pb-10 custom-scrollbar">
                 <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    <!-- Карточки генерируются скриптом -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Модальное окно: КАРТА ГОРОДА -->
-    <div id="map-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="map-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div id="map-backdrop" class="absolute inset-0"></div>
         
-        <button id="btn-close-map" class="absolute top-6 right-6 text-red-600 hover:text-red-400 font-mono-custom text-2xl z-[70] font-bold">
+        <button id="btn-close-map" class="absolute top-6 right-6 text-red-600 hover:text-red-400 font-mono-custom text-2xl z-[70] font-bold hover-sound">
             [ CLOSE MAP ]
         </button>
 
-        <div class="w-full max-w-6xl aspect-square md:aspect-[4/3] relative flex items-center justify-center z-[65] p-2 md:p-8">
+        <div id="svg-container" class="w-full max-w-6xl aspect-square md:aspect-[4/3] relative flex items-center justify-center z-[65] p-2 md:p-8 transform scale-95 opacity-0 transition-all duration-500">
             <div class="absolute top-8 left-8 font-mono-custom text-red-600 text-xs z-[66]">
                 <p class="font-bold">> CITY SECTOR MAP</p>
                 <p class="text-red-800">> TRACKING TBCW BRANCHES...</p>
@@ -172,11 +165,11 @@
         </div>
     </div>
 
-    <!-- Modal (Full Dossier) -->
-    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div id="modal-backdrop" class="absolute inset-0" onclick="closeModal()"></div>
-        <div class="modal-content relative z-10 w-full max-w-5xl max-h-[95vh] overflow-hidden m-4 flex flex-col md:flex-row rounded-sm">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20">[X]</button>
+        
+        <div id="modal-box" class="modal-content relative z-10 w-full max-w-5xl max-h-[95vh] overflow-hidden m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 hover-sound">[X]</button>
 
             <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r border-gray-800 flex flex-col overflow-y-auto custom-scrollbar">
                 <div class="relative mb-4">
@@ -214,7 +207,6 @@
         </div>
     </div>
 
-    <!-- Подключаем скрипты -->
     <script src="js/data.js"></script>
     <script src="js/app.js"></script>
 </body>

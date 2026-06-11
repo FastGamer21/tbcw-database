@@ -30,7 +30,7 @@ const dossiers = [
         grade: "Grade 3",
         status: "Deceased",
         lastUpdate: "2023.08.15 09:30",
-            photo: "https://placehold.co/400x400/0a0a0c/991b1b?text=MW",
+        photo: "https://placehold.co/400x400/0a0a0c/991b1b?text=MW",
         stats: { fortitude: 5, prudence: 4, temperance: 2, justice: 4 },
         reports: [{ title: "Incident Report #77-A", content: "Veteran operative. Killed in action during a perimeter breach." }]
     }

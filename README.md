@@ -7,7 +7,7 @@ Most importantly is to make lore for our office and wrap it up in interesting an
 ## Roadmap
 1. Make map of The City. (Done)
 2. Make remangment of HTML files, split them on few files. (Done)
-3. Add SFX for any enteraction on webpage.
+3. Add SFX for any enteraction on webpage. (Done)
 4. Add more documents.
 5. Add lore section.
 6. Encrypt documents so they cannot be easily viewed through the file repository.
