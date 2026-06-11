@@ -32,7 +32,49 @@ const dossiers = [
         lastUpdate: "2023.08.15 09:30",
         photo: "https://placehold.co/400x400/0a0a0c/991b1b?text=MW",
         stats: { fortitude: 5, prudence: 4, temperance: 2, justice: 4 },
-        reports: [{ title: "Incident Report #77-A", content: "Veteran operative. Killed in action during a perimeter breach." }]
+        reports: [{ title: "Incident Report #77-A", content: "Veteran operative. Killed in action during a perimeter breach. Body recovered by cleanup crew." }]
+    },
+    {
+        id: "W-CORP-812",
+        name: "Sarah Jenkins",
+        age: 32,
+        district: "District 4",
+        affiliation: "W Corp Cleanup Crew",
+        grade: "Grade 4",
+        status: "MIA",
+        lastUpdate: "2024.01.12 11:45",
+        photo: "https://placehold.co/400x400/0a0a0c/6b7280?text=SJ",
+        stats: { fortitude: 3, prudence: 5, temperance: 3, justice: 3 },
+        reports: [{ title: "Disappearance Log", content: "Agent lost contact during a standard WARP train cleanup operation. Last known signal emitted from carriage 4. Search protocols suspended." }]
+    },
+    {
+        id: "SYN-099",
+        name: "Victor 'Hound' Vance",
+        age: 36,
+        district: "Outskirts",
+        affiliation: "Unregistered Syndicate",
+        grade: "Grade 2",
+        status: "Kill on Sight",
+        lastUpdate: "2024.05.20 22:15",
+        photo: "https://placehold.co/400x400/0a0a0c/ef4444?text=VV",
+        stats: { fortitude: 5, prudence: 2, temperance: 1, justice: 5 },
+        reports: [
+            { title: "Threat Assessment", content: "Highly dangerous individual. Implants modified with illegal Outskirts tech. Do not engage without Grade 3+ Backup." },
+            { title: "Bounty Status", content: "Hana Association issued an open contract. Priority: Elimination." }
+        ]
+    },
+    {
+        id: "TBCW-044",
+        name: "Elena Rostova",
+        age: 25,
+        district: "District 12",
+        affiliation: "The Backstreets Commonwealth",
+        grade: "Grade 6",
+        status: "Active",
+        lastUpdate: "2024.06.11 08:00",
+        photo: "https://placehold.co/400x400/0a0a0c/10b981?text=ER",
+        stats: { fortitude: 2, prudence: 4, temperance: 4, justice: 2 },
+        reports: [{ title: "Transfer Record", content: "Recently transferred from logistical support to frontline observation. Shows high aptitude for tracking anomaly traces." }]
     }
 ];
 

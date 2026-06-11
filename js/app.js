@@ -1,84 +1,92 @@
-// --- TBCW CORE ENGINE // PROTOTYPE V.0.4.3 ---
+// --- TBCW CORE ENGINE // PROTOTYPE V.0.4.4 ---
 
-// 1. ПРОДВИНУТЫЙ ЗВУКОВОЙ ДВИЖОК (AUDIO ENGINE)
-class SoundEngine {
-    constructor() {
-        this.sounds = {};
-        this.unlocked = false;
-    }
+// 1. ЗВУКОВОЙ ДВИЖОК
+const sfx = {
+    hover: new Audio('sfx/hover.mp3'),
+    click: new Audio('sfx/click.mp3'),
+    typing: new Audio('sfx/typing.mp3'),
+    ambient: new Audio('sfx/ambient.mp3'),
+    docOpen: new Audio('sfx/docopen.mp3'),
+    mapOpen: new Audio('sfx/mapclick.mp3'),
+    mapHover: new Audio('sfx/hover.mp3')
+};
 
-    // Регистрация звука (Имя, Путь, Громкость, Зацикленность)
-    register(name, src, volume = 1.0, loop = false) {
-        const audio = new Audio(src);
-        audio.volume = volume;
-        audio.loop = loop;
-        audio.preload = 'auto'; // Заставляем браузер грузить звук до клика
-        this.sounds[name] = audio;
-    }
+Object.values(sfx).forEach(a => { a.volume = 0.2; a.loop = false; });
+sfx.typing.loop = true; 
+sfx.ambient.loop = true;
 
-    // Разблокировка движка (Вызывается первым кликом по экрану)
-    unlock() {
-        this.unlocked = true;
-    }
-
-    // Проигрывание звука
-    play(name) {
-        if (!this.unlocked) return; // Браузер заблокирует звук, если не было клика
-        
-        const audio = this.sounds[name];
-        if (!audio) {
-            console.error(`[SFX ENGINE] Ошибка: Звук '${name}' не зарегистрирован.`);
-            return;
-        }
-
-        try {
-            // Если звук не зациклен, клонируем его для наслоения (чтобы быстрые клики не "глотались")
-            if (!audio.loop) {
-                const clone = audio.cloneNode();
-                clone.volume = audio.volume;
-                clone.play().catch(e => console.warn(`[SFX ENGINE] Ошибка воспроизведения '${name}':`, e));
-            } else {
-                // Зацикленные звуки (ambient, typing) играем напрямую
-                if (audio.paused) {
-                    audio.play().catch(e => console.warn(`[SFX ENGINE] Ошибка воспроизведения '${name}':`, e));
-                }
-            }
-        } catch (e) {
-            console.error(`[SFX ENGINE] Критическая ошибка звука '${name}':`, e);
-        }
-    }
-
-    // Остановка зацикленного звука
-    stop(name) {
-        const audio = this.sounds[name];
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-        }
-    }
+function playSound(audioObj) {
+    try {
+        if(audioObj.readyState > 0) audioObj.currentTime = 0;
+        audioObj.play().catch(() => {});
+    } catch (e) {}
 }
 
-// Инициализация движка
-const sfx = new SoundEngine();
+function stopSound(audioObj) {
+    try {
+        audioObj.pause();
+        audioObj.currentTime = 0;
+    } catch (e) {}
+}
 
-// РЕГИСТРАЦИЯ ФАЙЛОВ. 
-// ВНИМАНИЕ: Проверь пути! Если папка sfx лежит внутри папки data, то путь будет 'data/sfx/hover.mp3'
-sfx.register('hover', 'sfx/hover.mp3', 0.08);
-sfx.register('click', 'sfx/click.mp3', 0.2);
-sfx.register('typing', 'sfx/typing.mp3', 0.15, true); // true = зациклено
-sfx.register('ambient', 'sfx/ambient.mp3', 0.25, true); // true = зациклено
-sfx.register('docOpen', 'sfx/docopen.mp3', 0.3);
-sfx.register('mapOpen', 'sfx/mapclick.mp3', 0.3);
-sfx.register('mapHover', 'sfx/hover.mp3', 0.05); // Временно используем hover для карты
-sfx.register('boot', 'sfx/boot.mp3', 0.2);
-
-function attachHoverSounds() {
-    document.querySelectorAll('.hover-sound, input, select, button').forEach(el => {
-        el.addEventListener('mouseenter', () => sfx.play('hover'));
+function initGlobalSounds() {
+    document.querySelectorAll('.ui-element, input, select').forEach(el => {
+        el.addEventListener('mouseenter', () => playSound(sfx.hover));
+        if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
+            el.addEventListener('focus', () => playSound(sfx.click));
+        } else {
+            el.addEventListener('click', () => playSound(sfx.click));
+        }
     });
 }
 
-// 2. ДВИЖОК КАРТЫ
+// 2. ДИНАМИЧЕСКИЕ ЛОГИ
+function addSystemLog(message, isError = false) {
+    const list = document.getElementById('log-list');
+    if (!list) return;
+    const li = document.createElement('li');
+    li.className = `flex gap-2 ui-element ${isError ? 'text-red-900 cursor-pointer hover:text-red-500' : ''}`;
+    
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    
+    li.innerHTML = `<span class="${isError ? 'text-red-900' : 'text-gray-500'}">[${timeStr}]</span> <span class="${isError ? 'text-red-800 glitch-text' : 'glitch-text'}" data-val="${message}">${message}</span>`;
+    
+    li.addEventListener('mouseenter', () => playSound(sfx.hover));
+    if (isError) li.addEventListener('click', () => playSound(sfx.click));
+    
+    list.prepend(li);
+    if(list.children.length > 8) list.lastChild.remove();
+}
+
+// 3. ЭФФЕКТ ДЕШИФРОВКИ
+function scrambleText(elements) {
+    playSound(sfx.typing);
+    elements.forEach(el => {
+        const originalText = el.getAttribute('data-val') || el.innerText || '';
+        el.setAttribute('data-val', originalText);
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+        let iterations = 0;
+        const maxIterations = 10 + Math.random() * 15;
+        
+        const interval = setInterval(() => {
+            if (iterations >= maxIterations) {
+                clearInterval(interval);
+                el.innerText = originalText;
+            } else {
+                let scrambled = "";
+                for(let i=0; i<originalText.length; i++) {
+                    scrambled += originalText[i] === ' ' ? ' ' : chars[Math.floor(Math.random() * chars.length)];
+                }
+                el.innerText = scrambled;
+                iterations++;
+            }
+        }, 30);
+    });
+    setTimeout(() => stopSound(sfx.typing), 800);
+}
+
+// 4. ДВИЖОК КАРТЫ
 function expandNodes(nodeNames, padding) {
     return nodeNames.map(name => {
         const [x, y] = nodes[name];
@@ -131,32 +139,12 @@ function buildMap() {
                 ${hasBranch ? `<g class="branch-flag" transform="translate(${centroid[0]-25}, ${centroid[1]-55}) scale(1.8)"><polygon points="0,0 14,9 0,18" fill="#000000"/><polygon points="28,0 14,9 28,18" fill="#000000"/><polygon points="0,0 28,0 14,9" fill="#ffffff"/><polygon points="0,18 28,18 14,9" fill="#ffffff"/><line x1="0" y1="0" x2="28" y2="18" stroke="#1d4ed8" stroke-width="2"/><line x1="0" y1="18" x2="28" y2="0" stroke="#1d4ed8" stroke-width="2"/><line x1="14" y1="0" x2="14" y2="18" stroke="#eab308" stroke-width="3"/><line x1="0" y1="9" x2="28" y2="9" stroke="#eab308" stroke-width="3"/><rect x="0" y="0" width="28" height="18" fill="none" stroke="#fff" stroke-width="0.5"/></g>` : ''}
             </g>`;
     });
-    document.getElementById('map-districts').innerHTML = districtsSvg;
-    document.querySelectorAll('.district-group').forEach(g => g.addEventListener('mouseenter', () => sfx.play('mapHover')));
+    const mapContainer = document.getElementById('map-districts');
+    if (mapContainer) mapContainer.innerHTML = districtsSvg;
+    document.querySelectorAll('.district-group').forEach(g => g.addEventListener('mouseenter', () => playSound(sfx.mapHover)));
 }
 
-const mapModal = document.getElementById('map-modal');
-const svgContainer = document.getElementById('svg-container');
-
-document.getElementById('btn-open-map').addEventListener('click', () => {
-    sfx.play('click');
-    mapModal.classList.remove('hidden');
-    
-    setTimeout(() => { 
-        mapModal.classList.remove('opacity-0');
-        sfx.play('mapOpen');
-        svgContainer.classList.add('window-open-active');
-    }, 10);
-});
-
-document.getElementById('btn-close-map').addEventListener('click', () => {
-    sfx.play('click');
-    mapModal.classList.add('opacity-0');
-    svgContainer.classList.remove('window-open-active');
-    setTimeout(() => { mapModal.classList.add('hidden'); }, 300);
-});
-
-// 3. ДОСЬЕ И МОДАЛКИ
+// 5. ДОСЬЕ И ГРИД
 function generateStatBar(statName, value, cssClass) {
     let blocks = '';
     for(let i = 1; i <= 5; i++) { blocks += `<div class="stat-segment ${cssClass} ${i <= value ? 'filled' : ''}"></div>`; }
@@ -164,7 +152,8 @@ function generateStatBar(statName, value, cssClass) {
     return `
         <div>
             <div class="flex justify-between text-[10px] text-gray-500 mb-1 font-bold">
-                <span class="uppercase">${statName}</span><span>${valueTicks}</span>
+                <span class="uppercase glitch-text" data-val="${statName}">${statName}</span>
+                <span class="glitch-text" data-val="${valueTicks}">${valueTicks}</span>
             </div>
             <div class="stat-bar-container">${blocks}</div>
         </div>`;
@@ -172,144 +161,192 @@ function generateStatBar(statName, value, cssClass) {
 
 function renderCards() {
     const grid = document.getElementById('dossier-grid');
+    if(!grid) return;
     grid.innerHTML = '';
     dossiers.forEach((person, index) => {
         const conf = statusConfig[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
         const card = document.createElement('div');
-        card.className = `dossier-card p-4 flex flex-col h-full`;
-        card.addEventListener('mouseenter', () => sfx.play('hover'));
-        card.addEventListener('click', () => { sfx.play('click'); openModal(index); });
-        card.innerHTML = `<div class="flex gap-4 mb-4 relative z-10"><img src="${person.photo}" class="w-16 h-16 object-cover border border-gray-800 grayscale"><div class="flex-1 min-w-0"><div class="text-[10px] font-mono-custom text-emerald-700/50 mb-1">${person.id}</div><h3 class="font-bold text-gray-200 uppercase truncate text-sm">${person.name}</h3><div class="text-xs text-gray-500 truncate font-mono-custom">${person.affiliation}</div></div></div><div class="mt-auto relative z-10"><span class="inline-block px-2 py-1 text-[9px] font-mono-custom uppercase tracking-widest ${conf.bg} ${conf.text} ${conf.border} border">${person.status}</span></div>`;
+        card.className = `dossier-card p-4 flex flex-col h-full ui-element`;
+        card.addEventListener('mouseenter', () => playSound(sfx.hover));
+        card.addEventListener('click', () => { 
+            playSound(sfx.click); 
+            openModal(index); 
+        });
+        card.innerHTML = `
+            <div class="flex gap-4 mb-4 relative z-10">
+                <img src="${person.photo}" class="w-16 h-16 object-cover border border-gray-800 grayscale">
+                <div class="flex-1 min-w-0">
+                    <div class="text-[10px] font-mono-custom text-emerald-700/50 mb-1 glitch-text" data-val="${person.id}">${person.id}</div>
+                    <h3 class="font-bold text-gray-200 uppercase truncate text-sm glitch-text" data-val="${person.name}">${person.name}</h3>
+                    <div class="text-xs text-gray-500 truncate font-mono-custom glitch-text" data-val="${person.affiliation}">${person.affiliation}</div>
+                </div>
+            </div>
+            <div class="mt-auto relative z-10 space-y-2">
+                <div class="flex justify-between text-[10px] font-mono-custom text-gray-600 border-t border-gray-800 pt-2">
+                    <span class="glitch-text" data-val="${person.district}">${person.district}</span>
+                    <span class="glitch-text" data-val="${person.grade}">${person.grade}</span>
+                </div>
+                <div class="text-right">
+                    <span class="inline-block px-2 py-1 text-[9px] font-mono-custom uppercase tracking-widest ${conf.bg} ${conf.text} ${conf.border} border glitch-text" data-val="${person.status}">${person.status}</span>
+                </div>
+            </div>`;
         grid.appendChild(card);
     });
 }
 
+// 6. МОДАЛЬНЫЕ ОКНА
 function openModal(index) {
     const person = dossiers[index];
+    const conf = statusConfig[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
+    
     document.getElementById('modal-photo').src = person.photo;
-    document.getElementById('modal-id').textContent = person.id;
-    document.getElementById('modal-age').textContent = person.age;
-    document.getElementById('modal-district').textContent = person.district;
-    document.getElementById('modal-affiliation').textContent = person.affiliation;
-    document.getElementById('modal-grade').textContent = person.grade;
-    document.getElementById('modal-name').textContent = person.name;
-    document.getElementById('modal-date').textContent = "LAST_MODIFIED: " + person.lastUpdate;
+    
+    const idEl = document.getElementById('modal-id');
+    const nameEl = document.getElementById('modal-name');
+    const ageEl = document.getElementById('modal-age');
+    const distEl = document.getElementById('modal-district');
+    const affilEl = document.getElementById('modal-affiliation');
+    const gradeEl = document.getElementById('modal-grade');
+    const dateEl = document.getElementById('modal-date');
+    const statusEl = document.getElementById('modal-status');
+    const statsContainer = document.getElementById('modal-stats-container');
+    const reportsContainer = document.getElementById('modal-reports');
+    
+    idEl.innerText = person.id; idEl.setAttribute('data-val', person.id);
+    nameEl.innerText = person.name; nameEl.setAttribute('data-val', person.name);
+    ageEl.innerText = person.age; ageEl.setAttribute('data-val', person.age);
+    distEl.innerText = person.district; distEl.setAttribute('data-val', person.district);
+    affilEl.innerText = person.affiliation; affilEl.setAttribute('data-val', person.affiliation);
+    gradeEl.innerText = person.grade; gradeEl.setAttribute('data-val', person.grade);
+    dateEl.innerText = "LAST_MODIFIED: " + person.lastUpdate; dateEl.setAttribute('data-val', "LAST_MODIFIED: " + person.lastUpdate);
+    
+    statusEl.innerText = person.status; 
+    statusEl.setAttribute('data-val', person.status);
+    statusEl.className = `inline-block w-full text-center py-2 text-[11px] border uppercase tracking-widest font-mono-custom font-bold glitch-text ${conf.bg} ${conf.text} ${conf.border} ${conf.extraClass || ''}`;
 
-    document.getElementById('modal-stats-container').innerHTML = 
+    statsContainer.innerHTML = 
         generateStatBar("Fortitude (Instinct)", person.stats.fortitude, "stat-fortitude") +
         generateStatBar("Prudence (Insight)", person.stats.prudence, "stat-prudence") +
         generateStatBar("Temperance (Attachment)", person.stats.temperance, "stat-temperance") +
         generateStatBar("Justice (Repression)", person.stats.justice, "stat-justice");
 
-    const statusEl = document.getElementById('modal-status');
-    const conf = statusConfig[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
-    statusEl.textContent = person.status;
-    statusEl.className = `inline-block w-full text-center py-2 text-[11px] border uppercase tracking-widest font-mono-custom font-bold ${conf.bg} ${conf.text} ${conf.border} ${conf.extraClass || ''}`;
-
-    const reportsContainer = document.getElementById('modal-reports');
     reportsContainer.innerHTML = '';
     person.reports.forEach(report => {
         const reportEl = document.createElement('div');
         reportEl.innerHTML = `
-            <h3 class="text-[10px] font-mono-custom text-emerald-600 mb-3 border-b border-gray-800/50 pb-1 uppercase tracking-wider">>> ${report.title}</h3>
-            <p class="whitespace-pre-line text-gray-400 text-sm pl-2 border-l border-gray-800">${report.content}</p>`;
+            <h3 class="text-[10px] font-mono-custom text-emerald-600 mb-3 border-b border-gray-800/50 pb-1 uppercase tracking-wider glitch-text" data-val=">> ${report.title}">>> ${report.title}</h3>
+            <p class="whitespace-pre-line text-gray-400 text-sm pl-2 border-l border-gray-800 glitch-text" data-val="${report.content}">${report.content}</p>`;
         reportsContainer.appendChild(reportEl);
     });
 
     const modal = document.getElementById('modal');
     const modalBox = document.getElementById('modal-box');
     modal.classList.remove('hidden');
+    
+    addSystemLog(`Accessing record ${person.id}`);
+    
     setTimeout(() => { 
         modal.classList.remove('opacity-0');
-        sfx.play('docOpen');
+        playSound(sfx.docOpen);
         modalBox.classList.add('window-open-active');
+        
+        scrambleText(modal.querySelectorAll('.glitch-text')); 
     }, 10);
 }
 
 function closeModal() {
-    sfx.play('click');
-    const modal = document.getElementById('modal');
-    const modalBox = document.getElementById('modal-box');
-    modal.classList.add('opacity-0');
-    modalBox.classList.remove('window-open-active');
-    setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    playSound(sfx.click);
+    document.getElementById('modal').classList.add('opacity-0');
+    document.getElementById('modal-box').classList.remove('window-open-active');
+    setTimeout(() => { document.getElementById('modal').classList.add('hidden'); }, 300);
+}
+
+const mapModal = document.getElementById('map-modal');
+const svgContainer = document.getElementById('svg-container');
+
+if(document.getElementById('btn-open-map')) {
+    document.getElementById('btn-open-map').addEventListener('click', () => {
+        playSound(sfx.click);
+        addSystemLog('City Map radar activated');
+        mapModal.classList.remove('hidden');
+        
+        setTimeout(() => { 
+            mapModal.classList.remove('opacity-0');
+            playSound(sfx.mapOpen);
+            svgContainer.classList.add('window-open-active');
+        }, 10);
+    });
+}
+
+if(document.getElementById('btn-close-map')) {
+    document.getElementById('btn-close-map').addEventListener('click', () => {
+        playSound(sfx.click);
+        mapModal.classList.add('opacity-0');
+        svgContainer.classList.remove('window-open-active');
+        setTimeout(() => { mapModal.classList.add('hidden'); }, 300);
+    });
 }
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        const modal = document.getElementById('modal');
-        const mapModal = document.getElementById('map-modal');
-        if(!modal.classList.contains('hidden')) closeModal();
+        if(!document.getElementById('modal').classList.contains('hidden')) closeModal();
         if(!mapModal.classList.contains('hidden')) {
             mapModal.classList.add('opacity-0');
-            document.getElementById('svg-container').classList.remove('window-open-active');
+            svgContainer.classList.remove('window-open-active');
             setTimeout(() => { mapModal.classList.add('hidden'); }, 300);
         }
     }
 });
 
-// 4. ПЕЧАТНАЯ МАШИНКА
+// 7. СТАРТ И ЗАГРУЗКА
 async function typeLine(container, textStr, speed = 35) {
-    return new Promise(resolve => {
-        const p = document.createElement('p');
-        container.appendChild(p);
-        
-        sfx.play('typing');
-        
-        let i = 0;
-        const interval = setInterval(() => {
-            p.textContent += textStr.charAt(i);
-            i++;
-            if (i >= textStr.length) {
-                clearInterval(interval);
-                sfx.stop('typing');
-                resolve();
-            }
-        }, speed);
-    });
+    const p = document.createElement('p');
+    container.appendChild(p);
+    playSound(sfx.typing);
+    for (let char of textStr) {
+        p.textContent += char;
+        await new Promise(r => setTimeout(r, speed));
+    }
+    stopSound(sfx.typing);
 }
 
-// 5. СТАРТ ТЕРМИНАЛА
-window.onload = async () => {
-    buildMap();
+document.addEventListener('DOMContentLoaded', () => {
+    try { buildMap(); } catch(e) { console.error(e); }
+    
     const init = document.getElementById('init-screen');
+    const bootScreen = document.getElementById('boot-screen');
+    const mainUI = document.getElementById('main-ui');
+    
+    if(!init || !bootScreen || !mainUI) return;
+
     init.addEventListener('click', async () => {
-        sfx.unlock(); // ВАЖНО: Разрешаем браузеру играть звуки
-        sfx.play('click');
-        
+        playSound(sfx.click);
         init.style.opacity = '0';
+        init.style.pointerEvents = 'none';
         setTimeout(() => init.style.display = 'none', 500);
 
-        const bootScreen = document.getElementById('boot-screen');
-        bootScreen.className = "fixed inset-0 bg-black flex flex-col justify-center items-center z-[100] transition-opacity duration-500";
-        sfx.play('boot');
-
         const bootText = document.getElementById('boot-text');
-        const lines = [
-            "> INITIALIZING TBCW DATABANK...", 
-            "> CONNECTING TO THE BACKSTREETS NETWORK...", 
-            "> VERIFYING SECURITY PROTOCOLS...", 
-            "> DECRYPTING DOSSIER ARCHIVES...", 
-            "> ACCESS GRANTED."
-        ];
-        
+        const lines = ["> INITIALIZING TBCW DATABANK...", "> CONNECTING TO NETWORK...", "> DECRYPTING DOSSIER ARCHIVES...", "> ACCESS GRANTED."];
         for (let line of lines) {
-            await typeLine(bootText, line, 25);
+            await typeLine(bootText, line);
             await new Promise(r => setTimeout(r, 200));
         }
-
-        sfx.play('ambient');
-
+        
+        sfx.ambient.play().catch(() => {});
+        
         bootScreen.style.opacity = '0';
-        const mainUI = document.getElementById('main-ui');
-        mainUI.classList.remove('hidden');
-        mainUI.style.display = 'flex';
-
-        setTimeout(() => { 
+        bootScreen.style.pointerEvents = 'none';
+        
+        setTimeout(() => {
             bootScreen.style.display = 'none';
-            mainUI.style.opacity = '1'; 
-            renderCards(); 
-            attachHoverSounds();
+            mainUI.classList.remove('hidden');
+            
+            setTimeout(() => { 
+                mainUI.style.opacity = '1'; 
+                renderCards(); 
+                initGlobalSounds(); 
+                scrambleText(document.querySelectorAll('#main-ui .glitch-text'));
+            }, 50);
         }, 500);
     });
-};
+});

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TBCW // The Backstreets Commonwealth</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -20,49 +19,40 @@
         <div id="boot-text" class="text-emerald-500 font-mono-custom text-sm md:text-base space-y-2"></div>
     </div>
 
-    <div id="main-ui" class="hidden w-full h-full flex flex-col opacity-0 transition-opacity duration-1000">
-        <header class="w-full mb-6 border-b border-gray-800 pb-4 shrink-0 hover-sound">
+    <div id="main-ui" class="hidden w-full h-full flex flex-col opacity-0 transition-opacity duration-1000 relative z-10">
+        <header class="w-full mb-6 border-b border-gray-800 pb-4 shrink-0 ui-element">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="w-16 h-10 border border-gray-700 bg-[#050505] flex items-center justify-center overflow-hidden shadow-sm" title="TBCW Flag">
+                    <div class="w-16 h-10 border border-gray-700 bg-[#050505] flex items-center justify-center overflow-hidden shadow-sm">
                         <svg viewBox="0 0 100 60" class="w-full h-full opacity-90 hover:opacity-100 transition-opacity">
-                            <polygon points="0,0 50,30 0,60" fill="#000000"/>
-                            <polygon points="100,0 50,30 100,60" fill="#000000"/>
-                            <polygon points="0,0 100,0 50,30" fill="#ffffff"/>
-                            <polygon points="0,60 100,60 50,30" fill="#ffffff"/>
-                            <line x1="0" y1="0" x2="100" y2="60" stroke="#1d4ed8" stroke-width="8"/>
-                            <line x1="0" y1="60" x2="100" y2="0" stroke="#1d4ed8" stroke-width="8"/>
-                            <line x1="50" y1="0" x2="50" y2="60" stroke="#eab308" stroke-width="10"/>
-                            <line x1="0" y1="30" x2="100" y2="30" stroke="#eab308" stroke-width="10"/>
+                            <polygon points="0,0 50,30 0,60" fill="#000000"/><polygon points="100,0 50,30 100,60" fill="#000000"/><polygon points="0,0 100,0 50,30" fill="#ffffff"/><polygon points="0,60 100,60 50,30" fill="#ffffff"/><line x1="0" y1="0" x2="100" y2="60" stroke="#1d4ed8" stroke-width="8"/><line x1="0" y1="60" x2="100" y2="0" stroke="#1d4ed8" stroke-width="8"/><line x1="50" y1="0" x2="50" y2="60" stroke="#eab308" stroke-width="10"/><line x1="0" y1="30" x2="100" y2="30" stroke="#eab308" stroke-width="10"/>
                         </svg>
                     </div>
-                    
                     <div>
-                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor">
-                            TBCW_DATABANK // PROTOTYPE V.0.5.9
-                        </h1>
-                        <p class="text-xs text-gray-500 font-mono-custom mt-1">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
+                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.4.3">TBCW_DATABANK // PROTOTYPE V.0.4.3</h1>
+                        <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
                 </div>
                 <div class="hidden md:block text-right">
-                    <div class="text-[10px] font-mono-custom text-gray-600">ENCRYPTION: ACTIVE</div>
-                    <div class="text-[10px] font-mono-custom text-emerald-700">CONNECTION ESTABLISHED</div>
+                    <div class="text-[10px] font-mono-custom text-gray-600 glitch-text" data-val="ENCRYPTION: ACTIVE">ENCRYPTION: ACTIVE</div>
+                    <div class="text-[10px] font-mono-custom text-emerald-700 glitch-text" data-val="CONNECTION ESTABLISHED">CONNECTION ESTABLISHED</div>
                 </div>
             </div>
         </header>
 
         <main class="w-full flex-1 flex gap-6 overflow-hidden">
             <aside class="hidden lg:flex w-72 flex-col gap-4 shrink-0 h-full overflow-y-auto pr-2 custom-scrollbar">
+                
                 <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom">
-                    <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase">Query Parameters</h2>
+                    <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase glitch-text" data-val="Query Parameters">Query Parameters</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[10px] text-gray-500 block mb-1">SEARCH IDENTIFIER</label>
-                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors hover-sound">
+                            <label class="text-[10px] text-gray-500 block mb-1 glitch-text" data-val="SEARCH IDENTIFIER">SEARCH IDENTIFIER</label>
+                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
                         </div>
                         <div>
-                            <label class="text-[10px] text-gray-500 block mb-1">DISTRICT FILTER</label>
-                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer hover-sound">
+                            <label class="text-[10px] text-gray-500 block mb-1 glitch-text" data-val="DISTRICT FILTER">DISTRICT FILTER</label>
+                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer ui-element">
                                 <option>ALL DISTRICTS</option>
                                 <option>District 4</option>
                                 <option>District 12</option>
@@ -73,139 +63,82 @@
                     </div>
                 </div>
 
-                <div class="border border-red-900/50 bg-red-950/10 p-4 font-mono-custom relative overflow-hidden group hover-sound">
+                <div class="border border-red-900/50 bg-red-950/10 p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer" id="btn-open-map">
                     <div class="absolute inset-0 bg-red-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                    <button id="btn-open-map" class="relative w-full border border-red-800 text-red-500 py-3 text-sm font-bold tracking-widest hover:text-red-400 transition-colors uppercase shadow-[0_0_15px_rgba(220,20,20,0.2)]">
+                    <button class="relative w-full border border-red-800 text-red-500 py-3 text-sm font-bold tracking-widest hover:text-red-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ Access City Map ]">
                         [ Access City Map ]
                     </button>
-                    <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-red-500/80 transition-colors">TBCW BRANCH RADAR SYSTEM</p>
+                    <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-red-500/80 transition-colors pointer-events-none glitch-text" data-val="TBCW BRANCH RADAR SYSTEM">TBCW BRANCH RADAR SYSTEM</p>
                 </div>
 
-                <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom flex-1">
-                    <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase">System Logs</h2>
-                    <ul class="text-[10px] space-y-2 text-gray-600">
-                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[14:02]</span> <span>Access granted to TBCW-001</span></li>
-                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[13:45]</span> <span>Data sync with Hana Assoc.</span></li>
-                        <li class="flex gap-2 text-red-900 cursor-pointer hover:text-red-500 hover-sound"><span class="text-red-900">[ERR]</span> <span class="text-red-800">FILE_CORRUPTED_ID_000</span></li>
-                        <li class="flex gap-2 hover-sound"><span class="text-gray-500">[11:20]</span> <span>Archive backup complete</span></li>
-                    </ul>
+                <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom flex-1 overflow-hidden flex flex-col">
+                    <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase shrink-0 glitch-text" data-val="System Logs">System Logs</h2>
+                    <ul id="log-list" class="text-[10px] space-y-2 text-gray-600 overflow-y-auto custom-scrollbar flex-1">
+                        </ul>
                 </div>
             </aside>
 
             <div class="flex-1 h-full overflow-y-auto pr-2 pb-10 custom-scrollbar">
-                <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                </div>
+                <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
             </div>
         </main>
     </div>
 
     <div id="map-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div id="map-backdrop" class="absolute inset-0"></div>
-        
-        <button id="btn-close-map" class="absolute top-6 right-6 text-red-600 hover:text-red-400 font-mono-custom text-2xl z-[70] font-bold hover-sound">
-            [ CLOSE MAP ]
-        </button>
-
+        <button id="btn-close-map" class="absolute top-6 right-6 text-red-600 hover:text-red-400 font-mono-custom text-2xl z-[70] font-bold ui-element">[ CLOSE MAP ]</button>
         <div id="svg-container" class="w-full max-w-6xl aspect-square md:aspect-[4/3] relative flex items-center justify-center z-[65] p-2 md:p-8 transform scale-95 opacity-0 transition-all duration-500">
             <div class="absolute top-8 left-8 font-mono-custom text-red-600 text-xs z-[66]">
                 <p class="font-bold">> CITY SECTOR MAP</p>
                 <p class="text-red-800">> TRACKING TBCW BRANCHES...</p>
-                <p class="text-red-900 mt-2">> TOPOLOGY: MANUAL REPLICATION</p>
             </div>
-
             <svg id="city-map-svg" viewBox="0 0 1200 1200" class="w-full h-full drop-shadow-2xl rounded-sm">
-                <defs>
-                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(220, 20, 20, 0.08)" stroke-width="1"/>
-                    </pattern>
-                    <linearGradient id="lakeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(10, 25, 60, 0.85)" />
-                        <stop offset="100%" stop-color="rgba(3, 8, 20, 0.95)" />
-                    </linearGradient>
-                </defs>
-                
-                <rect width="1200" height="1200" fill="url(#grid)" />
-
-                <g id="great-lake-waves">
-                    <path d="M -100,950 Q 600,820 1300,950 L 1300,1300 L -100,1300 Z" fill="url(#lakeGrad)" stroke="rgba(30,60,140,0.5)" stroke-width="3"/>
-                    <text x="600" y="1120" fill="rgba(40,80,160,0.4)" font-family="Oswald" font-size="36" text-anchor="middle" letter-spacing="20" font-weight="bold">THE GREAT LAKE</text>
-                </g>
-
-                <g id="map-outskirts"></g>
-                <g id="map-rails"></g>
-                <g id="map-districts"></g>
-
-                <g id="map-compass" transform="translate(1080, 1050)">
-                    <circle cx="0" cy="0" r="35" fill="none" stroke="rgba(220,30,30,0.8)" stroke-width="2"/>
-                    <circle cx="0" cy="0" r="25" fill="none" stroke="rgba(220,30,30,0.3)" stroke-width="1"/>
-                    <polygon points="0,-22 -8,5 8,5" fill="rgba(220,30,30,1)"/>
-                    <polygon points="0,22 -8,-5 8,-5" fill="#0a0303" stroke="rgba(220,30,30,1)" stroke-width="1"/>
-                    <text x="0" y="-40" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">N</text>
-                    <text x="0" y="52" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">S</text>
-                    <text x="42" y="6" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">E</text>
-                    <text x="-42" y="6" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">W</text>
-                </g>
-
-                <g id="map-scale" transform="translate(880, 1140)">
-                    <line x1="0" y1="0" x2="250" y2="0" stroke="rgba(220,30,30,1)" stroke-width="4"/>
-                    <line x1="0" y1="-8" x2="0" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
-                    <line x1="50" y1="-8" x2="50" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
-                    <line x1="100" y1="-8" x2="100" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
-                    <line x1="150" y1="-8" x2="150" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
-                    <line x1="200" y1="-8" x2="200" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
-                    <line x1="250" y1="-8" x2="250" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
-                    <text x="0" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">0</text>
-                    <text x="50" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">10KM</text>
-                    <text x="100" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">20KM</text>
-                    <text x="150" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">30KM</text>
-                    <text x="200" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">40KM</text>
-                    <text x="250" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">50KM</text>
-                </g>
+                <g id="map-outskirts"></g><g id="map-rails"></g><g id="map-districts"></g>
             </svg>
         </div>
     </div>
 
     <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div id="modal-backdrop" class="absolute inset-0" onclick="closeModal()"></div>
-        
         <div id="modal-box" class="modal-content relative z-10 w-full max-w-5xl max-h-[95vh] overflow-hidden m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 hover-sound">[X]</button>
-
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
             <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r border-gray-800 flex flex-col overflow-y-auto custom-scrollbar">
                 <div class="relative mb-4">
                     <img id="modal-photo" src="" alt="Photo" class="w-full aspect-square object-cover border border-gray-800 grayscale hover:grayscale-0 transition-all duration-700">
-                    <div class="absolute bottom-0 right-0 bg-black/80 px-2 py-1 text-[10px] font-mono-custom text-emerald-500 border-t border-l border-gray-800">REC_VISUAL_01</div>
+                    <div class="absolute bottom-0 right-0 bg-black/80 px-2 py-1 text-[10px] font-mono-custom text-emerald-500 border-t border-l border-gray-800 glitch-text" data-val="REC_VISUAL_01">REC_VISUAL_01</div>
                 </div>
                 <div class="font-mono-custom mb-4 border-b border-gray-800 pb-2">
-                    <div class="text-[10px] text-gray-600 mb-1">REGISTRY_ID</div>
-                    <div id="modal-id" class="text-lg text-gray-200 tracking-wider"></div>
+                    <div class="text-[10px] text-gray-600 mb-1 glitch-text" data-val="REGISTRY_ID">REGISTRY_ID</div>
+                    <div id="modal-id" class="text-lg text-gray-200 tracking-wider glitch-text"></div>
                 </div>
                 <div class="space-y-3 font-mono-custom text-xs">
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="text-gray-600">Age:</div><div id="modal-age" class="text-gray-300 text-right"></div>
-                        <div class="text-gray-600">District:</div><div id="modal-district" class="text-gray-300 text-right"></div>
-                        <div class="text-gray-600">Affiliation:</div><div id="modal-affiliation" class="text-gray-300 text-right"></div>
-                        <div class="text-gray-600">Grade:</div><div id="modal-grade" class="text-gray-300 text-right"></div>
+                        <div class="text-gray-600 glitch-text" data-val="Age:">Age:</div><div id="modal-age" class="text-gray-300 text-right glitch-text"></div>
+                        <div class="text-gray-600 glitch-text" data-val="District:">District:</div><div id="modal-district" class="text-gray-300 text-right glitch-text"></div>
+                        <div class="text-gray-600 glitch-text" data-val="Affiliation:">Affiliation:</div><div id="modal-affiliation" class="text-gray-300 text-right glitch-text"></div>
+                        <div class="text-gray-600 glitch-text" data-val="Grade:">Grade:</div><div id="modal-grade" class="text-gray-300 text-right glitch-text"></div>
                     </div>
                     <div class="pt-4 border-t border-gray-800">
-                        <span class="text-gray-600 block mb-3 text-[10px] uppercase">Employee Virtues</span>
+                        <span class="text-gray-600 block mb-3 text-[10px] uppercase glitch-text" data-val="Employee Virtues">Employee Virtues</span>
                         <div class="space-y-3" id="modal-stats-container"></div>
                     </div>
                     <div class="pt-4 border-t border-gray-800">
-                        <span class="text-gray-600 block mb-2 text-[10px]">CURRENT_STATUS:</span>
-                        <div id="modal-status" class="inline-block w-full text-center py-2 text-xs border uppercase tracking-widest font-bold"></div>
+                        <span class="text-gray-600 block mb-2 text-[10px] glitch-text" data-val="CURRENT_STATUS:">CURRENT_STATUS:</span>
+                        <div id="modal-status" class="inline-block w-full text-center py-2 text-xs border uppercase tracking-widest font-bold glitch-text"></div>
                     </div>
                 </div>
             </div>
             <div class="w-full md:flex-1 p-6 md:p-8 overflow-y-auto bg-[#0a0a0c] custom-scrollbar">
                 <div class="flex items-end justify-between border-b border-gray-800 pb-4 mb-6">
-                    <h2 id="modal-name" class="text-2xl md:text-4xl font-bold text-gray-100 uppercase tracking-tight"></h2>
-                    <span id="modal-date" class="text-[10px] font-mono-custom text-gray-600"></span>
+                    <h2 id="modal-name" class="text-2xl md:text-4xl font-bold text-gray-100 uppercase tracking-tight glitch-text"></h2>
+                    <span id="modal-date" class="text-[10px] font-mono-custom text-gray-600 glitch-text"></span>
                 </div>
                 <div id="modal-reports" class="space-y-8 text-gray-300 leading-relaxed text-sm"></div>
             </div>
         </div>
     </div>
+
+    <div class="crt-overlay"></div>
 
     <script src="js/data.js"></script>
     <script src="js/app.js"></script>
