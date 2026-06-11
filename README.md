@@ -6,7 +6,7 @@ I guess, make something interesting and cool for my office members and make peop
 Most importantly is to make lore for our office and wrap it up in interesting and cool form.
 ## Roadmap
 1. Make map of The City. (Done)
-2. Make remangment of HTML files, split them on few files. 
+2. Make remangment of HTML files, split them on few files. (Done)
 3. Add SFX for any enteraction on webpage.
 4. Add more documents.
 5. Add lore section.
