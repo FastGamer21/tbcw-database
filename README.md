@@ -13,7 +13,7 @@ Most importantly is to make lore for our office and wrap it up in interesting an
 6. Add lore section. (Done)
 7. Encrypt documents so they cannot be easily viewed through the file repository. (Done)
 8. Add guide for members to add their own documents on webpage. (Done)
-9. Add opportunity to add audio files to documents.
+9. Add opportunity to add audio files to documents. (Done)
 10. Make redesign of webpage.
 11. Fix bugs.
 12. Release.

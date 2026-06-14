@@ -29,7 +29,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.8.0">TBCW_DATABANK // PROTOTYPE V.0.7.0</h1>
+                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.9">TBCW_DATABANK // PROTOTYPE V.0.9</h1>
                         <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
                 </div>
@@ -141,10 +141,20 @@
                 </div>
             </div>
             <div class="w-full md:flex-1 p-6 md:p-8 overflow-y-auto bg-[#0a0a0c] custom-scrollbar">
+                
                 <div class="flex items-end justify-between border-b border-gray-800 pb-4 mb-6">
                     <h2 id="modal-name" class="text-2xl md:text-4xl font-bold text-gray-100 uppercase tracking-tight glitch-text"></h2>
                     <span id="modal-date" class="text-[10px] font-mono-custom text-gray-600 glitch-text"></span>
                 </div>
+
+                <div id="modal-audio-container" class="hidden mb-6 border border-emerald-900/50 bg-emerald-950/10 p-3 flex items-center gap-4 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                    <button id="btn-play-log" class="text-emerald-500 hover:text-emerald-300 font-bold tracking-widest font-mono-custom text-xs focus:outline-none transition-colors ui-element w-20 text-left">[ PLAY ]</button>
+                    <div class="flex-1 h-1 bg-black border border-emerald-900/50 relative overflow-hidden">
+                        <div id="log-progress" class="absolute top-0 left-0 h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                    </div>
+                    <span id="log-time" class="text-[10px] font-mono-custom text-emerald-600 w-10 text-right">00:00</span>
+                </div>
+
                 <div id="modal-reports" class="space-y-8 text-gray-300 leading-relaxed text-sm"></div>
             </div>
         </div>
@@ -154,22 +164,17 @@
         <div id="archive-backdrop" class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
         <div id="archive-box" class="modal-content relative z-10 w-full max-w-6xl h-[85vh] m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500 border border-emerald-900/50">
             <button id="btn-close-archive" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
-            
             <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r border-emerald-900/50 flex flex-col overflow-y-auto custom-scrollbar shrink-0">
                 <h2 class="text-emerald-500 font-mono-custom text-sm mb-6 border-b border-emerald-900/50 pb-2 glitch-text" data-val="STORAGE_RACK // ENCRYPTED">STORAGE_RACK // ENCRYPTED</h2>
                 <ul id="archive-list" class="space-y-3 font-mono-custom text-xs text-gray-400"></ul>
             </div>
-
             <div class="w-full md:flex-1 p-6 md:p-10 flex flex-col overflow-hidden bg-[#030504] relative">
-                
                 <div id="reader-bay" class="w-full max-w-2xl mx-auto h-32 border-2 border-dashed border-emerald-900/50 mb-8 flex flex-col items-center justify-center transition-colors relative overflow-hidden shrink-0">
                     <span id="reader-status" class="text-emerald-700 font-mono-custom text-sm glitch-text pointer-events-none" data-val="[ DRAG AND DROP ARCHIVE DRIVE HERE ]">[ DRAG AND DROP ARCHIVE DRIVE HERE ]</span>
-                    
                     <div id="decryption-screen" class="absolute inset-0 bg-[#050505] border-2 border-emerald-500 hidden flex-col items-center justify-center p-4">
                         <div id="decryption-text" class="text-emerald-500 text-xs font-mono-custom text-center whitespace-pre-line leading-relaxed"></div>
                     </div>
                 </div>
-
                 <div id="archive-reader-content" class="w-full max-w-3xl mx-auto hidden opacity-0 transition-opacity duration-500 overflow-y-auto custom-scrollbar flex-1 pr-4">
                     <div class="flex items-end justify-between border-b border-emerald-900/50 pb-4 mb-8 shrink-0">
                         <h1 id="archive-title" class="text-xl md:text-2xl font-bold text-emerald-400 uppercase tracking-widest glitch-text" data-val=""></h1>
@@ -177,12 +182,11 @@
                     </div>
                     <div id="archive-content" class="text-emerald-50/80 leading-relaxed text-sm md:text-base font-mono-custom whitespace-pre-line glitch-text" data-val=""></div>
                 </div>
-
             </div>
         </div>
     </div>
 
-<div id="submit-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div id="submit-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
         <div id="submit-box" class="modal-content relative z-10 w-full max-w-6xl m-4 p-6 flex flex-col rounded-sm transform scale-95 opacity-0 transition-all duration-500 border border-emerald-900/50 bg-[#030504] max-h-[95vh]">
             <button id="btn-close-submit" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
@@ -205,7 +209,7 @@
             <div class="flex flex-col lg:flex-row gap-6 font-mono-custom overflow-hidden flex-1">
                 <div class="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar pr-2">
                     
-                   <div class="bg-emerald-950/10 border border-emerald-900/30 p-3 mb-4">
+                    <div class="bg-emerald-950/10 border border-emerald-900/30 p-3">
                         <p class="text-emerald-600 text-[10px] uppercase font-bold mb-1">> REGISTRATION GUIDELINES</p>
                         <p class="text-gray-400 text-[10px] leading-relaxed">
                             - <b>DISTRICT</b>: Use official designations (e.g. "District 23", "Outskirts", "The Ruins").<br>
@@ -257,33 +261,17 @@
                         </div>
                     </div>
 
-                    <div class="border border-gray-800 p-3 bg-black/50">
-                        <span class="text-emerald-700 text-[10px] uppercase font-bold mb-2 block">> EMPLOYEE VIRTUES (1-5)</span>
-                        <div class="grid grid-cols-4 gap-3">
-                            <div>
-                                <label class="text-[9px] text-red-500 block mb-1">FORTITUDE</label>
-                                <input id="sub-f" type="number" min="1" max="5" value="1" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 text-center focus:outline-none ui-element">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-white block mb-1">PRUDENCE</label>
-                                <input id="sub-p" type="number" min="1" max="5" value="1" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 text-center focus:outline-none ui-element">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-purple-500 block mb-1">TEMPERANCE</label>
-                                <input id="sub-t" type="number" min="1" max="5" value="1" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 text-center focus:outline-none ui-element">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-blue-500 block mb-1">JUSTICE</label>
-                                <input id="sub-j" type="number" min="1" max="5" value="1" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 text-center focus:outline-none ui-element">
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="border border-gray-800 p-3 bg-black/50 flex flex-col flex-1 min-h-[180px]">
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-800/50">
                             <span class="text-emerald-700 text-[10px] uppercase font-bold">> LOGS / BACKGROUND</span>
                             <button id="btn-add-report" class="text-emerald-500 text-[9px] hover:text-emerald-300 border border-emerald-900/50 px-2 py-1 ui-element transition-colors">[+ ADD SECTION ]</button>
                         </div>
+                        
+                        <div class="mb-4 pb-4 border-b border-gray-800/50">
+                            <label class="text-[9px] text-emerald-500 block mb-1">> ATTACH AUDIO LOG (EXTERNAL URL .MP3 / .WAV)</label>
+                            <input id="sub-audio" type="text" placeholder="e.g. https://cdn.discordapp.com/attachments/.../log.mp3" class="w-full bg-black border border-emerald-900/50 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                        </div>
+
                         <div id="reports-container" class="space-y-4 overflow-y-auto custom-scrollbar pr-2 flex-1">
                             <div class="report-entry flex flex-col gap-2 relative group">
                                 <input type="text" placeholder="Report Title (e.g. Psychological Profile)" class="report-title w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
@@ -318,19 +306,15 @@
     </div>
 
     <div class="crt-overlay"></div>
-
     <script src="js/data.js"></script>
     <script src="js/mapData.js"></script>
     <script src="js/lore.js"></script>
-
     <script src="js/audio.js"></script>
     <script src="js/effects.js"></script>
-
     <script src="js/map.js"></script>
     <script src="js/dossiers.js"></script>
     <script src="js/archives.js"></script>
     <script src="js/submit.js"></script>
-
     <script src="js/main.js"></script>
 </body>
 </html>

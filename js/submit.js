@@ -6,7 +6,7 @@ let progress_interval;
 function getMoscowTime() {
     const d = new Date();
     const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-    const nd = new Date(utc + (3600000 * 3)); // +3 hours for MSK
+    const nd = new Date(utc + (3600000 * 3)); // UTC +3 для МСК
     const yy = nd.getFullYear();
     const mm = String(nd.getMonth() + 1).padStart(2, '0');
     const dd = String(nd.getDate()).padStart(2, '0');
@@ -33,7 +33,6 @@ function addReportSection() {
     
     container.appendChild(entry);
     
-    // Подключаем звуки к новым элементам
     entry.querySelectorAll('.ui-element').forEach(el => {
         el.addEventListener('mouseenter', () => playSound(sfx.hover));
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
@@ -79,6 +78,12 @@ function setupSubmitControls() {
     if(btn_close) {
         btn_close.addEventListener('click', () => {
             playSound(sfx.click);
+            // Если анимация шифрования шла полным ходом, обрубаем её звуки при закрытии окна
+            stopSound(sfx.typing);
+            clearTimeout(encryption_timeout);
+            clearInterval(progress_interval);
+            enc_overlay.classList.add('hidden');
+            
             submit_modal.classList.add('opacity-0');
             if(submit_box) submit_box.classList.remove('window-open-active');
             setTimeout(() => { submit_modal.classList.add('hidden'); }, 300);
@@ -87,11 +92,11 @@ function setupSubmitControls() {
 
     let pending_hash = "";
 
-    // Функция завершения процесса шифровки
+    // Функция мгновенного завершения процесса шифровки (вызывается по SKIP или по концу таймера)
     function finishEncryption() {
         clearTimeout(encryption_timeout);
         clearInterval(progress_interval);
-        stopSound(sfx.typing);
+        stopSound(sfx.typing); // Выключаем зацикленный звук печати!
         playSound(sfx.docOpen);
         enc_overlay.classList.add('hidden');
         output_hash.value = pending_hash;
@@ -112,7 +117,7 @@ function setupSubmitControls() {
             const name_val = document.getElementById('sub-name').value.trim() || "UNKNOWN";
             const initials = name_val.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
 
-            // Сбор всех добавленных отчетов
+            // Сбор всех добавленных динамических отчетов из контейнера
             const reports_arr = [];
             document.querySelectorAll('.report-entry').forEach(entry => {
                 const t = entry.querySelector('.report-title').value.trim() || "UNTITLED LOG";
@@ -120,7 +125,7 @@ function setupSubmitControls() {
                 reports_arr.push({ title: t, content: c });
             });
 
-            // Формирование JSON объекта Досье
+            // Формирование JSON объекта Досье фиксера (характеристики по умолчанию 0)
             const dossier_data = {
                 id: document.getElementById('sub-id').value.trim() || "TBCW-XXX",
                 name: name_val,
@@ -131,38 +136,35 @@ function setupSubmitControls() {
                 status: document.getElementById('sub-status').value,
                 last_update: getMoscowTime(),
                 photo: `https://placehold.co/400x400/0a0a0c/10b981?text=${initials}`,
-                stats: {
-                    fortitude: parseInt(document.getElementById('sub-f').value) || 1,
-                    prudence: parseInt(document.getElementById('sub-p').value) || 1,
-                    temperance: parseInt(document.getElementById('sub-t').value) || 1,
-                    justice: parseInt(document.getElementById('sub-j').value) || 1
-                },
-                reports: reports_arr.length > 0 ? reports_arr : [{ title: "INITIAL LOG", content: "No data." }]
+                audio_log: document.getElementById('sub-audio').value.trim(),
+                stats: { fortitude: 0, prudence: 0, temperance: 0, justice: 0 },
+                reports: reports_arr.length > 0 ? reports_arr : [{ title: "INITIAL LOG", content: "No data provided." }]
             };
 
+            // Переводим объект в строку и шифруем в глобальной функции (effects.js)
             const json_str = JSON.stringify(dossier_data, null, 0); 
             const encrypted_str = encryptData(json_str);
             pending_hash = `"${encrypted_str}",`;
             
-            // ЗАПУСК АНИМАЦИИ
+            // ЗАПУСК СТИЛЬНОЙ АНИМАЦИИ ШИФРОВАНИЯ
             output_hash.value = "";
             enc_overlay.classList.remove('hidden');
             enc_overlay.classList.add('flex');
-            playSound(sfx.typing);
+            playSound(sfx.typing); // Включаем зацикленный звук тайпинга
             
             let progress = 0;
             anim_progress.style.width = '0%';
             
             const steps = [
                 "> COMPILING BIOMETRICS...",
-                "> SECURING VIRTUE METRICS...",
-                "> ENCRYPTING REPORTS...",
-                "> BYPASSING ROOT SECURITY...",
-                "> FINALIZING HASH..."
+                "> GENERATING IDENT-TAGS...",
+                "> ENCRYPTING DATA PACKETS...",
+                "> PACKAGING LOG SECTORS...",
+                "> FINALIZING DOSSIER HASH..."
             ];
             let step_idx = 0;
 
-            // Таймер 4 секунды (50 итераций по 80мс = 4000мс)
+            // Анимация идет ~4 секунды (50 шагов по 80 миллисекунд)
             progress_interval = setInterval(() => {
                 progress += 2;
                 anim_progress.style.width = progress + '%';
