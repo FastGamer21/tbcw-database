@@ -6,6 +6,9 @@ document.addEventListener('keydown', (e) => {
         const map_modal = document.getElementById('map-modal');
         const archive_modal = document.getElementById('archive-modal');
         const archive_box = document.getElementById('archive-box');
+        
+        const submit_modal = document.getElementById('submit-modal');
+        const submit_box = document.getElementById('submit-box');
 
         if(modal && !modal.classList.contains('hidden')) closeModal();
         if(map_modal && !map_modal.classList.contains('hidden')) { 
@@ -17,14 +20,22 @@ document.addEventListener('keydown', (e) => {
             if(archive_box) archive_box.classList.remove('window-open-active');
             setTimeout(() => archive_modal.classList.add('hidden'), 300); 
         }
+        if(submit_modal && !submit_modal.classList.contains('hidden')) { 
+            submit_modal.classList.add('opacity-0'); 
+            if(submit_box) submit_box.classList.remove('window-open-active');
+            setTimeout(() => submit_modal.classList.add('hidden'), 300); 
+        }
     }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Инициализация всех интерфейсов
     try { buildMap(); } catch(e) { console.error("Map build failed:", e); }
     try { setupMapControls(); } catch(e) { console.error("Map controls failed:", e); }
     try { setupArchiveControls(); } catch(e) { console.error("Archive controls failed:", e); }
+    try { setupSubmitControls(); } catch(e) { console.error("Submit controls failed:", e); }
     
+    // 2. Логика загрузочного терминала
     const init = document.getElementById('init-screen');
     const boot_screen = document.getElementById('boot-screen');
     const main_ui = document.getElementById('main-ui');
@@ -40,28 +51,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const boot_text = document.getElementById('boot-text');
         const lines = ["> INITIALIZING TBCW DATABANK...", "> CONNECTING TO NETWORK...", "> DECRYPTING SECURE ARCHIVES...", "> ACCESS GRANTED."];
         
+        // РАСШИФРОВКА БАЗЫ СОТРУДНИКОВ
         if (typeof encrypted_dossiers !== 'undefined') {
             encrypted_dossiers.forEach(enc_str => {
                 const decoded = decryptData(enc_str);
                 if(decoded) {
-                    try { 
-                        dossiers.push(JSON.parse(decoded)); 
-                    } catch(e) {
-                        console.error("Failed to parse dossier json:", e);
-                    }
+                    try { dossiers.push(JSON.parse(decoded)); } catch(e) {}
                 }
             });
         }
 
+        // РАСШИФРОВКА БАЗЫ ЛОРА (ЖЕСТКИХ ДИСКОВ)
         if (typeof encrypted_lore !== 'undefined') {
             encrypted_lore.forEach(enc_str => {
                 const decoded = decryptData(enc_str);
                 if(decoded) {
-                    try { 
-                        lore_chapters.push(JSON.parse(decoded)); 
-                    } catch(e) {
-                        console.error("Failed to parse lore json:", e);
-                    }
+                    try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {}
                 }
             });
         }
@@ -75,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         boot_screen.style.opacity = '0'; 
         boot_screen.style.pointerEvents = 'none';
         
+        // 3. Открытие главного интерфейса
         setTimeout(() => {
             boot_screen.style.display = 'none';
             main_ui.classList.remove('hidden');

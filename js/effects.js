@@ -60,3 +60,12 @@ async function typeLine(container, textStr, speed = 35) {
     }
     stopSound(sfx.typing);
 }
+
+function encryptData(raw_str) {
+    try {
+        return btoa(unescape(encodeURIComponent(raw_str)));
+    } catch (e) {
+        console.error("CRITICAL ERROR: ENCRYPTION FAILED.", e);
+        return "";
+    }
+}
