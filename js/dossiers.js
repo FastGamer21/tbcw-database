@@ -1,10 +1,10 @@
 // --- TBCW DOSSIERS MODULE ---
 
-function generateStatBar(statName, value, cssClass) {
+function generateStatBar(stat_name, value, css_class) {
     let blocks = '';
-    for(let i = 1; i <= 5; i++) { blocks += `<div class="stat-segment ${cssClass} ${i <= value ? 'filled' : ''}"></div>`; }
-    let valueTicks = value > 0 ? 'I'.repeat(value) : '-';
-    return `<div><div class="flex justify-between text-[10px] text-gray-500 mb-1 font-bold"><span class="uppercase glitch-text" data-val="${statName}">${statName}</span><span class="glitch-text" data-val="${valueTicks}">${valueTicks}</span></div><div class="stat-bar-container">${blocks}</div></div>`;
+    for(let i = 1; i <= 5; i++) { blocks += `<div class="stat-segment ${css_class} ${i <= value ? 'filled' : ''}"></div>`; }
+    let value_ticks = value > 0 ? 'I'.repeat(value) : '-';
+    return `<div><div class="flex justify-between text-[10px] text-gray-500 mb-1 font-bold"><span class="uppercase glitch-text" data-val="${stat_name}">${stat_name}</span><span class="glitch-text" data-val="${value_ticks}">${value_ticks}</span></div><div class="stat-bar-container">${blocks}</div></div>`;
 }
 
 function renderCards() {
@@ -12,7 +12,7 @@ function renderCards() {
     if(!grid || typeof dossiers === 'undefined') return;
     grid.innerHTML = '';
     dossiers.forEach((person, index) => {
-        const conf = statusConfig[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
+        const conf = status_config[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
         const card = document.createElement('div');
         card.className = `dossier-card p-4 flex flex-col h-full ui-element`;
         card.addEventListener('click', () => { playSound(sfx.click); openModal(index); });
@@ -23,7 +23,7 @@ function renderCards() {
 
 function openModal(index) {
     const person = dossiers[index];
-    const conf = statusConfig[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
+    const conf = status_config[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
     
     document.getElementById('modal-photo').src = person.photo;
     const fields = ['id', 'name', 'age', 'district', 'affiliation', 'grade'];
@@ -32,35 +32,35 @@ function openModal(index) {
         el.innerText = person[f]; el.setAttribute('data-val', person[f]);
     });
     
-    document.getElementById('modal-date').innerText = "LAST_MODIFIED: " + person.lastUpdate;
-    document.getElementById('modal-date').setAttribute('data-val', "LAST_MODIFIED: " + person.lastUpdate);
+    document.getElementById('modal-date').innerText = "LAST_MODIFIED: " + person.last_update;
+    document.getElementById('modal-date').setAttribute('data-val', "LAST_MODIFIED: " + person.last_update);
     
-    const statusEl = document.getElementById('modal-status');
-    statusEl.innerText = person.status; statusEl.setAttribute('data-val', person.status);
-    statusEl.className = `inline-block w-full text-center py-2 text-[11px] border uppercase tracking-widest font-mono-custom font-bold glitch-text ${conf.bg} ${conf.text} ${conf.border} ${conf.extraClass || ''}`;
+    const status_el = document.getElementById('modal-status');
+    status_el.innerText = person.status; status_el.setAttribute('data-val', person.status);
+    status_el.className = `inline-block w-full text-center py-2 text-[11px] border uppercase tracking-widest font-mono-custom font-bold glitch-text ${conf.bg} ${conf.text} ${conf.border} ${conf.extra_class || ''}`;
 
     document.getElementById('modal-stats-container').innerHTML = 
         generateStatBar("Fortitude (Instinct)", person.stats.fortitude, "stat-fortitude") + generateStatBar("Prudence (Insight)", person.stats.prudence, "stat-prudence") +
         generateStatBar("Temperance (Attachment)", person.stats.temperance, "stat-temperance") + generateStatBar("Justice (Repression)", person.stats.justice, "stat-justice");
 
-    const reportsContainer = document.getElementById('modal-reports');
-    reportsContainer.innerHTML = '';
+    const reports_container = document.getElementById('modal-reports');
+    reports_container.innerHTML = '';
     person.reports.forEach(report => {
-        const reportEl = document.createElement('div');
-        reportEl.innerHTML = `<h3 class="text-[10px] font-mono-custom text-emerald-600 mb-3 border-b border-gray-800/50 pb-1 uppercase tracking-wider glitch-text" data-val=">> ${report.title}">>> ${report.title}</h3><p class="whitespace-pre-line text-gray-400 text-sm pl-2 border-l border-gray-800 glitch-text" data-val="${report.content}">${report.content}</p>`;
-        reportsContainer.appendChild(reportEl);
+        const report_el = document.createElement('div');
+        report_el.innerHTML = `<h3 class="text-[10px] font-mono-custom text-emerald-600 mb-3 border-b border-gray-800/50 pb-1 uppercase tracking-wider glitch-text" data-val=">> ${report.title}">>> ${report.title}</h3><p class="whitespace-pre-line text-gray-400 text-sm pl-2 border-l border-gray-800 glitch-text" data-val="${report.content}">${report.content}</p>`;
+        reports_container.appendChild(report_el);
     });
 
     const modal = document.getElementById('modal');
-    const modalBox = document.getElementById('modal-box');
+    const modal_box = document.getElementById('modal-box');
     modal.classList.remove('hidden');
     addSystemLog(`Accessing record ${person.id}`);
     
     setTimeout(() => { 
         modal.classList.remove('opacity-0');
-        modalBox.classList.remove('opacity-0');
+        modal_box.classList.remove('opacity-0');
         playSound(sfx.docOpen);
-        modalBox.classList.add('window-open-active');
+        modal_box.classList.add('window-open-active');
         scrambleText(modal.querySelectorAll('.glitch-text')); 
     }, 10);
 }

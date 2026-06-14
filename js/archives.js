@@ -1,31 +1,28 @@
 // --- TBCW LORE ARCHIVES MODULE (DRAG AND DROP) ---
 
 function setupArchiveControls() {
-    const archiveModal = document.getElementById('archive-modal');
-    const archiveList = document.getElementById('archive-list');
-    const archiveBox = document.getElementById('archive-box');
+    const archive_modal = document.getElementById('archive-modal');
+    const archive_list = document.getElementById('archive-list');
+    const archive_box = document.getElementById('archive-box');
     
-    // Элементы считывателя
-    const readerBay = document.getElementById('reader-bay');
-    const readerStatus = document.getElementById('reader-status');
-    const decryptionScreen = document.getElementById('decryption-screen');
-    const decryptionText = document.getElementById('decryption-text');
-    const readerContent = document.getElementById('archive-reader-content');
+    const reader_bay = document.getElementById('reader-bay');
+    const reader_status = document.getElementById('reader-status');
+    const decryption_screen = document.getElementById('decryption-screen');
+    const decryption_text = document.getElementById('decryption-text');
+    const reader_content = document.getElementById('archive-reader-content');
 
     if(document.getElementById('btn-open-archives')) {
         document.getElementById('btn-open-archives').addEventListener('click', () => {
             playSound(sfx.click);
             addSystemLog('Accessing secure lore archives');
             
-            if(archiveList && archiveList.children.length === 0 && typeof loreChapters !== 'undefined') {
-                loreChapters.forEach((chapter) => {
-                    // Создаем Draggable элемент
+            if(archive_list && archive_list.children.length === 0 && typeof lore_chapters !== 'undefined') {
+                lore_chapters.forEach((chapter) => {
                     const li = document.createElement('li');
                     li.className = "cursor-grab active:cursor-grabbing group relative bg-[#050505] border border-gray-800 p-3 hover:border-emerald-500 transition-colors ui-element flex items-center gap-4";
                     li.draggable = true;
-                    li.dataset.id = chapter.id; // Привязываем ID для передачи при Drag-and-Drop
+                    li.dataset.id = chapter.id; 
                     
-                    // Строгий минималистичный векторный диск
                     li.innerHTML = `
                         <div class="w-12 h-16 shrink-0 border border-emerald-900 bg-black flex flex-col relative overflow-hidden group-hover:border-emerald-500 transition-colors pointer-events-none">
                             <div class="h-2 w-full border-b border-emerald-900 flex justify-evenly items-end px-1">
@@ -50,12 +47,10 @@ function setupArchiveControls() {
                     
                     li.addEventListener('mouseenter', () => playSound(sfx.hover));
                     
-                    // ЛОГИКА ПЕРЕТАСКИВАНИЯ (Drag Start)
                     li.addEventListener('dragstart', (e) => {
                         playSound(sfx.hover);
                         e.dataTransfer.setData('text/plain', chapter.id);
                         e.dataTransfer.effectAllowed = 'move';
-                        // Визуальная полупрозрачность перетаскиваемого элемента
                         setTimeout(() => li.classList.add('opacity-40'), 0);
                     });
 
@@ -63,44 +58,40 @@ function setupArchiveControls() {
                         li.classList.remove('opacity-40');
                     });
 
-                    archiveList.appendChild(li);
+                    archive_list.appendChild(li);
                 });
             }
             
-            archiveModal.classList.remove('hidden');
+            archive_modal.classList.remove('hidden');
             setTimeout(() => { 
-                archiveModal.classList.remove('opacity-0');
-                if(archiveBox) archiveBox.classList.add('window-open-active');
+                archive_modal.classList.remove('opacity-0');
+                if(archive_box) archive_box.classList.add('window-open-active');
                 playSound(sfx.docOpen);
-                if(archiveList) scrambleText(archiveList.querySelectorAll('.glitch-text'));
+                if(archive_list) scrambleText(archive_list.querySelectorAll('.glitch-text'));
             }, 10);
         });
     }
 
-    // ЛОГИКА ПРИЕМНИКА (Drop Zone)
-    if(readerBay) {
-        // Разрешаем сброс в эту зону
-        readerBay.addEventListener('dragover', (e) => {
+    if(reader_bay) {
+        reader_bay.addEventListener('dragover', (e) => {
             e.preventDefault(); 
             e.dataTransfer.dropEffect = 'move';
-            readerBay.classList.add('border-emerald-500', 'bg-emerald-900/20');
-            readerStatus.innerText = "[ RELEASE TO INSERT ]";
+            reader_bay.classList.add('border-emerald-500', 'bg-emerald-900/20');
+            reader_status.innerText = "[ RELEASE TO INSERT ]";
         });
 
-        // Если увели мышку из зоны
-        readerBay.addEventListener('dragleave', () => {
-            readerBay.classList.remove('border-emerald-500', 'bg-emerald-900/20');
-            readerStatus.innerText = "[ DRAG AND DROP ARCHIVE DRIVE HERE ]";
+        reader_bay.addEventListener('dragleave', () => {
+            reader_bay.classList.remove('border-emerald-500', 'bg-emerald-900/20');
+            reader_status.innerText = "[ DRAG AND DROP ARCHIVE DRIVE HERE ]";
         });
 
-        // Момент сброса диска
-        readerBay.addEventListener('drop', (e) => {
+        reader_bay.addEventListener('drop', (e) => {
             e.preventDefault();
-            readerBay.classList.remove('border-emerald-500', 'bg-emerald-900/20');
-            readerStatus.innerText = "[ DRAG AND DROP ARCHIVE DRIVE HERE ]";
+            reader_bay.classList.remove('border-emerald-500', 'bg-emerald-900/20');
+            reader_status.innerText = "[ DRAG AND DROP ARCHIVE DRIVE HERE ]";
             
-            const driveId = e.dataTransfer.getData('text/plain');
-            const chapter = loreChapters.find(c => c.id === driveId);
+            const drive_id = e.dataTransfer.getData('text/plain');
+            const chapter = lore_chapters.find(c => c.id === drive_id);
 
             if(chapter) {
                 processDriveInsertion(chapter);
@@ -108,43 +99,39 @@ function setupArchiveControls() {
         });
     }
 
-    // СЕКВЕНСОР ВЗЛОМА
     function processDriveInsertion(chapter) {
-        playSound(sfx.click); // Звук вставки
-        playSound(sfx.typing); // Звук вычислений терминала
+        playSound(sfx.click); 
+        playSound(sfx.typing); 
 
-        // Скрываем старый контент
-        readerContent.classList.add('hidden', 'opacity-0');
+        reader_content.classList.add('hidden', 'opacity-0');
+        decryption_screen.classList.remove('hidden');
         
-        // Показываем терминал взлома
-        decryptionScreen.classList.remove('hidden');
-        
-        const hackText = `> MOUNTING VOLUME [${chapter.id}]...\n> BYPASSING SECURE ENCRYPTION PROTOCOLS...\n> EXTRACTING DATA SECTORS [||||||||||||] 100%`;
-        decryptionText.innerText = hackText;
-        decryptionText.setAttribute('data-val', hackText);
-        scrambleText([decryptionText]);
+        const hack_text = `> MOUNTING VOLUME [${chapter.id}]...\n> BYPASSING SECURE ENCRYPTION PROTOCOLS...\n> EXTRACTING DATA SECTORS [||||||||||||] 100%`;
+        decryption_text.innerText = hack_text;
+        decryption_text.setAttribute('data-val', hack_text);
+        scrambleText([decryption_text]);
 
         addSystemLog(`Commencing decryption of ${chapter.id}`);
 
-        // Сброс диодов на всех дисках на полке
         document.querySelectorAll('.drive-led').forEach(led => {
             led.className = "w-1.5 h-1.5 rounded-full bg-red-900 group-hover:bg-yellow-500 transition-colors shadow-[0_0_5px_rgba(0,0,0,0)] group-hover:shadow-[0_0_8px_rgba(234,179,8,0.8)] drive-led";
         });
 
-        // Зажигаем зеленый диод на вставленном диске
-        const activeDrive = document.querySelector(`li[data-id="${chapter.id}"] .drive-led`);
-        if(activeDrive) {
-            activeDrive.classList.remove('bg-red-900', 'group-hover:bg-yellow-500');
-            activeDrive.classList.add('bg-emerald-500', 'shadow-[0_0_8px_rgba(16,185,129,0.8)]');
+        const active_drive = document.querySelector(`li[data-id="${chapter.id}"] .drive-led`);
+        if(active_drive) {
+            active_drive.classList.remove('bg-red-900', 'group-hover:bg-yellow-500');
+            active_drive.classList.add('bg-emerald-500', 'shadow-[0_0_8px_rgba(16,185,129,0.8)]');
         }
 
-        // Через 1.8 секунды показываем лор
+        // Текст берется напрямую, так как он был расшифрован при старте терминала
+        const decrypted_content = chapter.content;
+
         setTimeout(() => {
             playSound(sfx.docOpen);
-            decryptionScreen.classList.add('hidden');
+            decryption_screen.classList.add('hidden');
             
-            readerContent.classList.remove('hidden');
-            setTimeout(() => readerContent.classList.remove('opacity-0'), 50);
+            reader_content.classList.remove('hidden');
+            setTimeout(() => reader_content.classList.remove('opacity-0'), 50);
 
             document.getElementById('archive-title').innerText = chapter.title;
             document.getElementById('archive-title').setAttribute('data-val', chapter.title);
@@ -152,8 +139,9 @@ function setupArchiveControls() {
             document.getElementById('archive-id').innerText = chapter.id;
             document.getElementById('archive-id').setAttribute('data-val', chapter.id);
 
-            document.getElementById('archive-content').innerText = chapter.content;
-            document.getElementById('archive-content').setAttribute('data-val', chapter.content);
+            // Выводим расшифрованный текст
+            document.getElementById('archive-content').innerText = decrypted_content;
+            document.getElementById('archive-content').setAttribute('data-val', decrypted_content);
 
             scrambleText([document.getElementById('archive-title'), document.getElementById('archive-id'), document.getElementById('archive-content')]);
             addSystemLog(`Decryption successful.`);
@@ -163,9 +151,9 @@ function setupArchiveControls() {
     if(document.getElementById('btn-close-archive')) {
         document.getElementById('btn-close-archive').addEventListener('click', () => {
             playSound(sfx.click);
-            archiveModal.classList.add('opacity-0');
-            if(archiveBox) archiveBox.classList.remove('window-open-active');
-            setTimeout(() => { archiveModal.classList.add('hidden'); }, 300);
+            archive_modal.classList.add('opacity-0');
+            if(archive_box) archive_box.classList.remove('window-open-active');
+            setTimeout(() => { archive_modal.classList.add('hidden'); }, 300);
         });
     }
 }

@@ -1,5 +1,16 @@
 // --- TBCW VISUAL EFFECTS & LOGGING ---
 
+// Глобальная функция дешифровки пакетов данных Содружества
+function decryptData(encrypted_str) {
+    try {
+        let decoded_base = atob(encrypted_str);
+        return decodeURIComponent(escape(decoded_base));
+    } catch (e) {
+        console.error("CRITICAL ERROR: DATA CORRUPTION.");
+        return "";
+    }
+}
+
 function addSystemLog(message, isError = false) {
     const list = document.getElementById('log-list');
     if (!list) return;
