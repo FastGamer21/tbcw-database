@@ -29,7 +29,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.4.3">TBCW_DATABANK // PROTOTYPE V.0.4.3</h1>
+                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.7">TBCW_DATABANK // PROTOTYPE V.0.7</h1>
                         <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
                 </div>
@@ -53,11 +53,7 @@
                         <div>
                             <label class="text-[10px] text-gray-500 block mb-1 glitch-text" data-val="DISTRICT FILTER">DISTRICT FILTER</label>
                             <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer ui-element">
-                                <option>ALL DISTRICTS</option>
-                                <option>District 4</option>
-                                <option>District 12</option>
-                                <option>District 23</option>
-                                <option>Outskirts</option>
+                                <option>ALL DISTRICTS</option><option>District 4</option><option>District 12</option><option>District 23</option><option>Outskirts</option>
                             </select>
                         </div>
                     </div>
@@ -65,16 +61,19 @@
 
                 <div class="border border-red-900/50 bg-red-950/10 p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer" id="btn-open-map">
                     <div class="absolute inset-0 bg-red-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                    <button class="relative w-full border border-red-800 text-red-500 py-3 text-sm font-bold tracking-widest hover:text-red-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ Access City Map ]">
-                        [ Access City Map ]
-                    </button>
+                    <button class="relative w-full border border-red-800 text-red-500 py-3 text-sm font-bold tracking-widest hover:text-red-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ Access City Map ]">[ Access City Map ]</button>
                     <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-red-500/80 transition-colors pointer-events-none glitch-text" data-val="TBCW BRANCH RADAR SYSTEM">TBCW BRANCH RADAR SYSTEM</p>
+                </div>
+
+                <div class="border border-emerald-900/50 bg-emerald-950/10 p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer" id="btn-open-archives">
+                    <div class="absolute inset-0 bg-emerald-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <button class="relative w-full border border-emerald-800 text-emerald-500 py-3 text-sm font-bold tracking-widest hover:text-emerald-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ Access Archives ]">[ Access Archives ]</button>
+                    <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-emerald-500/80 transition-colors pointer-events-none glitch-text" data-val="DECRYPT LORE DRIVES">DECRYPT LORE DRIVES</p>
                 </div>
 
                 <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom flex-1 overflow-hidden flex flex-col">
                     <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase shrink-0 glitch-text" data-val="System Logs">System Logs</h2>
-                    <ul id="log-list" class="text-[10px] space-y-2 text-gray-600 overflow-y-auto custom-scrollbar flex-1">
-                        </ul>
+                    <ul id="log-list" class="text-[10px] space-y-2 text-gray-600 overflow-y-auto custom-scrollbar flex-1"></ul>
                 </div>
             </aside>
 
@@ -89,11 +88,44 @@
         <button id="btn-close-map" class="absolute top-6 right-6 text-red-600 hover:text-red-400 font-mono-custom text-2xl z-[70] font-bold ui-element">[ CLOSE MAP ]</button>
         <div id="svg-container" class="w-full max-w-6xl aspect-square md:aspect-[4/3] relative flex items-center justify-center z-[65] p-2 md:p-8 transform scale-95 opacity-0 transition-all duration-500">
             <div class="absolute top-8 left-8 font-mono-custom text-red-600 text-xs z-[66]">
-                <p class="font-bold">> CITY SECTOR MAP</p>
-                <p class="text-red-800">> TRACKING TBCW BRANCHES...</p>
+                <p class="font-bold">> CITY SECTOR MAP</p><p class="text-red-800">> TRACKING TBCW BRANCHES...</p>
             </div>
-            <svg id="city-map-svg" viewBox="0 0 1200 1200" class="w-full h-full drop-shadow-2xl rounded-sm">
+            <svg id="city-map-svg" viewBox="-100 -100 1400 1400" class="w-full h-full drop-shadow-2xl rounded-sm">
+                <defs>
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(220, 20, 20, 0.08)" stroke-width="1"/></pattern>
+                    <linearGradient id="lakeGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(10, 25, 60, 0.85)" /><stop offset="100%" stop-color="rgba(3, 8, 20, 0.95)" /></linearGradient>
+                </defs>
+                <rect x="-100" y="-100" width="1400" height="1400" fill="url(#grid)" />
+                <g id="great-lake-waves">
+                    <path d="M -200,950 Q 600,820 1500,950 L 1500,1500 L -200,1500 Z" fill="url(#lakeGrad)" stroke="rgba(30,60,140,0.5)" stroke-width="3"/>
+                    <text x="600" y="1120" fill="rgba(40,80,160,0.4)" font-family="Oswald" font-size="36" text-anchor="middle" letter-spacing="20" font-weight="bold">THE GREAT LAKE</text>
+                </g>
                 <g id="map-outskirts"></g><g id="map-rails"></g><g id="map-districts"></g>
+                <g id="map-compass" transform="translate(1150, 1150)">
+                    <circle cx="0" cy="0" r="35" fill="none" stroke="rgba(220,30,30,0.8)" stroke-width="2"/>
+                    <circle cx="0" cy="0" r="25" fill="none" stroke="rgba(220,30,30,0.3)" stroke-width="1"/>
+                    <polygon points="0,-22 -8,5 8,5" fill="rgba(220,30,30,1)"/>
+                    <polygon points="0,22 -8,-5 8,-5" fill="#0a0303" stroke="rgba(220,30,30,1)" stroke-width="1"/>
+                    <text x="0" y="-40" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">N</text>
+                    <text x="0" y="52" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">S</text>
+                    <text x="42" y="6" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">E</text>
+                    <text x="-42" y="6" fill="rgba(220,30,30,1)" font-size="16" font-family="Oswald" text-anchor="middle" font-weight="bold">W</text>
+                </g>
+                <g id="map-scale" transform="translate(900, 1220)">
+                    <line x1="0" y1="0" x2="250" y2="0" stroke="rgba(220,30,30,1)" stroke-width="4"/>
+                    <line x1="0" y1="-8" x2="0" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
+                    <line x1="50" y1="-8" x2="50" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
+                    <line x1="100" y1="-8" x2="100" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
+                    <line x1="150" y1="-8" x2="150" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
+                    <line x1="200" y1="-8" x2="200" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
+                    <line x1="250" y1="-8" x2="250" y2="0" stroke="rgba(220,30,30,1)" stroke-width="2"/>
+                    <text x="0" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">0</text>
+                    <text x="50" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">10KM</text>
+                    <text x="100" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">20KM</text>
+                    <text x="150" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">30KM</text>
+                    <text x="200" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">40KM</text>
+                    <text x="250" y="15" fill="rgba(220,30,30,1)" font-size="10" font-family="JetBrains Mono" text-anchor="middle">50KM</text>
+                </g>
             </svg>
         </div>
     </div>
@@ -138,9 +170,51 @@
         </div>
     </div>
 
+    <div id="archive-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
+        <div id="archive-backdrop" class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
+        <div id="archive-box" class="modal-content relative z-10 w-full max-w-6xl h-[85vh] m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500 border border-emerald-900/50">
+            <button id="btn-close-archive" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
+            
+            <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r border-emerald-900/50 flex flex-col overflow-y-auto custom-scrollbar shrink-0">
+                <h2 class="text-emerald-500 font-mono-custom text-sm mb-6 border-b border-emerald-900/50 pb-2 glitch-text" data-val="STORAGE_RACK // ENCRYPTED">STORAGE_RACK // ENCRYPTED</h2>
+                <ul id="archive-list" class="space-y-3 font-mono-custom text-xs text-gray-400"></ul>
+            </div>
+
+            <div class="w-full md:flex-1 p-6 md:p-10 flex flex-col overflow-hidden bg-[#030504] relative">
+                
+                <div id="reader-bay" class="w-full max-w-2xl mx-auto h-32 border-2 border-dashed border-emerald-900/50 mb-8 flex flex-col items-center justify-center transition-colors relative overflow-hidden shrink-0">
+                    <span id="reader-status" class="text-emerald-700 font-mono-custom text-sm glitch-text pointer-events-none" data-val="[ DRAG AND DROP ARCHIVE DRIVE HERE ]">[ DRAG AND DROP ARCHIVE DRIVE HERE ]</span>
+                    
+                    <div id="decryption-screen" class="absolute inset-0 bg-[#050505] border-2 border-emerald-500 hidden flex-col items-center justify-center p-4">
+                        <div id="decryption-text" class="text-emerald-500 text-xs font-mono-custom text-center whitespace-pre-line leading-relaxed"></div>
+                    </div>
+                </div>
+
+                <div id="archive-reader-content" class="w-full max-w-3xl mx-auto hidden opacity-0 transition-opacity duration-500 overflow-y-auto custom-scrollbar flex-1 pr-4">
+                    <div class="flex items-end justify-between border-b border-emerald-900/50 pb-4 mb-8 shrink-0">
+                        <h1 id="archive-title" class="text-xl md:text-2xl font-bold text-emerald-400 uppercase tracking-widest glitch-text" data-val=""></h1>
+                        <span id="archive-id" class="text-[10px] font-mono-custom text-emerald-700 glitch-text" data-val=""></span>
+                    </div>
+                    <div id="archive-content" class="text-emerald-50/80 leading-relaxed text-sm md:text-base font-mono-custom whitespace-pre-line glitch-text" data-val=""></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <div class="crt-overlay"></div>
 
     <script src="js/data.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/mapData.js"></script>
+    <script src="js/lore.js"></script>
+
+    <script src="js/audio.js"></script>
+    <script src="js/effects.js"></script>
+
+    <script src="js/map.js"></script>
+    <script src="js/dossiers.js"></script>
+    <script src="js/archives.js"></script>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

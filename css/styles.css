@@ -6,6 +6,7 @@
     --panel-bg: #0a0a0c;
     --border-color: #2dd4bf;
     --text-main: #e2e8f0;
+    --text-muted: #475569;
     --terminal-green: #10b981;
     --tbcw-gold: #eab308;
     --tbcw-blue: #1d4ed8;
@@ -18,12 +19,13 @@ body {
     background-color: var(--bg-color);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
+    background-image: linear-gradient(rgba(16, 185, 129, 0.03) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 4px, 3px 100%;
     margin: 0;
     min-height: 100vh;
     overflow: hidden;
 }
 
-/* Эффект старого монитора (Scanlines & Vignette) */
 .crt-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -95,11 +97,12 @@ body {
 .branch-flag { opacity: 0; transition: all 0.3s ease; pointer-events: none; transform-origin: center; }
 .district-group:hover .branch-flag { opacity: 1; transform: scale(1.2) translateY(-10px); }
 
+@keyframes subtleWave { 0% { transform: translateY(0px) scaleY(1); } 50% { transform: translateY(-2px) scaleY(1.02); } 100% { transform: translateY(0px) scaleY(1); } }
+#great-lake-waves { animation: subtleWave 8s ease-in-out infinite; transform-origin: bottom; }
+
 @keyframes terminalExpand {
     0% { transform: scaleX(0.01) scaleY(0.005); opacity: 0; }
     40% { transform: scaleX(1) scaleY(0.005); opacity: 0.8; }
     100% { transform: scaleX(1) scaleY(1); opacity: 1; }
 }
 .window-open-active { animation: terminalExpand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
-#boot-text p { border-right: 2px solid #10b981; white-space: nowrap; overflow: hidden; }
-#log-list li { transition: color 0.2s; }

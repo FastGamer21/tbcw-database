@@ -75,7 +75,38 @@ const dossiers = [
         photo: "https://placehold.co/400x400/0a0a0c/10b981?text=ER",
         stats: { fortitude: 2, prudence: 4, temperance: 4, justice: 2 },
         reports: [{ title: "Transfer Record", content: "Recently transferred from logistical support to frontline observation. Shows high aptitude for tracking anomaly traces." }]
+    },
+    {
+        id: "TBCW-009",
+        name: "Gideon Cross",
+        age: 37,
+        district: "Outskirts Border",
+        affiliation: "The Backstreets Commonwealth // Vanguard Command",
+        grade: "Grade 1 Fixer (Color Candidate)",
+        status: "Active",
+        lastUpdate: "2026.06.12 23:00",
+        photo: "https://placehold.co/400x400/0a0a0c/dc2626?text=GC",
+        stats: { fortitude: 5, prudence: 4, temperance: 3, justice: 5 },
+        reports: [
+            {
+                title: "SECTION I: EXTENDED BIOGRAPHICAL OVERVIEW",
+                content: "Gideon Cross. Born in the deepest slums of District 23, an area notorious for rampant cannibalism and the culinary atrocities of the Eight O'Clock Circus. According to fragmented Hana Association records, Cross was not originally a registered Fixer. He was assimilated into a Sweeper family during his early teens. His internal organs were systematically liquefied and replaced with the standard cybernetic carapace and life-support slurry typical of the Sweeper hive mind.\n\nHowever, during the incident classified as the 'Blood-Red Night', a massive localized Distortion event severed the telepathic link between Cross and his family unit. Instead of collapsing into a vegetative state like standard Sweepers isolated from their 'Mother', Cross experienced a violent awakening of self-awareness. He tore his way out of District 23, slaughtering his former brethren to secure enough liquid fuel to sustain his own failing carapace.\n\nHe was discovered half-dead on the borders of the Outskirts by the founding members of the TBCW. Recognizing his unnatural resilience and immense combat potential, he was offered sanctuary and a steady supply of refined bio-fuel in exchange for his absolute loyalty. He currently serves as the Commander of the Vanguard, the primary defense line standing between the Commonwealth's hidden branches and the Eldritch horrors bleeding in from the Ruins."
+            },
+            {
+                title: "SECTION II: COMBAT CAPABILITY & WORKSHOP GEAR",
+                content: "THREAT ASSESSMENT: CATACLYSMIC. HIGH PRIORITY FOR IMMEDIATE DISPATCH IF GONE ROGUE.\n\nPrimary Armament: The 'Tartarus-Model Piledriver' — a massive, heavily customized hydraulic spear-gauntlet crafted by an underground Workshop affiliated with the Tres Association. The weapon utilizes a highly unstable, unrefined variant of W Corp's spatial distortion Singularities. Upon impact, the Piledriver does not merely crush armor; it forcefully overlaps the physical space of the target's internal organs with the surrounding air, effectively 'deleting' chunks of matter.\n\nPhysiological Augmentations: Due to his time as a Sweeper, over 70% of Gideon's internal biology is non-human. He does not possess a traditional heart or lungs. Instead, his thoracic cavity houses a pressurized tank of nutrient-dense slurry. This grants him near-instantaneous tissue regeneration and immunity to conventional poisons, gases, and biological hazards (including extreme resistance to K Corp's degenerative ampules). To kill him, one must shatter the reinforced core housed within his spine, a feat requiring firepower equivalent to a Grade 1 Fixer team.\n\nCombat Doctrine: Relentless forward assault. Cross does not utilize evasion. He relies on his Sweeper-grade armor and hyper-regeneration to absorb lethal blows, closing the distance to execute targets with his Piledriver. He thrives in chaotic, close-quarters environments where his lack of pain receptors gives him an absolute psychological advantage over human combatants."
+            },
+            {
+                title: "SECTION III: PSYCHOLOGICAL PORTRAIT & DISTORTION THREAT",
+                content: "MENTAL STABILITY: PRECARIOUS. DISTORTION THREAT LEVEL: 42% (CAUTION REQUIRED).\n\nPsychiatric evaluations indicate that Cross suffers from severe chronic phantom pain — not from a missing limb, but from the missing 'hive mind' of his Sweeper family. The absolute silence in his head drives him towards extreme acts of violence, which temporarily trigger chemical spikes in his slurry, simulating the warmth of the collective.\n\nFurthermore, automated surveillance algorithms have flagged multiple instances of Cross muttering to an invisible entity. When questioned, he claims to hear a 'gentle woman's voice' urging him to shed his metallic carapace and embrace his true, liquid nature. This is a recognized precursor to the Distortion Phenomenon.\n\nDespite this, his loyalty to the TBCW remains ironclad. He views the Commonwealth as his new 'Family'. The structure and rigid discipline of the Vanguard act as his mental anchor. As long as he is given clear, brutal directives, his ego remains intact. \n\nDirectives: Under no circumstances is Cross to be deployed in District 23 or allowed contact with active Sweeper patrols. The risk of him re-assimilating or, worse, Distorting into an Apex-class Hive Entity is too high."
+            },
+            {
+                title: "SECTION IV: EXPANDED INCIDENT LOG // BACK-OUT-88 // THE RUINS PUSH",
+                content: "TRANSCRIPT RECOVERED FROM GIDEON CROSS'S TACTICAL VISOR HUD. DATE: [REDACTED]. LOCATION: 40KM INTO THE OUTSKIRTS.\n\n[02:14 AM] - Vanguard Squad Delta encounters a localized reality-tear near the abandoned L Corp branch ruins. \n[02:15 AM] - Entities designated as 'Peccatulum' begin swarming the perimeter. Standard rounds are ineffective. Casualties reported: 4.\n[02:19 AM] - Commander Cross engages. Audio logs detect the hydraulic screech of the Tartarus Piledriver charging.\n[02:22 AM] - CROSS: 'Hold the line! If they breach the perimeter, the Backstreets will drown in this filth! Fire the incendiaries!'\n[02:30 AM] - A massive Abnormality-class entity emerges from the ruins. Classification: WAW-level threat. It resembles a grotesque amalgamation of human limbs and weeping eyes.\n[02:35 AM] - Cross orders the squad to fall back. He manually overrides the safety limiters on his Piledriver, venting toxic W-Corp spatial exhaust directly into his own life-support slurry.\n[02:40 AM] - Seismic sensors record a spatial detonation. The Abnormality's core is ruptured. Cross is found buried under 40 tons of rubble, his carapace severely compromised, leaking black fluid, but laughing.\n[02:45 AM] - CROSS: 'Is that all the Ruins have to offer? We are the Commonwealth. We do not break.'\n\nCONCLUSION: The operation was a success. The perimeter was secured. Cross required 400 liters of replacement biomass but returned to active duty within 72 hours. He has been nominated for a Color title by the Hana Association, though TBCW leadership has intercepted and buried the paperwork to keep him off the Head's radar."
+            }
+        ]
     }
+    
 ];
 
 const activeBranches = ['D', 'L', 'W'];
