@@ -18,27 +18,26 @@ function getMoscowTime() {
 function addReportSection() {
     playSound(sfx.click);
     const container = document.getElementById('reports-container');
-    const submitBox = document.getElementById('submit-box'); // Контейнер модалки для фона
+    const submitBox = document.getElementById('submit-box'); 
     const entry = document.createElement('div');
     entry.className = "report-entry flex flex-col gap-2 relative group pt-3 border-t border-gray-800/50 mt-3";
     
-    // Блок кнопок вынесен в отдельный div для удобного управления в Focus Mode
     entry.innerHTML = `
-        <div class="btn-group absolute top-1 right-0 flex gap-3 hidden group-hover:flex z-20 bg-[#030504] px-2 rounded">
-            <button class="btn-focus-report text-emerald-600 hover:text-emerald-300 text-[10px] font-bold transition-colors ui-element">[ MAXIMIZE ]</button>
-            <button class="btn-remove-report text-red-900 hover:text-red-500 text-[10px] font-bold transition-colors ui-element">[ REMOVE ]</button>
+        <div class="btn-group absolute top-1 right-0 flex gap-3 hidden group-hover:flex z-20 bg-[#030504] px-2 py-1 rounded border theme-border">
+            <button class="btn-focus-report theme-text hover:text-white text-[10px] font-bold transition-colors ui-element">[ MAXIMIZE ]</button>
+            <button class="btn-remove-report text-red-700 hover:text-red-400 text-[10px] font-bold transition-colors ui-element">[ REMOVE ]</button>
         </div>
-        <input type="text" placeholder="Report Title (e.g. History & Incidents)" class="report-title w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 pr-28 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-        <input type="text" placeholder="Audio Record URL (Optional)" class="report-audio w-full bg-black border border-emerald-900/30 text-xs text-emerald-500 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-        <textarea placeholder="Enter background details or incident report here using formatting protocols..." class="report-content w-full min-h-[140px] bg-black border border-gray-800 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors resize-none custom-scrollbar ui-element"></textarea>
+        <input type="text" placeholder="Report Title (e.g. History & Incidents)" class="report-title w-full bg-black border border-gray-800 text-xs theme-text p-2 pr-28 focus-theme transition-colors ui-element">
+        <input type="text" placeholder="Audio Record URL (Catbox.moe / Discord CDN)" class="report-audio w-full bg-black border border-gray-800 text-xs theme-text opacity-80 p-2 focus-theme transition-colors ui-element">
+        <textarea placeholder="Enter background details or incident report here using formatting protocols..." class="report-content w-full min-h-[140px] bg-black border border-gray-800 text-xs text-gray-300 p-2 focus-theme transition-colors resize-none custom-scrollbar ui-element"></textarea>
     `;
     
-    entry.querySelector('.btn-remove-report').addEventListener('click', function() {
+    const removeBtn = entry.querySelector('.btn-remove-report');
+    removeBtn.addEventListener('click', function() {
         playSound(sfx.click);
         entry.remove();
     });
 
-    // --- ЛОГИКА РЕЖИМА ФОКУСИРОВКИ (FOCUS MODE) ---
     const focusBtn = entry.querySelector('.btn-focus-report');
     const btnGroup = entry.querySelector('.btn-group');
     const textarea = entry.querySelector('.report-content');
@@ -49,35 +48,32 @@ function addReportSection() {
         isFocused = !isFocused;
         
         if (isFocused) {
-            // Добавляем фон внутрь модалки, чтобы не ломать глобальные слои
             submitBox.insertAdjacentHTML('beforeend', '<div id="focus-backdrop" class="absolute inset-0 bg-[#030504] z-[90]"></div>');
+            btnGroup.classList.remove('hidden', 'group-hover:flex', 'absolute', 'top-1', 'right-0', 'border');
+            btnGroup.classList.add('flex', 'fixed', 'top-6', 'right-6', 'md:top-10', 'md:right-10', 'z-[100]', 'p-2', 'bg-black', 'border-2', 'theme-border');
             
-            // Фиксируем группу кнопок поверх фона
-            btnGroup.classList.remove('hidden', 'group-hover:flex', 'absolute', 'top-1', 'right-0');
-            btnGroup.classList.add('flex', 'fixed', 'top-6', 'right-6', 'md:top-10', 'md:right-10', 'z-[100]', 'p-2', 'bg-black', 'border', 'theme-border');
+            // Расширяем поле, убираем w-full чтобы не выезжало за рамки
+            textarea.classList.add('fixed', 'inset-4', 'md:inset-8', 'z-[95]', 'text-sm', 'md:text-base', 'p-6', 'shadow-[0_0_50px_rgba(16,185,129,0.15)]');
+            textarea.classList.remove('min-h-[140px]', 'w-full'); 
             
-            // Растягиваем текстовое поле на всю ширину модалки
-            textarea.classList.add('fixed', 'inset-4', 'md:inset-8', 'z-[95]', 'text-sm', 'md:text-base', 'p-6', 'shadow-[0_0_50px_rgba(16,185,129,0.15)]', 'border-emerald-500/50');
-            textarea.classList.remove('min-h-[140px]');
-            
+            // Скрываем кнопку удаления от греха подальше
+            removeBtn.style.display = 'none';
             focusBtn.innerText = "[ MINIMIZE ]";
         } else {
-            // Убираем фон
             const backdrop = document.getElementById('focus-backdrop');
             if (backdrop) backdrop.remove();
             
-            // Возвращаем кнопки в угол блока
-            btnGroup.classList.add('hidden', 'group-hover:flex', 'absolute', 'top-1', 'right-0');
-            btnGroup.classList.remove('flex', 'fixed', 'top-6', 'right-6', 'md:top-10', 'md:right-10', 'z-[100]', 'p-2', 'bg-black', 'border', 'theme-border');
+            btnGroup.classList.add('hidden', 'group-hover:flex', 'absolute', 'top-1', 'right-0', 'border');
+            btnGroup.classList.remove('flex', 'fixed', 'top-6', 'right-6', 'md:top-10', 'md:right-10', 'z-[100]', 'p-2', 'bg-black', 'border-2', 'theme-border');
             
-            // Возвращаем текстовое поле в норму
-            textarea.classList.remove('fixed', 'inset-4', 'md:inset-8', 'z-[95]', 'text-sm', 'md:text-base', 'p-6', 'shadow-[0_0_50px_rgba(16,185,129,0.15)]', 'border-emerald-500/50');
-            textarea.classList.add('min-h-[140px]');
+            // Возвращаем исходные стили
+            textarea.classList.remove('fixed', 'inset-4', 'md:inset-8', 'z-[95]', 'text-sm', 'md:text-base', 'p-6', 'shadow-[0_0_50px_rgba(16,185,129,0.15)]');
+            textarea.classList.add('min-h-[140px]', 'w-full');
             
+            removeBtn.style.display = 'block';
             focusBtn.innerText = "[ MAXIMIZE ]";
         }
     });
-    // ----------------------------------------------
     
     container.appendChild(entry);
     
@@ -99,25 +95,27 @@ function setupSubmitControls() {
     const btn_copy = document.getElementById('btn-copy-hash');
     const output_hash = document.getElementById('submit-output');
     const btn_add = document.getElementById('btn-add-report');
+    const container = document.getElementById('reports-container');
     
     const enc_overlay = document.getElementById('encryption-overlay');
     const btn_skip = document.getElementById('btn-skip-anim');
     const anim_status = document.getElementById('anim-status');
     const anim_progress = document.getElementById('anim-progress');
 
-    // --- ЛОГИКА НАВИГАЦИИ ПО ВКЛАДКАМ (TAB SWITCHER) ---
+    // Если контейнер пустой, создаем первую форму отчета
+    if (container && container.children.length === 0) {
+        addReportSection();
+    }
+
     const tabBtns = document.querySelectorAll('.sub-tab-btn');
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             playSound(sfx.click);
-            
-            // 1. Сброс всех кнопок в неактивное состояние
             tabBtns.forEach(b => {
                 b.classList.remove('tab-active');
                 b.classList.add('tab-inactive');
             });
             
-            // 2. Скрытие всех секторов контента
             const targets = ['sub-tab-content-guide', 'sub-tab-content-param', 'sub-tab-content-logs', 'sub-tab-content-crypt'];
             targets.forEach(id => {
                 const el = document.getElementById(id);
@@ -127,22 +125,18 @@ function setupSubmitControls() {
                 }
             });
 
-            // 3. Активация нажатой кнопки
             btn.classList.remove('tab-inactive');
             btn.classList.add('tab-active');
             
-            // 4. Показ нужного сектора
             const targetId = btn.getAttribute('data-target');
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
                 targetEl.classList.remove('hidden');
-                // Возвращаем flex-классы специфичным вкладкам для правильной верстки
                 if (targetId === 'sub-tab-content-logs') targetEl.classList.add('flex', 'flex-col');
                 if (targetId === 'sub-tab-content-crypt') targetEl.classList.add('flex', 'flex-col', 'lg:flex-row');
             }
         });
     });
-    // ----------------------------------------------------
 
     if(btn_add) { btn_add.addEventListener('click', addReportSection); }
 
@@ -152,7 +146,6 @@ function setupSubmitControls() {
             addSystemLog('Opening HR Registration Terminal');
             if(output_hash) output_hash.value = '';
             
-            // При открытии всегда сбрасываем на первую вкладку (Guidelines)
             if(tabBtns.length > 0) tabBtns[0].click();
 
             submit_modal.classList.remove('hidden');
@@ -172,7 +165,6 @@ function setupSubmitControls() {
             clearInterval(progress_interval);
             if(enc_overlay) enc_overlay.classList.add('hidden');
             
-            // Автоматически сворачиваем Focus Mode при закрытии окна
             document.querySelectorAll('.btn-focus-report').forEach(btn => {
                 if (btn.innerText === "[ MINIMIZE ]") btn.click();
             });

@@ -1,6 +1,5 @@
 // --- TBCW VISUAL EFFECTS & LOGGING ---
 
-// Глобальная функция дешифровки пакетов данных Содружества
 function decryptData(encrypted_str) {
     try {
         let decoded_base = atob(encrypted_str);
@@ -22,7 +21,7 @@ function addSystemLog(message, isError = false) {
     li.addEventListener('mouseenter', () => playSound(sfx.hover));
     if (isError) li.addEventListener('click', () => playSound(sfx.click));
     list.prepend(li);
-    if(list.children.length > 8) list.lastChild.remove();
+    if(list.children.length > 5) list.lastChild.remove();
 }
 
 function scrambleText(elements) {

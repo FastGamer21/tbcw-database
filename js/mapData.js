@@ -1,6 +1,6 @@
 // --- TBCW MAP TOPOLOGY DATA ---
 
-const activeBranches = ['D', 'L', 'W'];
+const activeBranches = ['K'];
 
 const nodes = {
     n_A_B_C: [520, 450], n_A_C_D: [540, 500], n_A_D_E: [490, 540], n_A_E_F: [440, 520], n_A_F_B: [450, 460],

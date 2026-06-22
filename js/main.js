@@ -20,7 +20,21 @@ document.addEventListener('DOMContentLoaded', () => {
     try { setupArchiveControls(); } catch(e) {}
     try { setupSubmitControls(); } catch(e) {}
     
-    // --- UI PROTOCOLS (THEME SWITCHER) ---
+    const searchInput = document.getElementById('search-input');
+    const filterDistrict = document.getElementById('filter-district');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            renderCards(); 
+        });
+    }
+    if (filterDistrict) {
+        filterDistrict.addEventListener('change', () => {
+            playSound(sfx.click);
+            renderCards(); 
+        });
+    }
+
     const themeSelect = document.getElementById('ui-theme-select');
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
@@ -30,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- ID CARD LOGIN SEQUENCE (DRAG & DROP) ---
     const initScreen = document.getElementById('init-screen');
     const boot_screen = document.getElementById('boot-screen');
     const main_ui = document.getElementById('main-ui');
@@ -42,24 +55,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (idCard && idSlot) {
         idCard.addEventListener('dragstart', (e) => {
-            playSound(sfx.hover); // ЗВУК: card_pickup.mp3
+            playSound(sfx.hover);
             e.dataTransfer.setData('text/plain', 'vanguard-id');
             e.dataTransfer.effectAllowed = 'move';
             
-            // МАГИЯ ДЛЯ НЕПРОЗРАЧНОЙ КАРТЫ НА КУРСОРЕ:
-            // Создаем абсолютного клона карты
             const clone = idCard.cloneNode(true);
             clone.classList.add('dragged-clone');
             clone.style.position = 'absolute';
-            clone.style.top = '-9999px'; // Прячем за край экрана
+            clone.style.top = '-9999px'; 
             clone.style.opacity = '1';
             document.body.appendChild(clone);
 
-            // Подсовываем браузеру этого непрозрачного клона вместо стандартного "призрака"
             const rect = idCard.getBoundingClientRect();
             e.dataTransfer.setDragImage(clone, e.clientX - rect.left, e.clientY - rect.top);
 
-            // Удаляем клона из DOM и делаем карту на столе бледной
             setTimeout(() => {
                 document.body.removeChild(clone);
                 idCard.style.opacity = '0.2'; 
@@ -98,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!idCard || idCard.style.display === 'none') return;
         
         idCard.style.display = 'none'; 
-        playSound(sfx.click); // ЗВУК: card_insert.mp3
+        playSound(sfx.click); 
         
         if (slotLed) {
             slotLed.classList.remove('idle');
@@ -110,19 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         setTimeout(() => {
-            // ЗВУК: access_granted_beep.mp3
             triggerCRTFlash();
         }, 500);
     }
 
     function triggerCRTFlash() {
-        playSound(sfx.docOpen); // ЗВУК: crt_monitor_power_on.mp3
+        playSound(sfx.docOpen); 
         
         if(initScreen) initScreen.style.display = 'none';
         
         if(crtFlash) crtFlash.classList.add('active');
 
-        // ВКЛЮЧАЕМ СЕТКУ И ФОН ТЕРМИНАЛА (РАНЬШЕ ЭТОГО ТУТ ЧЕРНОТА)
         document.body.classList.add('terminal-active');
         
         setTimeout(() => unlockTerminal(), 300);
@@ -145,6 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(decoded) { try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {} }
             });
         }
+
+        if (typeof populateDistricts === 'function') populateDistricts();
 
         if(boot_text) {
             for (let line of lines) { 
@@ -169,14 +178,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
-        const aside = document.querySelector('aside');
-        if(aside && aside.classList.contains('hidden')) {
-            aside.classList.remove('hidden');
-            aside.classList.add('fixed', 'inset-0', 'bg-black', 'z-[80]', 'p-4');
-        } else if (aside) {
-            aside.classList.add('hidden');
-            aside.classList.remove('fixed', 'inset-0', 'bg-black', 'z-[80]', 'p-4');
-        }
-    });
+    const mobileMenuBtn = document.getElementById('mobile-menu-toggle');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            playSound(sfx.click); 
+            
+            const aside = document.querySelector('aside');
+            if (aside) {
+                if (aside.classList.contains('hidden-mobile')) {
+                    aside.classList.remove('hidden', 'hidden-mobile');
+                    aside.classList.add('visible-mobile', 'fixed', 'inset-0', 'bg-black', 'z-[90]', 'p-4');
+                    mobileMenuBtn.innerText = '[ CLOSE ]';
+                    mobileMenuBtn.classList.add('text-red-500');
+                } else {
+                    aside.classList.remove('visible-mobile', 'fixed', 'inset-0', 'bg-black', 'z-[90]', 'p-4');
+                    aside.classList.add('hidden', 'hidden-mobile');
+                    mobileMenuBtn.innerText = '[ MENU ]';
+                    mobileMenuBtn.classList.remove('text-red-500');
+                }
+            }
+        });
+    }
 });
