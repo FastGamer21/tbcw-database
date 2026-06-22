@@ -1,26 +1,70 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TBCW // The Backstreets Commonwealth</title>
+    <title>TBCW // Secure Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Локальные стили для удобного переключения вкладок редактора */
+        .sub-tab-btn {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .sub-tab-btn.tab-active {
+            color: var(--terminal-green, #10b981);
+            background: rgba(16, 185, 129, 0.08);
+            border-bottom: 2px solid var(--terminal-green, #10b981);
+            font-weight: bold;
+        }
+        .sub-tab-btn.tab-inactive {
+            color: #4b5563;
+        }
+        .sub-tab-btn.tab-inactive:hover {
+            color: #9ca3af;
+            background: rgba(255, 255, 255, 0.02);
+        }
+    </style>
 </head>
-<body class="p-2 md:p-6 h-screen flex flex-col">
+<body class="p-2 md:p-6 h-screen flex flex-col bg-black">
 
-    <div id="init-screen" class="fixed inset-0 bg-black z-[200] flex items-center justify-center cursor-pointer transition-opacity duration-500">
-        <div class="text-emerald-500 font-mono-custom text-xl blinking-cursor border border-emerald-500 p-4 hover:bg-emerald-900/30 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            [ SYSTEM OFFLINE. CLICK TO BOOT ]
+    <div id="init-screen" class="fixed inset-0 bg-[#020302] z-[200] flex flex-col md:flex-row items-center justify-center gap-10 md:gap-24 transition-opacity duration-500 overflow-hidden">
+        
+        <div class="flex flex-col items-center">
+            <div class="mb-12 text-center pointer-events-none">
+                <h1 class="text-2xl md:text-3xl font-mono-custom theme-text tracking-[0.5em] glitch-text" data-val="RESTRICTED ACCESS">RESTRICTED ACCESS</h1>
+                <p class="text-xs text-gray-600 mt-2 font-mono-custom tracking-widest">VANGUARD COMMAND TERMINAL</p>
+            </div>
+            
+            <div id="id-slot" class="id-slot shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+                <div id="slot-led" class="slot-led"></div>
+                <span class="theme-text font-mono-custom text-xs tracking-widest glitch-text pointer-events-none opacity-50" data-val="[ DRAG ID CARD HERE ]">[ DRAG ID CARD HERE ]</span>
+            </div>
+        </div>
+
+        <div id="id-card" class="id-card" draggable="true" title="Drag to scanner (or tap on mobile)">
+            <div class="id-card-stripe"></div>
+            <div class="id-card-barcode"></div>
+            <div class="id-card-hole"></div>
+            <div class="id-card-photo flex items-center justify-center">
+                <svg class="w-10 h-10 theme-text opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </div>
+            <div class="text-[10px] theme-text font-mono-custom mb-1 border-b border-gray-800 pb-1 w-full text-center tracking-widest opacity-80">TBCW_AUTH</div>
+            <div class="text-sm font-bold text-gray-200 font-mono-custom mt-3 tracking-widest">VANGUARD ID</div>
+            <div class="text-[10px] text-red-500 font-mono-custom mt-auto tracking-widest border border-red-900/50 px-2 py-1 bg-red-900/10">[ UNVERIFIED ]</div>
         </div>
     </div>
 
+    <div id="crt-flash" class="crt-flash-screen"></div>
+
     <div id="boot-screen" class="fixed inset-0 bg-black flex flex-col justify-center items-center z-[100] transition-opacity duration-500">
-        <div id="boot-text" class="text-emerald-500 font-mono-custom text-sm md:text-base space-y-2"></div>
+        <div id="boot-text" class="theme-text font-mono-custom text-sm md:text-base space-y-2"></div>
     </div>
 
     <div id="main-ui" class="hidden w-full h-full flex flex-col opacity-0 transition-opacity duration-1000 relative z-10">
-        <header class="w-full mb-6 border-b border-gray-800 pb-4 shrink-0 ui-element">
+        <header class="w-full mb-6 border-b theme-border pb-4 shrink-0 ui-element">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="w-16 h-10 border border-gray-700 bg-[#050505] flex items-center justify-center overflow-hidden shadow-sm">
@@ -29,61 +73,74 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-mono-custom text-emerald-500 uppercase tracking-widest blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.9">TBCW_DATABANK // PROTOTYPE V.0.9</h1>
+                        <h1 class="text-xl md:text-2xl font-mono-custom theme-text uppercase tracking-widest theme-blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.9">TBCW_DATABANK // PROTOTYPE V.0.9</h1>
                         <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
                 </div>
                 <div class="hidden md:block text-right">
                     <div class="text-[10px] font-mono-custom text-gray-600 glitch-text" data-val="ENCRYPTION: ACTIVE">ENCRYPTION: ACTIVE</div>
-                    <div class="text-[10px] font-mono-custom text-emerald-700 glitch-text" data-val="CONNECTION ESTABLISHED">CONNECTION ESTABLISHED</div>
+                    <div class="text-[10px] font-mono-custom theme-text glitch-text" data-val="CONNECTION ESTABLISHED">CONNECTION ESTABLISHED</div>
                 </div>
             </div>
         </header>
 
-        <main class="w-full flex-1 flex gap-6 overflow-hidden">
-            <aside class="hidden lg:flex w-72 flex-col gap-4 shrink-0 h-full overflow-y-auto pr-2 custom-scrollbar">
+        <main class="w-full flex-1 flex flex-row gap-6 overflow-hidden">
+            <aside class="hidden lg:flex w-72 flex-col gap-5 shrink-0 h-full overflow-y-auto pr-2 custom-scrollbar hidden-mobile">
                 
-                <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom">
-                    <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase glitch-text" data-val="Query Parameters">Query Parameters</h2>
+                <div class="tech-panel p-4 font-mono-custom">
+                    <h2 class="text-xs theme-text mb-4 border-b theme-border pb-1 uppercase glitch-text" data-val="Query Parameters">Query Parameters</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[10px] text-gray-500 block mb-1 glitch-text" data-val="SEARCH IDENTIFIER">SEARCH IDENTIFIER</label>
-                            <input type="text" placeholder="Name or ID..." class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                            <label class="text-[10px] theme-text block mb-1 glitch-text" data-val="SEARCH IDENTIFIER">SEARCH IDENTIFIER</label>
+                            <input id="search-input" type="text" placeholder="Name or ID..." class="w-full bg-black/50 border theme-border text-xs theme-text p-2 focus:outline-none ui-element">
                         </div>
                         <div>
-                            <label class="text-[10px] text-gray-500 block mb-1 glitch-text" data-val="DISTRICT FILTER">DISTRICT FILTER</label>
-                            <select class="w-full bg-black border border-gray-700 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none cursor-pointer ui-element">
-                                <option>ALL DISTRICTS</option><option>District 4</option><option>District 12</option><option>District 23</option><option>Outskirts</option>
+                            <label class="text-[10px] theme-text block mb-1 glitch-text" data-val="DISTRICT FILTER">DISTRICT FILTER</label>
+                            <select id="filter-district" class="w-full bg-black/50 border theme-border text-xs theme-text p-2 focus:outline-none cursor-pointer ui-element">
+                                <option value="ALL">ALL DISTRICTS</option>
+                                <option value="District 4">District 4</option>
+                                <option value="District 12">District 12</option>
+                                <option value="District 23">District 23</option>
+                                <option value="Outskirts">Outskirts</option>
+                                <option value="THE RUINS">The Ruins</option>
+                            </select>
+                        </div>
+                        
+                        <div class="pt-2 border-t theme-border mt-2">
+                            <label class="text-[10px] theme-text block mb-1 glitch-text" data-val="UI PROTOCOL">UI PROTOCOL</label>
+                            <select id="ui-theme-select" class="w-full bg-black/50 border theme-border text-xs theme-text p-2 focus:outline-none cursor-pointer ui-element">
+                                <option value="emerald">EMERALD (DEFAULT)</option>
+                                <option value="ruby">RUBY (COMBAT)</option>
+                                <option value="sapphire">SAPPHIRE (INTEL)</option>
+                                <option value="amber">AMBER (WARNING)</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <div class="border border-red-900/50 bg-red-950/10 p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer" id="btn-open-map">
-                    <div class="absolute inset-0 bg-red-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                    <button class="relative w-full border border-red-800 text-red-500 py-3 text-sm font-bold tracking-widest hover:text-red-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ Access City Map ]">[ Access City Map ]</button>
-                    <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-red-500/80 transition-colors pointer-events-none glitch-text" data-val="TBCW BRANCH RADAR SYSTEM">TBCW BRANCH RADAR SYSTEM</p>
+                <div class="tech-panel p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer hover:theme-bg-faint transition-all" id="btn-open-map">
+                    <button class="relative w-full theme-text py-2 text-sm font-bold tracking-widest uppercase pointer-events-none glitch-text" data-val="[ Access City Map ]">[ Access City Map ]</button>
+                    <p class="relative text-[9px] theme-text mt-1 text-center pointer-events-none glitch-text" data-val="TBCW BRANCH RADAR SYSTEM">TBCW BRANCH RADAR SYSTEM</p>
                 </div>
 
-                <div class="border border-emerald-900/50 bg-emerald-950/10 p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer" id="btn-open-archives">
-                    <div class="absolute inset-0 bg-emerald-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                    <button class="relative w-full border border-emerald-800 text-emerald-500 py-3 text-sm font-bold tracking-widest hover:text-emerald-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ Access Archives ]">[ Access Archives ]</button>
-                    <p class="relative text-[9px] text-gray-600 mt-2 text-center group-hover:text-emerald-500/80 transition-colors pointer-events-none glitch-text" data-val="DECRYPT LORE DRIVES">DECRYPT LORE DRIVES</p>
+                <div class="tech-panel p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer hover:theme-bg-faint transition-all" id="btn-open-archives">
+                    <button class="relative w-full theme-text py-2 text-sm font-bold tracking-widest uppercase pointer-events-none glitch-text" data-val="[ Access Archives ]">[ Access Archives ]</button>
+                    <p class="relative text-[9px] theme-text mt-1 text-center pointer-events-none glitch-text" data-val="DECRYPT LORE DRIVES">DECRYPT LORE DRIVES</p>
                 </div>
 
-                <div class="border border-emerald-900/50 bg-[#0a0a0c] p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer hover:border-emerald-500 transition-colors" id="btn-open-submit">
-                    <button class="relative w-full text-gray-400 py-3 text-sm font-bold tracking-widest group-hover:text-emerald-400 transition-colors uppercase pointer-events-none glitch-text" data-val="[ SUBMIT REPORT ]">[ SUBMIT REPORT ]</button>
-                    <p class="relative text-[9px] text-gray-600 mt-2 text-center pointer-events-none glitch-text" data-val="ENCRYPT FIELD DATA">ENCRYPT FIELD DATA</p>
+                <div class="tech-panel p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer hover:theme-bg-faint transition-all" id="btn-open-submit">
+                    <button class="relative w-full theme-text py-2 text-sm font-bold tracking-widest uppercase pointer-events-none glitch-text" data-val="[ SUBMIT REPORT ]">[ SUBMIT REPORT ]</button>
+                    <p class="relative text-[9px] theme-text mt-1 text-center pointer-events-none glitch-text" data-val="ENCRYPT FIELD DATA">ENCRYPT FIELD DATA</p>
                 </div>
 
-                <div class="border border-gray-800 bg-[#0a0a0c] p-4 font-mono-custom flex-1 overflow-hidden flex flex-col">
-                    <h2 class="text-xs text-emerald-500 mb-4 border-b border-gray-800 pb-1 uppercase shrink-0 glitch-text" data-val="System Logs">System Logs</h2>
-                    <ul id="log-list" class="text-[10px] space-y-2 text-gray-600 overflow-y-auto custom-scrollbar flex-1"></ul>
+                <div class="tech-panel p-4 font-mono-custom flex-1 overflow-hidden flex flex-col">
+                    <h2 class="text-xs theme-text mb-4 border-b theme-border pb-1 uppercase shrink-0 glitch-text" data-val="System Logs">System Logs</h2>
+                    <ul id="log-list" class="text-[10px] space-y-2 text-gray-500 overflow-y-auto custom-scrollbar flex-1"></ul>
                 </div>
             </aside>
 
-            <div class="flex-1 h-full overflow-y-auto pr-2 pb-10 custom-scrollbar">
-                <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+            <div class="flex-1 h-full overflow-y-auto pr-2 pb-10 pt-6 custom-scrollbar relative z-10">
+                <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
             </div>
         </main>
     </div>
@@ -113,14 +170,14 @@
     <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div id="modal-backdrop" class="absolute inset-0" onclick="closeModal()"></div>
         <div id="modal-box" class="modal-content relative z-10 w-full max-w-5xl max-h-[95vh] overflow-hidden m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
-            <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r border-gray-800 flex flex-col overflow-y-auto custom-scrollbar">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:theme-text transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
+            <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r theme-border flex flex-col overflow-y-auto custom-scrollbar">
                 <div class="relative mb-4">
-                    <img id="modal-photo" src="" alt="Photo" class="w-full aspect-square object-cover border border-gray-800 grayscale hover:grayscale-0 transition-all duration-700">
-                    <div class="absolute bottom-0 right-0 bg-black/80 px-2 py-1 text-[10px] font-mono-custom text-emerald-500 border-t border-l border-gray-800 glitch-text" data-val="REC_VISUAL_01">REC_VISUAL_01</div>
+                    <img id="modal-photo" src="" alt="Photo" class="w-full aspect-square object-cover border theme-border grayscale hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute bottom-0 right-0 bg-black/80 px-2 py-1 text-[10px] font-mono-custom theme-text border-t border-l theme-border glitch-text" data-val="REC_VISUAL_01">REC_VISUAL_01</div>
                 </div>
-                <div class="font-mono-custom mb-4 border-b border-gray-800 pb-2">
-                    <div class="text-[10px] text-gray-600 mb-1 glitch-text" data-val="REGISTRY_ID">REGISTRY_ID</div>
+                <div class="font-mono-custom mb-4 border-b theme-border pb-2">
+                    <div class="text-[10px] theme-text mb-1 glitch-text" data-val="REGISTRY_ID">REGISTRY_ID</div>
                     <div id="modal-id" class="text-lg text-gray-200 tracking-wider glitch-text"></div>
                 </div>
                 <div class="space-y-3 font-mono-custom text-xs">
@@ -130,11 +187,13 @@
                         <div class="text-gray-600 glitch-text" data-val="Affiliation:">Affiliation:</div><div id="modal-affiliation" class="text-gray-300 text-right glitch-text"></div>
                         <div class="text-gray-600 glitch-text" data-val="Grade:">Grade:</div><div id="modal-grade" class="text-gray-300 text-right glitch-text"></div>
                     </div>
-                    <div class="pt-4 border-t border-gray-800">
-                        <span class="text-gray-600 block mb-3 text-[10px] uppercase glitch-text" data-val="Employee Virtues">Employee Virtues</span>
-                        <div class="space-y-3" id="modal-stats-container"></div>
+                    
+                    <div class="pt-4 border-t theme-border">
+                        <span class="text-gray-600 block mb-3 text-[10px] uppercase glitch-text" data-val="Operative Expertise">Operative Expertise</span>
+                        <div class="flex flex-wrap gap-2" id="modal-tags-container"></div>
                     </div>
-                    <div class="pt-4 border-t border-gray-800">
+
+                    <div class="pt-4 border-t theme-border">
                         <span class="text-gray-600 block mb-2 text-[10px] glitch-text" data-val="CURRENT_STATUS:">CURRENT_STATUS:</span>
                         <div id="modal-status" class="inline-block w-full text-center py-2 text-xs border uppercase tracking-widest font-bold glitch-text"></div>
                     </div>
@@ -142,17 +201,20 @@
             </div>
             <div class="w-full md:flex-1 p-6 md:p-8 overflow-y-auto bg-[#0a0a0c] custom-scrollbar">
                 
-                <div class="flex items-end justify-between border-b border-gray-800 pb-4 mb-6">
+                <div class="flex items-end justify-between border-b theme-border pb-4 mb-6">
                     <h2 id="modal-name" class="text-2xl md:text-4xl font-bold text-gray-100 uppercase tracking-tight glitch-text"></h2>
-                    <span id="modal-date" class="text-[10px] font-mono-custom text-gray-600 glitch-text"></span>
+                    <span id="modal-date" class="text-[10px] font-mono-custom theme-text glitch-text"></span>
                 </div>
 
-                <div id="modal-audio-container" class="hidden mb-6 border border-emerald-900/50 bg-emerald-950/10 p-3 flex items-center gap-4 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
-                    <button id="btn-play-log" class="text-emerald-500 hover:text-emerald-300 font-bold tracking-widest font-mono-custom text-xs focus:outline-none transition-colors ui-element w-20 text-left">[ PLAY ]</button>
-                    <div class="flex-1 h-1 bg-black border border-emerald-900/50 relative overflow-hidden">
-                        <div id="log-progress" class="absolute top-0 left-0 h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                <div id="modal-audio-container" class="hidden mb-6 border theme-border theme-bg-heavy p-3 flex flex-col gap-3 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                    <canvas id="audio-visualizer" class="w-full h-12 bg-[#020503] border border-emerald-900/30 opacity-90"></canvas>
+                    <div class="flex items-center gap-4">
+                        <button id="btn-play-log" class="theme-text hover:text-white font-bold tracking-widest font-mono-custom text-xs focus:outline-none transition-colors ui-element w-20 text-left">[ PLAY ]</button>
+                        <div class="flex-1 h-1 bg-black border theme-border relative overflow-hidden">
+                            <div id="log-progress" class="absolute top-0 left-0 h-full background-color-theme w-0 transition-all duration-75 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                        </div>
+                        <span id="log-time" class="text-[10px] font-mono-custom theme-text w-10 text-right">00:00</span>
                     </div>
-                    <span id="log-time" class="text-[10px] font-mono-custom text-emerald-600 w-10 text-right">00:00</span>
                 </div>
 
                 <div id="modal-reports" class="space-y-8 text-gray-300 leading-relaxed text-sm"></div>
@@ -162,138 +224,205 @@
 
     <div id="archive-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div id="archive-backdrop" class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
-        <div id="archive-box" class="modal-content relative z-10 w-full max-w-6xl h-[85vh] m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500 border border-emerald-900/50">
-            <button id="btn-close-archive" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
-            <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r border-emerald-900/50 flex flex-col overflow-y-auto custom-scrollbar shrink-0">
-                <h2 class="text-emerald-500 font-mono-custom text-sm mb-6 border-b border-emerald-900/50 pb-2 glitch-text" data-val="STORAGE_RACK // ENCRYPTED">STORAGE_RACK // ENCRYPTED</h2>
+        <div id="archive-box" class="modal-content relative z-10 w-full max-w-6xl h-[85vh] m-4 flex flex-col md:flex-row rounded-sm transform scale-95 opacity-0 transition-all duration-500 border theme-border">
+            <button id="btn-close-archive" class="absolute top-4 right-4 text-gray-500 hover:theme-text transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
+            <div class="w-full md:w-80 bg-black p-6 border-b md:border-b-0 md:border-r theme-border flex flex-col overflow-y-auto custom-scrollbar shrink-0">
+                <h2 class="theme-text font-mono-custom text-sm mb-6 border-b theme-border pb-2 glitch-text" data-val="STORAGE_RACK // ENCRYPTED">STORAGE_RACK // ENCRYPTED</h2>
                 <ul id="archive-list" class="space-y-3 font-mono-custom text-xs text-gray-400"></ul>
             </div>
             <div class="w-full md:flex-1 p-6 md:p-10 flex flex-col overflow-hidden bg-[#030504] relative">
-                <div id="reader-bay" class="w-full max-w-2xl mx-auto h-32 border-2 border-dashed border-emerald-900/50 mb-8 flex flex-col items-center justify-center transition-colors relative overflow-hidden shrink-0">
-                    <span id="reader-status" class="text-emerald-700 font-mono-custom text-sm glitch-text pointer-events-none" data-val="[ DRAG AND DROP ARCHIVE DRIVE HERE ]">[ DRAG AND DROP ARCHIVE DRIVE HERE ]</span>
-                    <div id="decryption-screen" class="absolute inset-0 bg-[#050505] border-2 border-emerald-500 hidden flex-col items-center justify-center p-4">
-                        <div id="decryption-text" class="text-emerald-500 text-xs font-mono-custom text-center whitespace-pre-line leading-relaxed"></div>
+                
+                <div id="reader-bay" class="reader-empty w-full max-w-3xl mx-auto border-dashed mb-6 flex flex-col items-center justify-center transition-colors relative overflow-hidden shrink-0 theme-border">
+                    <span id="reader-status" class="theme-text font-mono-custom text-sm glitch-text pointer-events-none" data-val="[ AWAITING DRIVE INSERTION ]">[ AWAITING DRIVE INSERTION ]</span>
+                    <div id="decryption-screen" class="absolute inset-0 bg-[#050505] border-2 theme-border hidden flex-col items-center justify-center p-4">
+                        <div id="decryption-text" class="theme-text text-xs font-mono-custom text-center whitespace-pre-line leading-relaxed"></div>
                     </div>
                 </div>
-                <div id="archive-reader-content" class="w-full max-w-3xl mx-auto hidden opacity-0 transition-opacity duration-500 overflow-y-auto custom-scrollbar flex-1 pr-4">
-                    <div class="flex items-end justify-between border-b border-emerald-900/50 pb-4 mb-8 shrink-0">
-                        <h1 id="archive-title" class="text-xl md:text-2xl font-bold text-emerald-400 uppercase tracking-widest glitch-text" data-val=""></h1>
-                        <span id="archive-id" class="text-[10px] font-mono-custom text-emerald-700 glitch-text" data-val=""></span>
+
+                <div id="archive-reader-content" class="data-stream-container w-full max-w-3xl mx-auto hidden opacity-0 transition-opacity duration-500 overflow-y-auto custom-scrollbar flex-1 pr-4">
+                    <div class="flex items-end justify-between border-b theme-border pb-4 mb-8 shrink-0">
+                        <h1 id="archive-title" class="text-xl md:text-2xl font-bold theme-text uppercase tracking-widest glitch-text" data-val=""></h1>
+                        <span id="archive-id" class="text-[10px] font-mono-custom theme-text glitch-text" data-val=""></span>
                     </div>
-                    <div id="archive-content" class="text-emerald-50/80 leading-relaxed text-sm md:text-base font-mono-custom whitespace-pre-line glitch-text" data-val=""></div>
+                    <div id="archive-content" class="text-gray-300 leading-relaxed text-sm md:text-base font-mono-custom whitespace-pre-line" data-val=""></div>
                 </div>
+
             </div>
         </div>
     </div>
 
     <div id="submit-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
-        <div id="submit-box" class="modal-content relative z-10 w-full max-w-6xl m-4 p-6 flex flex-col rounded-sm transform scale-95 opacity-0 transition-all duration-500 border border-emerald-900/50 bg-[#030504] max-h-[95vh]">
-            <button id="btn-close-submit" class="absolute top-4 right-4 text-gray-500 hover:text-emerald-400 transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
+        <div id="submit-box" class="modal-content relative z-10 w-full max-w-6xl m-4 p-6 flex flex-col rounded-sm transform scale-95 opacity-0 transition-all duration-500 border theme-border bg-[#030504] h-[90vh] max-h-[95vh]">
+            <button id="btn-close-submit" class="absolute top-4 right-4 text-gray-500 hover:theme-text transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
             
             <div id="encryption-overlay" class="absolute inset-0 bg-[#050505]/95 backdrop-blur-md z-30 hidden flex-col items-center justify-center transition-opacity duration-300">
-                <div class="w-full max-w-md p-8 bg-black border border-emerald-900 flex flex-col relative shadow-[0_0_40px_rgba(16,185,129,0.15)]">
-                    <button id="btn-skip-anim" class="absolute top-4 right-4 text-[10px] text-gray-500 hover:text-emerald-500 ui-element transition-colors">[ SKIP ]</button>
-                    <p id="anim-status" class="text-emerald-500 font-mono-custom text-sm mb-6 glitch-text text-center tracking-widest uppercase" data-val="> INITIATING TBCW_CIPHER...">> INITIATING TBCW_CIPHER...</p>
+                <div class="w-full max-w-md p-8 bg-black border theme-border flex flex-col relative shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+                    <button id="btn-skip-anim" class="absolute top-4 right-4 text-[10px] text-gray-500 hover:theme-text ui-element transition-colors">[ SKIP ]</button>
+                    <p id="anim-status" class="theme-text font-mono-custom text-sm mb-6 glitch-text text-center tracking-widest uppercase" data-val="> INITIATING TBCW_CIPHER...">> INITIATING TBCW_CIPHER...</p>
                     <div class="w-full h-2 bg-gray-900 border border-gray-800">
-                        <div id="anim-progress" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+                        <div id="anim-progress" class="h-full theme-bg-heavy w-0 transition-all duration-75 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="border-b border-emerald-900/50 pb-2 mb-4 shrink-0">
-                <h2 class="text-xl font-bold text-emerald-500 uppercase tracking-widest font-mono-custom glitch-text" data-val="HR TERMINAL // OPERATIVE REGISTRATION">HR TERMINAL // OPERATIVE REGISTRATION</h2>
+            <div class="border-b theme-border pb-2 mb-4 shrink-0">
+                <h2 class="text-xl font-bold theme-text uppercase tracking-widest font-mono-custom glitch-text" data-val="HR TERMINAL // OPERATIVE REGISTRATION">HR TERMINAL // OPERATIVE REGISTRATION</h2>
                 <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="Add new Fixer parameters to the Vanguard Database.">Add new Fixer parameters to the Vanguard Database.</p>
             </div>
 
-            <div class="flex flex-col lg:flex-row gap-6 font-mono-custom overflow-hidden flex-1">
-                <div class="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar pr-2">
-                    
-                    <div class="bg-emerald-950/10 border border-emerald-900/30 p-3">
-                        <p class="text-emerald-600 text-[10px] uppercase font-bold mb-1">> REGISTRATION GUIDELINES</p>
-                        <p class="text-gray-400 text-[10px] leading-relaxed">
-                            - <b>DISTRICT</b>: Use official designations (e.g. "District 23", "Outskirts", "The Ruins").<br>
-                            - <b>LOGS</b>: Break down the operative's history into clear sections (e.g. Background, Combat Gear, Psychological Profile). Use the <b>[+ ADD SECTION]</b> button to create multiple reports for a single operative.
+            <div class="flex border-b theme-border mb-4 shrink-0 text-[10px] font-mono-custom">
+                <button class="sub-tab-btn tab-active px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-guide">[ 01 // GUIDELINES ]</button>
+                <button class="sub-tab-btn tab-inactive px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-param">[ 02 // PARAMETERS ]</button>
+                <button class="sub-tab-btn tab-inactive px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-logs">[ 03 // SECURE LOGS ]</button>
+                <button class="sub-tab-btn tab-inactive px-4 py-2 text-center tracking-widest uppercase" data-target="sub-tab-content-crypt">[ 04 // TRANSMISSION ]</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 font-mono-custom text-xs">
+                
+                <div id="sub-tab-content-guide" class="sub-tab-content space-y-4">
+                    <div class="theme-bg-heavy border theme-border p-5">
+                        <h3 class="theme-text text-sm font-bold mb-3 uppercase tracking-wider">> FORMATTING PROTOCOLS EDITOR</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed mb-4">
+                            When writing reports in Sector 03, the terminal supports automatic conversion of markup symbols into official Commonwealth stamps, redaction elements, and custom neon text formatting.
                         </p>
                     </div>
 
-                    <div class="border border-gray-800 p-3 bg-black/50">
-                        <span class="text-emerald-700 text-[10px] uppercase font-bold mb-2 block">> IDENTIFICATION</span>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">REGISTRY ID</label>
-                                <input id="sub-id" type="text" placeholder="TBCW-XXX" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">FULL NAME</label>
-                                <input id="sub-name" type="text" placeholder="Operative Name" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">AGE</label>
-                                <input id="sub-age" type="number" placeholder="e.g. 25" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">DISTRICT OF ORIGIN</label>
-                                <input id="sub-district" type="text" placeholder="e.g. District 12 or The Ruins" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border theme-border p-4 bg-black/40">
+                            <span class="theme-text font-bold block mb-3 uppercase tracking-widest">> TERMINAL MARKUP</span>
+                            <ul class="space-y-2 text-gray-400 leading-relaxed text-[11px]">
+                                <li><code>||text||</code> — <span class="text-gray-300 font-bold">Data Redaction</span> (black bar, turns red and reveals text on hover).</li>
+                                <li><code>! text</code> — <span class="text-red-400 font-bold">Critical Threat</span> (generates a red WARNING box).</li>
+                                <li><code>&gt; text</code> — <span class="text-emerald-400 font-bold">Quote / Audio Record</span> (italicizes and adds a green side border).</li>
+                                <li><code>[STAMP: TYPE]</code> — <span class="text-gray-300 font-bold">Official Stamp</span> overlaid on the document. Valid types: <span class="text-emerald-400">APPROVED</span>, <span class="text-red-500">DENIED</span>, <span class="text-red-800">DECEASED</span>, <span class="text-amber-500">CLASSIFIED</span>.</li>
+                            </ul>
+                        </div>
+                        <div class="border theme-border p-4 bg-black/40">
+                            <span class="theme-text font-bold block mb-3 uppercase tracking-widest">> CUSTOM COLOR SYNTAX</span>
+                            <p class="text-gray-400 mb-2 leading-relaxed text-[11px]">Use tags <code>[c:color]text[/c]</code> to highlight elements. You can use ANY standard color name or HEX code:</p>
+                            <ul class="space-y-1 text-[11px]">
+                                <li><code class="text-gray-500">[c:red]</code> — <span class="text-red-500" style="text-shadow: 0 0 8px red;">Red (Combat / Danger)</span></li>
+                                <li><code class="text-gray-500">[c:#00ffcc]</code> — <span style="color: #00ffcc; text-shadow: 0 0 8px #00ffcc;">Cyan (Tech / Anomalies)</span></li>
+                                <li><code class="text-gray-500">[c:gold]</code> — <span class="text-amber-400" style="text-shadow: 0 0 8px gold;">Amber (Special / High Value)</span></li>
+                                <li><code class="text-gray-500">[c:gray]</code> — <span class="text-gray-500">Gray (Addendums / Notes)</span></li>
+                            </ul>
                         </div>
                     </div>
 
-                    <div class="border border-gray-800 p-3 bg-black/50">
-                        <span class="text-emerald-700 text-[10px] uppercase font-bold mb-2 block">> COMBAT CLASSIFICATION</span>
-                        <div class="grid grid-cols-3 gap-3">
+                    <div class="border theme-border p-4 bg-black/20">
+                        <span class="text-gray-500 block mb-2 uppercase tracking-widest">> IDEAL REPORT TEMPLATE (COPY TO TEST)</span>
+                        <pre class="text-gray-400 bg-black p-3 border border-gray-800 rounded text-[11px] leading-relaxed overflow-x-auto select-all">Subject arrived from [c:#0088ff]W Corp[/c]. Real name is ||John Doe||.
+! Distortion Level: [c:red]Highly dangerous[/c]. Do not engage without backup.
+&gt; "I saw what is behind the train doors..." — audio transcript.
+[STAMP: CLASSIFIED]</pre>
+                    </div>
+                </div>
+
+                <div id="sub-tab-content-param" class="hidden space-y-4">
+                    <div class="border theme-border p-4 bg-black/50">
+                        <span class="theme-text text-[10px] uppercase font-bold mb-3 block tracking-widest">> 1. IDENTIFICATION</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">AFFILIATION</label>
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">REGISTRY ID</label>
+                                <input id="sub-id" type="text" placeholder="TBCW-XXX" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">FULL NAME</label>
+                                <input id="sub-name" type="text" placeholder="Operative Name" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">AGE</label>
+                                <input id="sub-age" type="number" placeholder="e.g. 25" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">DISTRICT OF ORIGIN</label>
+                                <input id="sub-district" type="text" placeholder="e.g. District 12 or The Ruins" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">PORTRAIT URL (Direct Link to Image)</label>
+                            <input id="sub-photo" type="text" placeholder="e.g. https://i.imgur.com/image.jpg" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                        </div>
+                    </div>
+
+                    <div class="border theme-border p-4 bg-black/50">
+                        <span class="theme-text text-[10px] uppercase font-bold mb-3 block tracking-widest">> 2. COMBAT CLASSIFICATION</span>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">AFFILIATION</label>
                                 <input id="sub-aff" type="text" value="The Backstreets Commonwealth" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
                             </div>
                             <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">GRADE</label>
-                                <select id="sub-grade" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">GRADE</label>
+                                <select id="sub-grade" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors cursor-pointer ui-element">
                                     <option>Grade 9</option><option>Grade 8</option><option>Grade 7</option><option>Grade 6</option><option>Grade 5</option><option>Grade 4</option><option>Grade 3</option><option>Grade 2</option><option>Grade 1</option><option>Color Fixer</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[9px] text-gray-500 block mb-1">STATUS</label>
-                                <select id="sub-status" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">STATUS</label>
+                                <select id="sub-status" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors cursor-pointer ui-element">
                                     <option>Active</option><option>MIA</option><option>Deceased</option><option>Kill on Sight</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="mt-4">
+                            <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">EXPERTISE TAGS (Comma separated)</label>
+                            <input id="sub-tags" type="text" placeholder="e.g. CQB, Espionage, Tech, Heavy Weapons, E.G.O" class="w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sub-tab-content-logs" class="hidden flex-col h-full gap-4">
+                    <div class="theme-bg-faint border border-dashed theme-border p-2 text-[10px] text-gray-400 flex flex-wrap gap-x-4 gap-y-1">
+                        <span class="theme-text font-bold uppercase">Formatting:</span>
+                        <span><code>||Redact||</code></span>
+                        <span><code>! Warning</code></span>
+                        <span><code>&gt; Quote</code></span>
+                        <span><code>[STAMP: APPROVED/DENIED/CLASSIFIED]</code></span>
+                        <span class="text-amber-400">Colors: <code>[c:red]..[/c]</code> <code>[c:gold]..[/c]</code> <code>[c:#hex]..[/c]</code></span>
                     </div>
 
-                    <div class="border border-gray-800 p-3 bg-black/50 flex flex-col flex-1 min-h-[180px]">
-                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-800/50">
-                            <span class="text-emerald-700 text-[10px] uppercase font-bold">> LOGS / BACKGROUND</span>
-                            <button id="btn-add-report" class="text-emerald-500 text-[9px] hover:text-emerald-300 border border-emerald-900/50 px-2 py-1 ui-element transition-colors">[+ ADD SECTION ]</button>
-                        </div>
-                        
-                        <div class="mb-4 pb-4 border-b border-gray-800/50">
-                            <label class="text-[9px] text-emerald-500 block mb-1">> ATTACH AUDIO LOG (EXTERNAL URL .MP3 / .WAV)</label>
-                            <input id="sub-audio" type="text" placeholder="e.g. https://cdn.discordapp.com/attachments/.../log.mp3" class="w-full bg-black border border-emerald-900/50 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                    <div class="border theme-border p-4 bg-black/50 flex flex-col flex-1 min-h-[300px]">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-800">
+                            <span class="theme-text text-[10px] uppercase font-bold tracking-widest">> ADD REPORT SECTIONS</span>
+                            <button id="btn-add-report" class="theme-text text-[9px] hover:text-white border theme-border px-3 py-1 ui-element transition-colors bg-emerald-950/10 hover:bg-emerald-900/30 font-bold">[+ ADD REPORT SECTION ]</button>
                         </div>
 
                         <div id="reports-container" class="space-y-4 overflow-y-auto custom-scrollbar pr-2 flex-1">
-                            <div class="report-entry flex flex-col gap-2 relative group">
-                                <input type="text" placeholder="Report Title (e.g. Psychological Profile)" class="report-title w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
-                                <textarea placeholder="Enter background details or incident report here..." class="report-content w-full min-h-[80px] bg-black border border-gray-800 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors resize-none custom-scrollbar ui-element"></textarea>
+                            <div class="report-entry flex flex-col gap-2 relative group pt-3 border-t border-gray-800/50 mt-1">
+                                <div class="btn-group absolute top-1 right-0 flex gap-3 hidden group-hover:flex z-20 bg-[#030504] px-2 rounded">
+                                    <button class="btn-focus-report text-emerald-600 hover:text-emerald-300 text-[10px] font-bold transition-colors ui-element">[ MAXIMIZE ]</button>
+                                    <button class="btn-remove-report text-red-900 hover:text-red-500 text-[10px] font-bold transition-colors ui-element">[ REMOVE ]</button>
+                                </div>
+                                <input type="text" placeholder="Report Title (e.g. History & Incidents)" class="report-title w-full bg-black border border-gray-800 text-xs text-emerald-400 p-2 pr-28 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                                <input type="text" placeholder="Audio Record URL (Optional)" class="report-audio w-full bg-black border border-emerald-900/30 text-xs text-emerald-500 p-2 focus:border-emerald-500 focus:outline-none transition-colors ui-element">
+                                <textarea placeholder="Enter background details or incident report here using formatting protocols..." class="report-content w-full min-h-[140px] bg-black border border-gray-800 text-xs text-gray-300 p-2 focus:border-emerald-500 focus:outline-none transition-colors resize-none custom-scrollbar ui-element"></textarea>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-                <div class="w-full lg:w-80 flex flex-col shrink-0">
-                    <button id="btn-encrypt-data" class="bg-emerald-900/20 border border-emerald-500 text-emerald-500 py-4 mb-4 font-bold tracking-widest hover:bg-emerald-500 hover:text-black transition-colors uppercase ui-element shadow-[0_0_10px_rgba(16,185,129,0.1)]">
-                        >> GENERATE DOSSIER <<
-                    </button>
-                    <div class="flex-1 bg-black p-4 border border-emerald-900/30 flex flex-col relative">
-                        <label class="text-[10px] text-emerald-700 block mb-2 glitch-text" data-val="ENCRYPTED_DOSSIER_HASH">ENCRYPTED_DOSSIER_HASH</label>
-                        <textarea id="submit-output" readonly class="w-full flex-1 bg-[#050505] border border-gray-800 text-[10px] text-emerald-700 p-3 focus:outline-none resize-none custom-scrollbar break-all" placeholder="Awaiting generation..."></textarea>
+                <div id="sub-tab-content-crypt" class="hidden flex-col lg:flex-row gap-6 h-full items-stretch">
+                    <div class="flex-1 flex flex-col justify-center items-center p-6 border theme-border bg-black/30 text-center">
+                        <span class="text-gray-500 text-[11px] block mb-4 uppercase tracking-widest">Commonwealth Data Compilation Manager</span>
+                        <button id="btn-encrypt-data" class="theme-bg-heavy border theme-border theme-text py-5 px-10 font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element theme-shadow-faint text-sm">
+                            >> GENERATE DOSSIER <<
+                        </button>
+                        <p class="text-gray-600 text-[10px] mt-4 max-w-sm leading-relaxed">
+                            Clicking will initiate the TBCW_CIPHER algorithm. All entered parameters, log sections, and external audio modules will be compressed into an encrypted hash string.
+                        </p>
+                    </div>
+
+                    <div class="w-full lg:w-96 flex flex-col bg-black p-4 border theme-border relative">
+                        <label class="text-[10px] theme-text block mb-2 glitch-text" data-val="ENCRYPTED_DOSSIER_HASH">ENCRYPTED_DOSSIER_HASH</label>
+                        <textarea id="submit-output" readonly class="w-full flex-1 bg-[#050505] border border-gray-800 text-[10px] theme-text p-3 focus:outline-none resize-none custom-scrollbar break-all font-mono" placeholder="Awaiting terminal generation sequence..."></textarea>
                         <button id="btn-copy-hash" class="border border-gray-700 text-gray-400 py-3 mt-4 text-xs font-bold tracking-widest hover:text-white hover:border-gray-500 transition-colors uppercase ui-element">
                             [ COPY TO CLIPBOARD ]
                         </button>
                     </div>
                 </div>
+
             </div>
             
             <div class="mt-4 border-t border-red-900/50 pt-3 text-center shrink-0">
@@ -304,6 +433,8 @@
             
         </div>
     </div>
+
+    <button id="mobile-menu-toggle" class="lg:hidden fixed bottom-4 right-4 z-[90] theme-bg-heavy theme-border theme-text p-4 rounded-full theme-shadow-faint">[ MENU ]</button>
 
     <div class="crt-overlay"></div>
     <script src="js/data.js"></script>

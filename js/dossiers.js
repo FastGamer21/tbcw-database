@@ -1,7 +1,35 @@
-// --- TBCW DOSSIERS MODULE ---
+// --- TBCW DOSSIERS MODULE (With 3D Hover & z-index Fix) ---
 
-// Глобальная переменная для хранения текущего играющего лога
 let current_log_audio = null;
+
+// ПАРСЕР ТЕРМИНАЛЬНОЙ РАЗМЕТКИ
+function parseLogText(text) {
+    if (!text) return "";
+    
+    // 1. Цензура: ||скрытый текст||
+    text = text.replace(/\|\|(.*?)\|\|/g, '<span class="log-redacted">$1</span>');
+    
+    // 2. Внимание: строка начинается с ! 
+    text = text.replace(/^!\s+(.*)$/gm, '<div class="log-warning">⚠ WARNING: $1</div>');
+    
+    // 3. Цитата: строка начинается с > 
+    text = text.replace(/^>\s+(.*)$/gm, '<div class="log-quote">$1</div>');
+    
+    // 4. Печати: [STAMP: ТИП]
+    text = text.replace(/\[STAMP:\s*(APPROVED|DENIED|DECEASED|CLASSIFIED)\]/gi, (match, p1) => {
+        const type = p1.toLowerCase();
+        return `<div class="log-stamp stamp-${type}">${p1}</div>`;
+    });
+
+    // 5. Кастомные цвета и неоновое свечение: [c:цвет]текст[/c]
+    // Позволяет вводить любые цвета (red, blue, gold, #00ffcc и т.д.)
+    text = text.replace(/\[c:([^\]]+)\](.*?)\[\/c\]/gi, (match, color, content) => {
+        const safeColor = color.replace(/["';\\]/g, ""); // Базовая защита
+        return `<span style="color: ${safeColor}; text-shadow: 0 0 8px ${safeColor}; font-weight: bold;">${content}</span>`;
+    });
+
+    return text;
+}
 
 function generateStatBar(statName, value, cssClass) {
     let blocks = '';
@@ -13,17 +41,45 @@ function generateStatBar(statName, value, cssClass) {
 function renderCards() {
     const grid = document.getElementById('dossier-grid');
     if(!grid || typeof dossiers === 'undefined') return;
+    
+    const searchInput = document.getElementById('search-input');
+    const districtSelect = document.getElementById('filter-district');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+    const filterDistrict = districtSelect ? districtSelect.value : 'ALL';
+
     grid.innerHTML = '';
+    
     dossiers.forEach((person, index) => {
+        const matchSearch = person.name.toLowerCase().includes(searchTerm) || person.id.toLowerCase().includes(searchTerm);
+        const matchDistrict = filterDistrict === 'ALL' || person.district.toUpperCase() === filterDistrict.toUpperCase();
+        if (!matchSearch || !matchDistrict) return;
+
         const conf = status_config[person.status] || { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
         const card = document.createElement('div');
-        card.className = `dossier-card p-4 flex flex-col h-full ui-element`;
+        
+        card.className = `dossier-card p-4 flex flex-col h-full`;
         card.addEventListener('click', () => { playSound(sfx.click); openModal(index); });
         
-        // Добавляем иконку аудио, если есть запись
-        const hasAudioIcon = (person.audio_log && person.audio_log.length > 5) ? `<span class="text-emerald-500 text-[10px] font-bold shadow-[0_0_5px_rgba(16,185,129,0.5)]">[ AUDIO ATTACHED ]</span>` : '';
+        card.addEventListener('mousemove', (e) => {
+            card.style.zIndex = "50";
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -8; 
+            const rotateY = ((x - centerX) / centerX) * 8;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.zIndex = "1";
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        });
+        
+        const hasAudioIcon = (person.audio_log && person.audio_log.length > 5) ? `<span class="theme-text text-[10px] font-bold theme-text-shadow">[ AUDIO ]</span>` : '';
 
-        card.innerHTML = `<div class="flex gap-4 mb-4 relative z-10"><img src="${person.photo}" class="w-16 h-16 object-cover border border-gray-800 grayscale"><div class="flex-1 min-w-0"><div class="text-[10px] font-mono-custom text-emerald-700/50 mb-1 glitch-text flex justify-between" data-val="${person.id}"><span>${person.id}</span> ${hasAudioIcon}</div><h3 class="font-bold text-gray-200 uppercase truncate text-sm glitch-text" data-val="${person.name}">${person.name}</h3><div class="text-xs text-gray-500 truncate font-mono-custom glitch-text" data-val="${person.affiliation}">${person.affiliation}</div></div></div><div class="mt-auto relative z-10 space-y-2"><div class="flex justify-between text-[10px] font-mono-custom text-gray-600 border-t border-gray-800 pt-2"><span class="glitch-text" data-val="${person.district}">${person.district}</span><span class="glitch-text" data-val="${person.grade}">${person.grade}</span></div><div class="text-right"><span class="inline-block px-2 py-1 text-[9px] font-mono-custom uppercase tracking-widest ${conf.bg} ${conf.text} ${conf.border} border glitch-text" data-val="${person.status}">${person.status}</span></div></div>`;
+        card.innerHTML = `<div class="flex gap-4 mb-4 relative z-10"><img src="${person.photo}" class="w-16 h-16 object-cover border theme-border grayscale"><div class="flex-1 min-w-0"><div class="text-[10px] font-mono-custom theme-text opacity-50 mb-1 glitch-text flex justify-between" data-val="${person.id}"><span>${person.id}</span> ${hasAudioIcon}</div><h3 class="font-bold text-gray-100 uppercase truncate text-sm glitch-text" data-val="${person.name}">${person.name}</h3><div class="text-xs theme-text opacity-70 truncate font-mono-custom glitch-text" data-val="${person.affiliation}">${person.affiliation}</div></div></div><div class="mt-auto relative z-10 space-y-2"><div class="flex justify-between text-[10px] font-mono-custom theme-text opacity-70 border-t theme-border pt-2"><span class="glitch-text" data-val="${person.district}">${person.district}</span><span class="glitch-text" data-val="${person.grade}">${person.grade}</span></div><div class="text-right"><span class="inline-block px-2 py-1 text-[9px] font-mono-custom uppercase tracking-widest ${conf.bg} ${conf.text} ${conf.border} border glitch-text" data-val="${person.status}">${person.status}</span></div></div>`;
         grid.appendChild(card);
     });
 }
@@ -46,36 +102,40 @@ function openModal(index) {
     statusEl.innerText = person.status; statusEl.setAttribute('data-val', person.status);
     statusEl.className = `inline-block w-full text-center py-2 text-[11px] border uppercase tracking-widest font-mono-custom font-bold glitch-text ${conf.bg} ${conf.text} ${conf.border} ${conf.extra_class || ''}`;
 
-    // Характеристики вырезаны из генератора, но если в объекте есть нули - рисуем прочерки
-    const statsContainer = document.getElementById('modal-stats-container');
-    if(statsContainer && person.stats) {
-        statsContainer.innerHTML = 
-            generateStatBar("Fortitude (Instinct)", person.stats.fortitude, "stat-fortitude") + generateStatBar("Prudence (Insight)", person.stats.prudence, "stat-prudence") +
-            generateStatBar("Temperance (Attachment)", person.stats.temperance, "stat-temperance") + generateStatBar("Justice (Repression)", person.stats.justice, "stat-justice");
+    const tagsContainer = document.getElementById('modal-tags-container');
+    if(tagsContainer) {
+        tagsContainer.innerHTML = '';
+        if (person.tags && person.tags.length > 0) {
+            person.tags.forEach(tag => {
+                tagsContainer.innerHTML += `<span class="px-2 py-1 theme-bg-heavy border theme-border text-[9px] theme-text font-mono-custom uppercase glitch-text" data-val="${tag}">${tag}</span>`;
+            });
+        } else {
+            tagsContainer.innerHTML = `<span class="text-[9px] text-gray-600 font-mono-custom">NO DATA</span>`;
+        }
     }
 
     const reportsContainer = document.getElementById('modal-reports');
     reportsContainer.innerHTML = '';
     person.reports.forEach(report => {
+        // Пропускаем текст через наш парсер Markdown
+        const parsedContent = parseLogText(report.content);
+        
         const reportEl = document.createElement('div');
-        reportEl.innerHTML = `<h3 class="text-[10px] font-mono-custom text-emerald-600 mb-3 border-b border-gray-800/50 pb-1 uppercase tracking-wider glitch-text" data-val=">> ${report.title}">>> ${report.title}</h3><p class="whitespace-pre-line text-gray-400 text-sm pl-2 border-l border-gray-800 glitch-text" data-val="${report.content}">${report.content}</p>`;
+        reportEl.innerHTML = `
+            <h3 class="text-[10px] font-mono-custom theme-text mb-3 border-b theme-border pb-1 uppercase tracking-wider glitch-text" data-val=">> ${report.title}">>> ${report.title}</h3>
+            <div class="whitespace-pre-line text-gray-300 text-sm pl-2 border-l theme-border leading-relaxed">${parsedContent}</div>
+        `;
         reportsContainer.appendChild(reportEl);
     });
 
-    // --- ЛОГИКА АУДИО ПЛЕЕРА ---
     const audio_container = document.getElementById('modal-audio-container');
     const btn_play = document.getElementById('btn-play-log');
     
-    // Останавливаем предыдущее аудио, если оно играло
-    if (current_log_audio) {
-        current_log_audio.pause();
-        current_log_audio = null;
-    }
+    if (current_log_audio) { current_log_audio.pause(); current_log_audio = null; }
     
     document.getElementById('log-progress').style.width = '0%';
     document.getElementById('log-time').innerText = "00:00";
 
-    // Сбрасываем старые обработчики событий с кнопки плеера через клонирование
     const new_btn_play = btn_play.cloneNode(true);
     btn_play.parentNode.replaceChild(new_btn_play, btn_play);
     new_btn_play.innerText = "[ PLAY ]";
@@ -83,7 +143,7 @@ function openModal(index) {
     if (person.audio_log && person.audio_log.length > 5) {
         audio_container.classList.remove('hidden');
         current_log_audio = new Audio(person.audio_log);
-        current_log_audio.volume = 0.5; // Базовая громкость для логов
+        current_log_audio.volume = 0.5;
         
         new_btn_play.addEventListener('click', () => {
             playSound(sfx.click);
@@ -114,7 +174,6 @@ function openModal(index) {
     } else {
         audio_container.classList.add('hidden');
     }
-    // ---------------------------
 
     const modal = document.getElementById('modal');
     const modalBox = document.getElementById('modal-box');
@@ -133,7 +192,6 @@ function openModal(index) {
 function closeModal() {
     playSound(sfx.click);
     
-    // Обрубаем звук лога при закрытии дела
     if (current_log_audio) {
         current_log_audio.pause();
         current_log_audio.currentTime = 0;

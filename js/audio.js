@@ -7,15 +7,30 @@ const sfx = {
     ambient: new Audio('sfx/ambient.mp3'),
     docOpen: new Audio('sfx/docopen.mp3'),
     mapOpen: new Audio('sfx/mapclick.mp3'),
-    mapHover: new Audio('sfx/hover.mp3')
+    mapHover: new Audio('sfx/hover.mp3'),
+
+    // --- НОВЫЕ ЗВУКИ ДЛЯ ЭКРАНА ВХОДА (ПОКА ЗАКОММЕНТИРОВАНЫ) ---
+    // Для активации просто раскомментируй строки ниже
+    // pickup: new Audio('sfx/card_pickup.mp3'),
+    // insert: new Audio('sfx/card_insert.mp3'),
+    // granted: new Audio('sfx/access_granted_beep.mp3'),
+    // crt: new Audio('sfx/crt_monitor_power_on.mp3')
 };
 
-Object.values(sfx).forEach(a => { a.volume = 0.2; a.loop = false; });
-sfx.typing.loop = true; 
-sfx.ambient.loop = true;
+// Задаем базовые настройки, игнорируя закомментированные (undefined) звуки
+Object.values(sfx).forEach(a => { 
+    if(a) {
+        a.volume = 0.2; 
+        a.loop = false; 
+    }
+});
+
+if(sfx.typing) sfx.typing.loop = true; 
+if(sfx.ambient) sfx.ambient.loop = true;
 
 function playSound(audioObj) {
     try {
+        if(!audioObj) return; // Защита от краша при вызове закомментированного звука
         if(audioObj.readyState > 0) audioObj.currentTime = 0;
         audioObj.play().catch(() => {});
     } catch (e) {}
@@ -23,6 +38,7 @@ function playSound(audioObj) {
 
 function stopSound(audioObj) {
     try {
+        if(!audioObj) return;
         audioObj.pause();
         audioObj.currentTime = 0;
     } catch (e) {}

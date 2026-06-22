@@ -1,12 +1,9 @@
-// --- CONFIGURATION & DATABASE // SECURE ENCRYPTED LAYERS ---
-
 const status_config = {
-    "Active": { bg: "bg-emerald-900/10", text: "text-emerald-500", border: "border-emerald-800/50" },
-    "Deceased": { bg: "bg-red-900/10", text: "text-red-700", border: "border-red-900" },
-    "MIA": { bg: "bg-gray-800/20", text: "text-gray-500", border: "border-gray-800" },
-    "Kill on Sight": { bg: "bg-red-900/20", text: "text-red-500", border: "border-red-500", extra_class: "status-kos" },
+    "Active": { bg: "bg-orange-950/40", text: "text-amber-500", border: "border-orange-800" },
+    "Deceased": { bg: "bg-red-950/80", text: "text-red-500", border: "border-red-900 border-dashed" },
+    "MIA": { bg: "bg-transparent", text: "text-orange-800", border: "border-orange-950" },
+    "Kill on Sight": { bg: "bg-red-900/40", text: "text-red-500", border: "border-red-600", extra_class: "status-kos font-bold" },
 };
-
 // Зашифрованные пакеты личных дел (первая строчка - Alex Rain с прикрепленным аудио)
 const encrypted_dossiers = [
     "eyJpZCI6ICJUQkNXLTAwMSIsICJuYW1lIjogIkFsZXggUmFpbiIsICJhZ2UiOiAyOCwgImRpc3RyaWN0IjogIkRpc3RyaWN0IDEyIiwgImFmZmlsaWF0aW9uIjogIlRoZSBCYWNrc3RyZWV0cyBDb21tb253ZWFsdGgiLCAiZ3JhZGUiOiAiR3JhZGUgNSIsICJzdGF0dXMiOiAiQWN0aXZlIiwgImxhc3RfdXBkYXRlIjogIjIwMjQuMTEuMDIgMTQ6MDAiLCAicGhvdG8iOiAiaHR0cHM6Ly9wbGFjZWhvbGQuY28vNDAweDQwMC8wYTBhMGMvMTBiOTgxP3RleHQ9QVIiLCAiYXVkaW9fbG9nIjogInNmeC92b2ljZW1lcy5tcDMiLCAic3RhdHMiOiB7ImZvcnRpdHVkZSI6IDQsICJwcnVkZW5jZSI6IDMsICJ0ZW1wZXJhbmNlIjogNSwgImp1c3RpY2UiOiAzfSwgInJlcG9ydHMiOiBbeyJ0aXRsZSI6ICJQc3ljaG9sb2dpY2FsIEV2YWx1YXRpb24iLCAiY29udGVudCI6ICJTdWJqZWN0IGRlbW9uc3RyYXRlcyBoaWdoIHN0cmVzcyB0b2xlcmFuY2UuIEFzc2lnbmVkIHRvIGNvbnRhaW5tZW50IGJsb2NrIGFmdGVyIEluY2lkZW50IDQ0LUIuIE1lbnRhbCBzdGFiaWxpdHkgbWV0cmljcyBhcmUgd2l0aGluIGFjY2VwdGFibGUgcGFyYW1ldGVycy4ifV19",

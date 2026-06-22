@@ -1,5 +1,17 @@
 // --- TBCW LORE ARCHIVES MODULE (DRAG AND DROP) ---
 
+// Функция авто-цензуры секретных слов
+function applyClassifiedRedaction(text) {
+    // Слова, которые будут скрыты черными блоками
+    const secretWords = ["Lobotomy Corporation", "White Nights", "Black Days", "Singularity", "The Head", "The Eye", "The Claw", "NEIN", "Distortions", "Eldritch Whales"];
+    let redactedText = text;
+    secretWords.forEach(word => {
+        const regex = new RegExp(word, 'gi');
+        redactedText = redactedText.replace(regex, `<span class="redacted" title="[ DECRYPT TO VIEW ]">${word}</span>`);
+    });
+    return redactedText;
+}
+
 function setupArchiveControls() {
     const archive_modal = document.getElementById('archive-modal');
     const archive_list = document.getElementById('archive-list');
@@ -19,27 +31,26 @@ function setupArchiveControls() {
             if(archive_list && archive_list.children.length === 0 && typeof lore_chapters !== 'undefined') {
                 lore_chapters.forEach((chapter) => {
                     const li = document.createElement('li');
-                    li.className = "cursor-grab active:cursor-grabbing group relative bg-[#050505] border border-gray-800 p-3 hover:border-emerald-500 transition-colors ui-element flex items-center gap-4";
+                    li.className = "cursor-grab active:cursor-grabbing group relative bg-[#050505] border border-gray-800 p-2 hover:border-emerald-500 transition-colors ui-element flex items-center gap-3";
                     li.draggable = true;
                     li.dataset.id = chapter.id; 
                     
+                    // Обновленный дизайн физического картриджа
                     li.innerHTML = `
-                        <div class="w-12 h-16 shrink-0 border border-emerald-900 bg-black flex flex-col relative overflow-hidden group-hover:border-emerald-500 transition-colors pointer-events-none">
-                            <div class="h-2 w-full border-b border-emerald-900 flex justify-evenly items-end px-1">
-                                <div class="w-1 h-1 bg-emerald-900 group-hover:bg-emerald-500"></div>
-                                <div class="w-1 h-1 bg-emerald-900 group-hover:bg-emerald-500"></div>
-                                <div class="w-1 h-1 bg-emerald-900 group-hover:bg-emerald-500"></div>
+                        <div class="w-12 h-16 shrink-0 lore-drive flex flex-col relative group-hover:border-emerald-500 transition-colors pointer-events-none">
+                            <div class="ml-2 flex-1 flex flex-col w-full bg-[#050505]/50">
+                                <div class="h-2 w-full border-b border-emerald-900/50 flex justify-end items-center px-1 pt-1">
+                                    <div class="w-1 h-1 rounded-full drive-led idle"></div>
+                                </div>
+                                <div class="flex-1 flex items-center justify-center pr-2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-4 h-4 text-emerald-900 group-hover:text-emerald-500 transition-colors">
+                                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M6 18h12M6 14h12M6 10h12" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="flex-1 flex items-center justify-center">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5 text-emerald-900 group-hover:text-emerald-500">
-                                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M6 18h12M6 14h12M6 10h12" />
-                                </svg>
-                            </div>
-                            <div class="h-3 w-full border-t border-emerald-900 flex items-center px-1">
-                                <div class="w-1.5 h-1.5 rounded-full bg-red-900 group-hover:bg-yellow-500 transition-colors shadow-[0_0_5px_rgba(0,0,0,0)] group-hover:shadow-[0_0_8px_rgba(234,179,8,0.8)] drive-led"></div>
-                            </div>
+                            <div class="drive-serial font-mono-custom">SN-${Math.floor(1000 + Math.random()*9000)}</div>
                         </div>
-                        <div class="flex-1 min-w-0 pointer-events-none">
+                        <div class="flex-1 min-w-0 pointer-events-none pl-1">
                             <div class="text-[9px] text-emerald-700 font-mono-custom mb-0.5 glitch-text" data-val="${chapter.id}">${chapter.id}</div>
                             <div class="text-xs text-gray-300 font-bold truncate font-mono-custom glitch-text" data-val="${chapter.title}">${chapter.title}</div>
                         </div>
@@ -76,19 +87,18 @@ function setupArchiveControls() {
         reader_bay.addEventListener('dragover', (e) => {
             e.preventDefault(); 
             e.dataTransfer.dropEffect = 'move';
-            reader_bay.classList.add('border-emerald-500', 'bg-emerald-900/20');
-            reader_status.innerText = "[ RELEASE TO INSERT ]";
+            reader_bay.classList.add('border-emerald-500');
+            reader_status.innerText = "[ RELEASE TO MOUNT DRIVE ]";
         });
 
         reader_bay.addEventListener('dragleave', () => {
-            reader_bay.classList.remove('border-emerald-500', 'bg-emerald-900/20');
-            reader_status.innerText = "[ DRAG AND DROP ARCHIVE DRIVE HERE ]";
+            reader_bay.classList.remove('border-emerald-500');
+            reader_status.innerText = "[ AWAITING DRIVE INSERTION ]";
         });
 
         reader_bay.addEventListener('drop', (e) => {
             e.preventDefault();
-            reader_bay.classList.remove('border-emerald-500', 'bg-emerald-900/20');
-            reader_status.innerText = "[ DRAG AND DROP ARCHIVE DRIVE HERE ]";
+            reader_bay.classList.remove('border-emerald-500');
             
             const drive_id = e.dataTransfer.getData('text/plain');
             const chapter = lore_chapters.find(c => c.id === drive_id);
@@ -103,6 +113,10 @@ function setupArchiveControls() {
         playSound(sfx.click); 
         playSound(sfx.typing); 
 
+        // Схлопываем окно сканера сверху
+        reader_bay.classList.remove('reader-empty');
+        reader_bay.classList.add('reader-filled');
+
         reader_content.classList.add('hidden', 'opacity-0');
         decryption_screen.classList.remove('hidden');
         
@@ -113,17 +127,17 @@ function setupArchiveControls() {
 
         addSystemLog(`Commencing decryption of ${chapter.id}`);
 
+        // Возвращаем все диоды в ждущий красный режим
         document.querySelectorAll('.drive-led').forEach(led => {
-            led.className = "w-1.5 h-1.5 rounded-full bg-red-900 group-hover:bg-yellow-500 transition-colors shadow-[0_0_5px_rgba(0,0,0,0)] group-hover:shadow-[0_0_8px_rgba(234,179,8,0.8)] drive-led";
+            led.className = "w-1 h-1 rounded-full drive-led idle";
         });
 
+        // Включаем зеленый диод у вставленного диска
         const active_drive = document.querySelector(`li[data-id="${chapter.id}"] .drive-led`);
         if(active_drive) {
-            active_drive.classList.remove('bg-red-900', 'group-hover:bg-yellow-500');
-            active_drive.classList.add('bg-emerald-500', 'shadow-[0_0_8px_rgba(16,185,129,0.8)]');
+            active_drive.className = "w-1.5 h-1.5 rounded-full drive-led active";
         }
 
-        // Текст берется напрямую, так как он был расшифрован при старте терминала
         const decrypted_content = chapter.content;
 
         setTimeout(() => {
@@ -139,11 +153,11 @@ function setupArchiveControls() {
             document.getElementById('archive-id').innerText = chapter.id;
             document.getElementById('archive-id').setAttribute('data-val', chapter.id);
 
-            // Выводим расшифрованный текст
-            document.getElementById('archive-content').innerText = decrypted_content;
-            document.getElementById('archive-content').setAttribute('data-val', decrypted_content);
+            // Вставляем зацензуренный текст (innerHTML вместо innerText)
+            document.getElementById('archive-content').innerHTML = applyClassifiedRedaction(decrypted_content);
 
-            scrambleText([document.getElementById('archive-title'), document.getElementById('archive-id'), document.getElementById('archive-content')]);
+            // Скремблим только заголовки, чтобы не сломать HTML тэгов цензуры
+            scrambleText([document.getElementById('archive-title'), document.getElementById('archive-id')]);
             addSystemLog(`Decryption successful.`);
         }, 1800);
     }
@@ -153,7 +167,18 @@ function setupArchiveControls() {
             playSound(sfx.click);
             archive_modal.classList.add('opacity-0');
             if(archive_box) archive_box.classList.remove('window-open-active');
-            setTimeout(() => { archive_modal.classList.add('hidden'); }, 300);
+            
+            // Полный сброс ридера при закрытии окна
+            setTimeout(() => { 
+                archive_modal.classList.add('hidden'); 
+                reader_bay.classList.remove('reader-filled');
+                reader_bay.classList.add('reader-empty');
+                reader_status.innerText = "[ AWAITING DRIVE INSERTION ]";
+                reader_content.classList.add('hidden', 'opacity-0');
+                document.querySelectorAll('.drive-led').forEach(led => {
+                    led.className = "w-1 h-1 rounded-full drive-led idle";
+                });
+            }, 300);
         });
     }
 }

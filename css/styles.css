@@ -2,107 +2,205 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap');
 
 :root {
-    --bg-color: #050505;
-    --panel-bg: #0a0a0c;
-    --border-color: #2dd4bf;
-    --text-main: #e2e8f0;
-    --text-muted: #475569;
+    --bg-color: #020503; 
+    --panel-bg: rgba(5, 10, 7, 0.75);
     --terminal-green: #10b981;
-    --tbcw-gold: #eab308;
-    --tbcw-blue: #1d4ed8;
-    --pm-red-dim: rgba(220, 20, 20, 0.12);
-    --pm-red-border: rgba(220, 20, 20, 0.4);
-    --pm-red-glow: rgba(255, 50, 50, 1);
+    --terminal-green-rgb: 16, 185, 129; 
+    --border-color: rgba(16, 185, 129, 0.4);
+    --text-main: #d1fae5;
 }
 
+/* === СТАРТОВЫЙ ЭКРАН (Абсолютно черный, без сетки) === */
 body {
-    background-color: var(--bg-color);
+    background-color: #000;
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
-    background-image: linear-gradient(rgba(16, 185, 129, 0.03) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 4px, 3px 100%;
     margin: 0;
     min-height: 100vh;
     overflow: hidden;
 }
 
+/* === ТЕРМИНАЛ ВКЛЮЧЕН (Появляется сетка и цветной фон) === */
+body.terminal-active {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(rgba(var(--terminal-green-rgb), 0.15) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Утилиты тем */
+.theme-text { color: var(--terminal-green); }
+.theme-text-shadow { text-shadow: 0 0 8px var(--border-color); }
+.theme-border { border-color: var(--border-color); }
+.theme-bg-faint { background-color: rgba(var(--terminal-green-rgb), 0.05); }
+.theme-bg-heavy { background-color: rgba(var(--terminal-green-rgb), 0.15); }
+.theme-shadow-faint { box-shadow: 0 0 15px rgba(var(--terminal-green-rgb), 0.1); }
+.theme-blinking-cursor::after { content: '_'; animation: blink 1s step-end infinite; color: var(--terminal-green); }
+
 .crt-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 9999;
-    pointer-events: none;
-    background-image: linear-gradient(rgba(16, 185, 129, 0.03) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 4px, 3px 100%;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9999; pointer-events: none;
     box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
+    background: linear-gradient(rgba(16, 185, 129, 0.02) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
 }
 
 .font-mono-custom { font-family: 'JetBrains Mono', monospace; }
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #000; }
-::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 0; }
+::-webkit-scrollbar-thumb { background: rgba(var(--terminal-green-rgb), 0.3); }
 ::-webkit-scrollbar-thumb:hover { background: var(--terminal-green); }
 
-.blinking-cursor::after { content: '_'; animation: blink 1s step-end infinite; color: var(--terminal-green); }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+/* КАРТОЧКИ ДОСЬЕ И 3D-БЛИКИ */
 .dossier-card {
     background-color: var(--panel-bg);
-    border: 1px solid #1f2937;
-    border-left: 2px solid var(--tbcw-gold);
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border-color);
+    clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+    transition: all 0.2s ease, transform 0.1s ease-out, z-index 0.05s linear;
+    transform-style: preserve-3d;
     position: relative;
-    overflow: hidden;
+    z-index: 1;
 }
-.dossier-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(transparent, rgba(234, 179, 8, 0.05));
-    transform: translateY(100%);
-    transition: transform 0.3s;
+.dossier-card:hover {
+    border-color: var(--terminal-green);
+    background-color: rgba(var(--terminal-green-rgb), 0.05);
+    box-shadow: 0 0 20px rgba(var(--terminal-green-rgb), 0.15);
 }
-.dossier-card:hover { border-color: #374151; border-left-color: var(--tbcw-blue); box-shadow: 0 4px 15px rgba(29, 78, 216, 0.15); }
-.dossier-card:hover::before { transform: translateY(0); }
-
-.status-kos { animation: pulse-red 2s infinite; }
-@keyframes pulse-red {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
-    70% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+.holo-glare {
+    position: absolute; inset: 0; pointer-events: none; z-index: 20; opacity: 0;
+    transition: opacity 0.3s ease; mix-blend-mode: screen;
 }
 
-#modal-backdrop, #map-backdrop { background-color: rgba(0, 0, 0, 0.95); backdrop-filter: blur(4px); }
+/* ПАНЕЛИ УПРАВЛЕНИЯ */
+.tech-panel {
+    position: relative; background: var(--panel-bg); backdrop-filter: blur(4px); border: 1px solid var(--border-color);
+}
+.tech-panel::before, .tech-panel::after {
+    content: '+'; position: absolute; color: var(--terminal-green); font-size: 14px; line-height: 1; opacity: 0.6; font-family: 'JetBrains Mono', monospace; pointer-events: none;
+}
+.tech-panel::before { top: -8px; left: -4px; }
+.tech-panel::after { bottom: -8px; right: -4px; }
+
+#modal-backdrop, #map-backdrop, #archive-backdrop { background-color: rgba(2, 5, 3, 0.95); backdrop-filter: blur(6px); }
+
 .modal-content {
-    background-color: #050505;
-    border: 1px solid #1f2937;
-    box-shadow: 0 0 30px rgba(0,0,0,1);
+    background-color: #030a06; border: 1px solid var(--terminal-green); box-shadow: 0 0 40px rgba(var(--terminal-green-rgb), 0.1);
+    clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
 }
 
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-.stat-bar-container { display: flex; gap: 2px; height: 8px; width: 100%; }
-.stat-segment { flex: 1; background-color: #1f2937; }
-.stat-fortitude.filled { background-color: #dc2626; box-shadow: 0 0 5px #dc2626; }
-.stat-prudence.filled { background-color: #f8fafc; box-shadow: 0 0 5px #f8fafc; }
-.stat-temperance.filled { background-color: #a855f7; box-shadow: 0 0 5px #a855f7; }
-.stat-justice.filled { background-color: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
 
-#city-map-svg { background-color: #0a0303; border: 1px solid rgba(220, 20, 20, 0.3); box-shadow: 0 0 50px rgba(220, 20, 20, 0.1) inset; }
-.district-group .district-path { fill: var(--pm-red-dim); stroke: var(--pm-red-border); stroke-width: 2.5; transition: all 0.2s ease; }
-.district-group:hover .district-path { fill: rgba(220, 20, 20, 0.4); stroke: var(--pm-red-glow); stroke-width: 4; filter: drop-shadow(0 0 10px rgba(255, 50, 50, 0.8)); cursor: crosshair; }
-.district-label-letter { font-family: 'Oswald', sans-serif; fill: rgba(220, 50, 50, 0.5); font-size: 32px; font-weight: 700; text-anchor: middle; pointer-events: none; transition: all 0.2s; }
-.district-label-num { font-family: 'JetBrains Mono', monospace; fill: rgba(220, 50, 50, 0.5); font-size: 10px; font-weight: bold; text-anchor: middle; pointer-events: none; transition: all 0.2s; }
-.district-group:hover .district-label-letter { fill: #ffffff; font-size: 42px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
-.district-group:hover .district-label-num { fill: #ffffff; }
-.branch-flag { opacity: 0; transition: all 0.3s ease; pointer-events: none; transform-origin: center; }
-.district-group:hover .branch-flag { opacity: 1; transform: scale(1.2) translateY(-10px); }
+.window-open-active { animation: techBoot 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+@keyframes techBoot { 0% { transform: scale(0.95); opacity: 0; filter: contrast(200%); } 100% { transform: scale(1); opacity: 1; filter: none; } }
 
+/* АРХИВЫ ЛОРА */
+.lore-drive {
+    background: #020503; border: 1px solid rgba(var(--terminal-green-rgb), 0.3); position: relative; overflow: hidden; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+.lore-drive::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 8px;
+    background: repeating-linear-gradient(-45deg, #064e3b, #064e3b 4px, #022c22 4px, #022c22 8px); border-right: 1px solid rgba(var(--terminal-green-rgb), 0.3);
+}
+.drive-serial { writing-mode: vertical-rl; text-orientation: mixed; font-size: 7px; color: #059669; position: absolute; right: 4px; top: 8px; letter-spacing: 1px; opacity: 0.5; }
+.drive-led { transition: all 0.3s ease; }
+.drive-led.idle { background-color: #7f1d1d; animation: ledPulse 2s infinite; }
+.drive-led.active { background-color: #10b981; box-shadow: 0 0 8px #10b981; animation: none; }
+@keyframes ledPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+#reader-bay { transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+.reader-empty { flex: 1; min-height: 100%; border-width: 2px; border-color: rgba(var(--terminal-green-rgb), 0.3); }
+.reader-filled { min-height: 60px; height: 60px; border-width: 1px; border-color: rgba(var(--terminal-green-rgb), 0.5); border-bottom-width: 2px; background: rgba(var(--terminal-green-rgb), 0.05); }
+
+.redacted { background-color: rgba(var(--terminal-green-rgb), 0.15); color: transparent; cursor: help; transition: all 0.3s ease; user-select: none; padding: 0 4px; border-radius: 2px; }
+.redacted:hover { background-color: rgba(var(--terminal-green-rgb), 0.05); color: var(--text-main); text-shadow: 0 0 8px var(--border-color); }
+
+.data-stream-container { position: relative; padding-left: 24px; }
+.data-stream-container::before {
+    content: '0101 1010 0011 1101 0000 1111 0101 1001 1100 0011 0101 1111'; position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 8px; line-height: 1.5; color: rgba(var(--terminal-green-rgb), 0.2);
+    writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; word-wrap: break-word;
+}
+
+/* КАРТА ГОРОДА */
+#city-map-svg { background-color: #050101; border: 1px solid rgba(220, 38, 38, 0.4); }
+.district-group .district-path { fill: rgba(220, 38, 38, 0.05); stroke: rgba(220, 38, 38, 0.2); stroke-width: 1.5; transition: all 0.2s; }
+.district-group:hover .district-path { fill: rgba(220, 38, 38, 0.15); stroke: #ef4444; stroke-width: 3; cursor: crosshair; }
+.district-label-letter { font-family: 'Oswald', sans-serif; fill: #991b1b; font-size: 30px; font-weight: bold; transition: 0.2s; text-anchor: middle; pointer-events: none;}
+.district-label-num { fill: #991b1b; font-family: 'JetBrains Mono'; font-size: 10px; transition: 0.2s; text-anchor: middle; pointer-events: none;}
+.district-group:hover .district-label-letter, .district-group:hover .district-label-num { fill: #fca5a5; text-shadow: 0 0 8px #fca5a5; }
+.branch-flag { opacity: 0; transition: opacity 0.2s ease; pointer-events: none; }
+.district-group:hover .branch-flag { opacity: 1; transform: none; } 
 @keyframes subtleWave { 0% { transform: translateY(0px) scaleY(1); } 50% { transform: translateY(-2px) scaleY(1.02); } 100% { transform: translateY(0px) scaleY(1); } }
 #great-lake-waves { animation: subtleWave 8s ease-in-out infinite; transform-origin: bottom; }
 
-@keyframes terminalExpand {
-    0% { transform: scaleX(0.01) scaleY(0.005); opacity: 0; }
-    40% { transform: scaleX(1) scaleY(0.005); opacity: 0.8; }
-    100% { transform: scaleX(1) scaleY(1); opacity: 1; }
+/* === ЭКРАН ВХОДА (КЛЮЧ-КАРТА) === */
+.id-card {
+    width: 200px; height: 320px;
+    background: #050505;
+    border: 1px solid rgba(var(--terminal-green-rgb), 0.5);
+    border-radius: 6px;
+    position: relative;
+    cursor: grab;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(var(--terminal-green-rgb), 0.1);
+    display: flex; flex-direction: column; align-items: center; padding: 20px;
+    transition: transform 0.1s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    z-index: 210;
 }
-.window-open-active { animation: terminalExpand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+.id-card:active { cursor: grabbing; }
+
+/* КАСТОМНЫЙ КЛОН ДЛЯ МЫШКИ (ЧТОБЫ КАРТА БЫЛА НЕПРОЗРАЧНОЙ) */
+.dragged-clone {
+    opacity: 1 !important; 
+    transform: scale(1.05) rotate(3deg) !important;
+    box-shadow: 0 20px 40px rgba(var(--terminal-green-rgb), 0.3), inset 0 0 30px rgba(var(--terminal-green-rgb), 0.2) !important;
+    border-color: var(--terminal-green) !important;
+}
+
+.id-card-hole { width: 50px; height: 8px; background: #000; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.9); }
+.id-card-photo { width: 90px; height: 90px; background: #111; border: 1px solid rgba(var(--terminal-green-rgb), 0.3); margin-bottom: 15px; }
+.id-card-stripe { position: absolute; right: 12px; top: 0; bottom: 0; width: 18px; background: #000; border-left: 1px solid rgba(255,255,255,0.05); }
+.id-card-barcode { position: absolute; left: 10px; bottom: 20px; height: 80px; width: 25px; background: repeating-linear-gradient(to bottom, #fff, #fff 2px, transparent 2px, transparent 4px, #fff 4px, #fff 5px, transparent 5px, transparent 8px); opacity: 0.3; }
+
+.id-slot {
+    width: 260px; height: 120px;
+    border: 2px dashed rgba(var(--terminal-green-rgb), 0.3);
+    border-radius: 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    background: rgba(0,0,0,0.5);
+}
+.id-slot.drag-over { border-color: var(--terminal-green); background: rgba(var(--terminal-green-rgb), 0.1); box-shadow: 0 0 30px rgba(var(--terminal-green-rgb), 0.2); transform: scale(1.02); }
+.slot-led { width: 12px; height: 12px; border-radius: 50%; background: #7f1d1d; position: absolute; top: -6px; box-shadow: 0 0 10px #7f1d1d; transition: all 0.3s; }
+.slot-led.granted { background: #10b981; box-shadow: 0 0 20px #10b981; }
+
+.crt-flash-screen {
+    position: fixed; inset: 0; z-index: 9998;
+    background: #fff; opacity: 0; pointer-events: none;
+    transform: scaleY(0.01);
+    transition: opacity 0.1s, transform 0.2s cubic-bezier(0.1, 1, 0.1, 1);
+}
+.crt-flash-screen.active {
+    opacity: 1; transform: scaleY(1);
+    animation: crtFadeOut 0.8s forwards;
+}
+@keyframes crtFadeOut { 0% { opacity: 1; filter: brightness(2); } 100% { opacity: 0; filter: brightness(1); display: none; } }
+
+/* ПРОТОКОЛЫ ТЕМ */
+body[data-theme="ruby"] { --terminal-green: #ef4444; --terminal-green-rgb: 239, 68, 68; --border-color: rgba(239, 68, 68, 0.4); --text-main: #fee2e2; }
+body[data-theme="sapphire"] { --terminal-green: #3b82f6; --terminal-green-rgb: 59, 130, 246; --border-color: rgba(59, 130, 246, 0.4); --text-main: #dbeafe; }
+body[data-theme="amber"] { --terminal-green: #f59e0b; --terminal-green-rgb: 245, 158, 11; --border-color: rgba(245, 158, 11, 0.4); --text-main: #fef3c7; }
+
+/* МОБИЛКА И ПК ФИКСЫ */
+@media (min-width: 1024px) { aside { display: flex !important; } }
+@media (max-width: 1023px) {
+    #dossier-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+    .modal-content { margin: 0 !important; height: 100vh !important; clip-path: none !important; }
+    input, select, textarea, button { font-size: 16px !important; }
+    aside.hidden-mobile { display: none !important; }
+    aside.visible-mobile { display: flex !important; }
+}
+
+.ui-element { min-height: 44px; display: flex; align-items: center; }
