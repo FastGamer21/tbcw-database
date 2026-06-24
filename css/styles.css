@@ -33,7 +33,6 @@ body.terminal-active {
 .theme-shadow-faint { box-shadow: 0 0 15px rgba(var(--terminal-green-rgb), 0.1); }
 .theme-blinking-cursor::after { content: '_'; animation: blink 1s step-end infinite; color: var(--terminal-green); }
 
-/* ДИНАМИЧЕСКИЙ ФОКУС ДЛЯ ИНПУТОВ */
 .focus-theme:focus { border-color: var(--terminal-green) !important; outline: none; }
 
 select { background-color: #050505 !important; color: var(--terminal-green) !important; }
@@ -101,51 +100,6 @@ select option { background-color: #050505 !important; color: var(--terminal-gree
 
 .log-highlight { background-color: var(--terminal-green); color: #000 !important; padding: 0 4px; font-weight: bold; border-radius: 2px; box-shadow: 0 0 5px var(--border-color); }
 
-/* НАСТОЯЩИЙ ЭФФЕКТ ГЛИТЧА ДЛЯ ТЕКСТА (VHS SLICING) */
-.text-glitch-fx {
-    position: relative; 
-    display: inline-block; 
-    font-weight: bold; 
-    color: inherit;
-}
-.text-glitch-fx::before, .text-glitch-fx::after {
-    content: attr(data-val);
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #000; /* Перекрывает текст при сдвиге для реализма */
-    overflow: hidden;
-}
-.text-glitch-fx::before {
-    left: 2px;
-    text-shadow: -2px 0 red;
-    animation: glitch-anim-1 2s infinite linear alternate-reverse;
-    z-index: 2;
-}
-.text-glitch-fx::after {
-    left: -2px;
-    text-shadow: -2px 0 #3b82f6;
-    animation: glitch-anim-2 3s infinite linear alternate-reverse;
-    z-index: 1;
-}
-
-@keyframes glitch-anim-1 {
-    0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
-    20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
-    40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
-    60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
-    80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
-    100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
-}
-@keyframes glitch-anim-2 {
-    0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, 1px); }
-    20% { clip-path: inset(80% 0 5% 0); transform: translate(-2px, -1px); }
-    40% { clip-path: inset(50% 0 30% 0); transform: translate(2px, 2px); }
-    60% { clip-path: inset(0% 0 80% 0); transform: translate(-2px, -2px); }
-    80% { clip-path: inset(40% 0 40% 0); transform: translate(1px, 1px); }
-    100% { clip-path: inset(20% 0 60% 0); transform: translate(-1px, -1px); }
-}
-
 .data-stream-container { position: relative; padding-left: 24px; }
 .data-stream-container::before {
     content: '0101 1010 0011 1101 0000 1111 0101 1001 1100 0011 0101 1111'; position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
@@ -204,15 +158,6 @@ body[data-theme="ruby"] { --terminal-green: #ef4444; --terminal-green-rgb: 239, 
 body[data-theme="sapphire"] { --terminal-green: #3b82f6; --terminal-green-rgb: 59, 130, 246; --border-color: rgba(59, 130, 246, 0.4); --text-main: #dbeafe; }
 body[data-theme="amber"] { --terminal-green: #f59e0b; --terminal-green-rgb: 245, 158, 11; --border-color: rgba(245, 158, 11, 0.4); --text-main: #fef3c7; }
 
-@media (min-width: 1024px) { aside { display: flex !important; } }
-@media (max-width: 1023px) {
-    #dossier-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
-    .modal-content { margin: 0 !important; height: 100vh !important; clip-path: none !important; }
-    input, select, textarea, button { font-size: 16px !important; }
-    aside.hidden-mobile { display: none !important; }
-    aside.visible-mobile { display: flex !important; }
-}
-
 .ui-element { min-height: 44px; display: flex; align-items: center; }
 
 .log-warning {
@@ -252,3 +197,59 @@ body[data-theme="amber"] { --terminal-green: #f59e0b; --terminal-green-rgb: 245,
 }
 .stat-segment { flex: 1; height: 100%; background: transparent; transition: background 0.3s; }
 .stat-segment.filled { background: var(--terminal-green); box-shadow: 0 0 8px var(--border-color); }
+
+/* --- НАСТОЯЩИЙ ЭФФЕКТ ГЛИТЧА ДЛЯ ТЕКСТА (VHS SLICING) --- */
+.text-glitch-fx {
+    position: relative; display: inline-block; font-weight: bold; color: inherit;
+}
+.text-glitch-fx::before, .text-glitch-fx::after {
+    content: attr(data-val); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; overflow: hidden;
+}
+.text-glitch-fx::before { left: 2px; text-shadow: -2px 0 red; animation: glitch-anim-1 2s infinite linear alternate-reverse; z-index: 2; }
+.text-glitch-fx::after { left: -2px; text-shadow: -2px 0 #3b82f6; animation: glitch-anim-2 3s infinite linear alternate-reverse; z-index: 1; }
+@keyframes glitch-anim-1 {
+    0%, 10% { clip-path: inset(0 0 0 0); transform: translate(0); }
+    11%, 15% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 1px); }
+    16%, 60% { clip-path: inset(0 0 0 0); transform: translate(0); }
+    61%, 65% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+    66%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
+@keyframes glitch-anim-2 {
+    0%, 30% { clip-path: inset(0 0 0 0); transform: translate(0); }
+    31%, 35% { clip-path: inset(10% 0 70% 0); transform: translate(2px, -1px); }
+    36%, 80% { clip-path: inset(0 0 0 0); transform: translate(0); }
+    81%, 85% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 2px); }
+    86%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
+
+/* --- УМНОЕ СКРЫТИЕ КНОПКИ МЕНЮ ПРИ ОТКРЫТЫХ ОКНАХ --- */
+body:has(#modal:not(.hidden)), 
+body:has(#map-modal:not(.hidden)), 
+body:has(#archive-modal:not(.hidden)), 
+body:has(#submit-modal:not(.hidden)) {
+    #mobile-menu-toggle { display: none !important; }
+}
+
+@media (min-width: 1024px) { aside { display: flex !important; } }
+@media (max-width: 1023px) {
+    /* ФИКС СЪЕЗЖАЮЩИХ РАМОК И МАСШТАБА НА МОБИЛКАХ */
+    body { overflow-x: hidden; width: 100vw; }
+    
+    #dossier-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+    
+    .modal-content { 
+        margin: 0 !important; 
+        height: 100vh !important; 
+        max-width: 100vw !important; 
+        width: 100vw !important;
+        box-sizing: border-box !important;
+        border-radius: 0 !important;
+        clip-path: none !important; 
+        overflow-x: hidden !important; 
+    }
+    
+    input, select, textarea, button { font-size: 16px !important; }
+    aside.hidden-mobile { display: none !important; }
+    aside.visible-mobile { display: flex !important; }
+}

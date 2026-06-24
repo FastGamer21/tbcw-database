@@ -125,31 +125,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function triggerCRTFlash() {
         playSound(sfx.docOpen); 
-        
         if(initScreen) initScreen.style.display = 'none';
-        
         if(crtFlash) crtFlash.classList.add('active');
-
         document.body.classList.add('terminal-active');
-        
         setTimeout(() => unlockTerminal(), 300);
     }
 
     async function unlockTerminal() {
         const boot_text = document.getElementById('boot-text');
-        const lines = ["> CREDENTIALS ACCEPTED...", "> CONNECTING TO NETWORK...", "> DECRYPTING SECURE ARCHIVES...", "> ACCESS GRANTED."];
+        const lines = ["> CREDENTIALS ACCEPTED...", "> CONNECTING TO NETWORK...", "> SYNCING DATABANKS...", "> ACCESS GRANTED."];
         
-        if (typeof encrypted_dossiers !== 'undefined') {
-            encrypted_dossiers.forEach(enc_str => {
-                const decoded = decryptData(enc_str);
-                if(decoded) { try { dossiers.push(JSON.parse(decoded)); } catch(e) {} }
-            });
-        }
-
+        // РАСШИФРОВКА ТОЛЬКО ЛОРА (Досье теперь читаются напрямую из data.js)
         if (typeof encrypted_lore !== 'undefined') {
-            encrypted_lore.forEach(enc_str => {
-                const decoded = decryptData(enc_str);
-                if(decoded) { try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {} }
+            encrypted_lore.forEach(enc_data => {
+                const full_str = Array.isArray(enc_data) ? enc_data.join('').replace(/\s/g, '') : enc_data.replace(/\s/g, '');
+                const decoded = decryptData(full_str);
+                if(decoded) {
+                    try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {}
+                }
             });
         }
 
@@ -179,10 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const mobileMenuBtn = document.getElementById('mobile-menu-toggle');
+    const dossierGridContainer = document.querySelector('main > div.flex-1'); 
+    
     if (mobileMenuBtn) {
         mobileMenuBtn.addEventListener('click', () => {
             playSound(sfx.click); 
-            
             const aside = document.querySelector('aside');
             if (aside) {
                 if (aside.classList.contains('hidden-mobile')) {
@@ -190,11 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     aside.classList.add('visible-mobile', 'fixed', 'inset-0', 'bg-black', 'z-[90]', 'p-4');
                     mobileMenuBtn.innerText = '[ CLOSE ]';
                     mobileMenuBtn.classList.add('text-red-500');
+                    if(dossierGridContainer) dossierGridContainer.style.display = 'none';
                 } else {
                     aside.classList.remove('visible-mobile', 'fixed', 'inset-0', 'bg-black', 'z-[90]', 'p-4');
                     aside.classList.add('hidden', 'hidden-mobile');
                     mobileMenuBtn.innerText = '[ MENU ]';
                     mobileMenuBtn.classList.remove('text-red-500');
+                    if(dossierGridContainer) dossierGridContainer.style.display = 'block';
                 }
             }
         });
