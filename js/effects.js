@@ -2,10 +2,12 @@
 
 function decryptData(encrypted_str) {
     try {
-        let decoded_base = atob(encrypted_str);
+        // Жесткая очистка: оставляем ТОЛЬКО валидные символы Base64
+        let clean_str = encrypted_str.replace(/[^A-Za-z0-9+/=]/g, "");
+        let decoded_base = atob(clean_str);
         return decodeURIComponent(escape(decoded_base));
     } catch (e) {
-        console.error("CRITICAL ERROR: DATA CORRUPTION.");
+        console.error("CRITICAL ERROR: DATA CORRUPTION.", e);
         return "";
     }
 }

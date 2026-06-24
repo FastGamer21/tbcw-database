@@ -1,4 +1,4 @@
-// --- TBCW LORE ARCHIVES MODULE (DRAG AND DROP) ---
+// --- TBCW LORE ARCHIVES MODULE (DRAG AND DROP / CLICK) ---
 
 function applyClassifiedRedaction(text) {
     const secretWords = ["Lobotomy Corporation", "White Nights", "Black Days", "Singularity", "The Head", "The Eye", "The Claw", "NEIN", "Distortions", "Eldritch Whales"];
@@ -55,6 +55,7 @@ function setupArchiveControls() {
                     
                     li.addEventListener('mouseenter', () => playSound(sfx.hover));
                     
+                    // Старый драг-н-дроп
                     li.addEventListener('dragstart', (e) => {
                         playSound(sfx.hover);
                         e.dataTransfer.setData('text/plain', chapter.id);
@@ -64,6 +65,11 @@ function setupArchiveControls() {
 
                     li.addEventListener('dragend', () => {
                         li.classList.remove('opacity-40');
+                    });
+
+                    // ИСПРАВЛЕНИЕ: Добавлен клик для мобилок и ПК
+                    li.addEventListener('click', () => {
+                        processDriveInsertion(chapter);
                     });
 
                     archive_list.appendChild(li);
@@ -151,7 +157,6 @@ function setupArchiveControls() {
 
             scrambleText([document.getElementById('archive-title'), document.getElementById('archive-id')]);
             
-            // ЕСЛИ ЭТО ОШИБКА ИЗ ЗАГЛУШКИ
             if (chapter.id === "ERROR_404") {
                 addSystemLog(`Decryption failed. Data purged.`, true);
             } else {
@@ -170,7 +175,7 @@ function setupArchiveControls() {
                 archive_modal.classList.add('hidden'); 
                 reader_bay.classList.remove('reader-filled');
                 reader_bay.classList.add('reader-empty');
-                reader_status.innerText = "[ AWAITING DRIVE INSERTION ]";
+                reader_status.innerText = "[ DRAG OR CLICK DRIVE ]";
                 reader_content.classList.add('hidden', 'opacity-0');
                 document.querySelectorAll('.drive-led').forEach(led => {
                     led.className = "w-1 h-1 rounded-full drive-led idle";

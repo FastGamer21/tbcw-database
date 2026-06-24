@@ -15,6 +15,63 @@ function getMoscowTime() {
     return `${yy}.${mm}.${dd} ${hh}:${mins}`;
 }
 
+function updateLivePreview() {
+    const previewContainer = document.getElementById('preview-container');
+    if (!previewContainer) return;
+
+    const id = document.getElementById('sub-id').value || "TBCW-XXX";
+    const name = document.getElementById('sub-name').value || "UNKNOWN OPERATIVE";
+    const age = document.getElementById('sub-age').value || "0";
+    const district = document.getElementById('sub-district').value || "Unknown";
+    const affiliation = document.getElementById('sub-aff').value || "Unknown";
+    const grade = document.getElementById('sub-grade').value || "Grade 9";
+    const status = document.getElementById('sub-status').value || "Active";
+    
+    const tagsInput = document.getElementById('sub-tags');
+    const tagsArr = tagsInput ? tagsInput.value.split(',').map(t => t.trim()).filter(t => t) : [];
+    let tagsHtml = tagsArr.length > 0 
+        ? tagsArr.map(tag => `<span class="px-2 py-1 theme-bg-heavy border theme-border text-[9px] theme-text font-mono-custom uppercase">${tag}</span>`).join('')
+        : `<span class="text-[9px] text-gray-600 font-mono-custom">NO DATA</span>`;
+
+    let reportsHtml = '';
+    document.querySelectorAll('.report-entry').forEach(entry => {
+        const t = entry.querySelector('.report-title').value || "UNTITLED LOG";
+        const c = entry.querySelector('.report-content').value || "No data provided.";
+        const parsedContent = typeof parseLogText === 'function' ? parseLogText(c) : c;
+        
+        reportsHtml += `
+            <div class="mb-6">
+                <h3 class="text-[10px] font-mono-custom theme-text mb-3 border-b theme-border pb-1 uppercase tracking-wider">>> ${t}</h3>
+                <div class="whitespace-pre-line text-gray-300 text-sm pl-2 border-l theme-border leading-relaxed">${parsedContent}</div>
+            </div>
+        `;
+    });
+
+    const conf = (typeof status_config !== 'undefined' && status_config[status]) ? status_config[status] : { bg: "bg-gray-900", text: "text-gray-500", border: "border-gray-800" };
+
+    previewContainer.innerHTML = `
+        <div class="border-b theme-border pb-4 mb-6">
+            <div class="text-[10px] theme-text mb-1">REGISTRY_ID: ${id}</div>
+            <h2 class="text-2xl font-bold text-gray-100 uppercase tracking-tight">${name}</h2>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-6 text-xs font-mono-custom">
+            <div class="text-gray-600">Age: <span class="text-gray-300 ml-2">${age}</span></div>
+            <div class="text-gray-600">District: <span class="text-gray-300 ml-2">${district}</span></div>
+            <div class="text-gray-600">Affiliation: <span class="text-gray-300 ml-2">${affiliation}</span></div>
+            <div class="text-gray-600">Grade: <span class="text-gray-300 ml-2">${grade}</span></div>
+        </div>
+        <div class="mb-6">
+            <div class="text-gray-600 text-[10px] mb-2">EXPERTISE:</div>
+            <div class="flex flex-wrap gap-2">${tagsHtml}</div>
+        </div>
+        <div class="mb-8 pt-4 border-t theme-border">
+            <div class="text-gray-600 text-[10px] mb-2">STATUS:</div>
+            <div class="inline-block w-full text-center py-2 text-[11px] border uppercase tracking-widest font-mono-custom font-bold ${conf.bg} ${conf.text} ${conf.border}">${status}</div>
+        </div>
+        <div>${reportsHtml}</div>
+    `;
+}
+
 function addReportSection() {
     playSound(sfx.click);
     const container = document.getElementById('reports-container');
@@ -52,11 +109,9 @@ function addReportSection() {
             btnGroup.classList.remove('hidden', 'group-hover:flex', 'absolute', 'top-1', 'right-0', 'border');
             btnGroup.classList.add('flex', 'fixed', 'top-6', 'right-6', 'md:top-10', 'md:right-10', 'z-[100]', 'p-2', 'bg-black', 'border-2', 'theme-border');
             
-            // Расширяем поле, убираем w-full чтобы не выезжало за рамки
             textarea.classList.add('fixed', 'inset-4', 'md:inset-8', 'z-[95]', 'text-sm', 'md:text-base', 'p-6', 'shadow-[0_0_50px_rgba(16,185,129,0.15)]');
             textarea.classList.remove('min-h-[140px]', 'w-full'); 
             
-            // Скрываем кнопку удаления от греха подальше
             removeBtn.style.display = 'none';
             focusBtn.innerText = "[ MINIMIZE ]";
         } else {
@@ -66,7 +121,6 @@ function addReportSection() {
             btnGroup.classList.add('hidden', 'group-hover:flex', 'absolute', 'top-1', 'right-0', 'border');
             btnGroup.classList.remove('flex', 'fixed', 'top-6', 'right-6', 'md:top-10', 'md:right-10', 'z-[100]', 'p-2', 'bg-black', 'border-2', 'theme-border');
             
-            // Возвращаем исходные стили
             textarea.classList.remove('fixed', 'inset-4', 'md:inset-8', 'z-[95]', 'text-sm', 'md:text-base', 'p-6', 'shadow-[0_0_50px_rgba(16,185,129,0.15)]');
             textarea.classList.add('min-h-[140px]', 'w-full');
             
@@ -102,7 +156,6 @@ function setupSubmitControls() {
     const anim_status = document.getElementById('anim-status');
     const anim_progress = document.getElementById('anim-progress');
 
-    // Если контейнер пустой, создаем первую форму отчета
     if (container && container.children.length === 0) {
         addReportSection();
     }
@@ -116,7 +169,7 @@ function setupSubmitControls() {
                 b.classList.add('tab-inactive');
             });
             
-            const targets = ['sub-tab-content-guide', 'sub-tab-content-param', 'sub-tab-content-logs', 'sub-tab-content-crypt'];
+            const targets = ['sub-tab-content-guide', 'sub-tab-content-param', 'sub-tab-content-logs', 'sub-tab-content-preview', 'sub-tab-content-crypt'];
             targets.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -130,9 +183,14 @@ function setupSubmitControls() {
             
             const targetId = btn.getAttribute('data-target');
             const targetEl = document.getElementById(targetId);
+            
+            if (targetId === 'sub-tab-content-preview') {
+                updateLivePreview();
+            }
+
             if (targetEl) {
                 targetEl.classList.remove('hidden');
-                if (targetId === 'sub-tab-content-logs') targetEl.classList.add('flex', 'flex-col');
+                if (targetId === 'sub-tab-content-logs' || targetId === 'sub-tab-content-preview') targetEl.classList.add('flex', 'flex-col');
                 if (targetId === 'sub-tab-content-crypt') targetEl.classList.add('flex', 'flex-col', 'lg:flex-row');
             }
         });
@@ -184,7 +242,7 @@ function setupSubmitControls() {
         playSound(sfx.docOpen);
         if(enc_overlay) enc_overlay.classList.add('hidden');
         if(output_hash) output_hash.value = pending_hash;
-        addSystemLog(`Dossier packaged successfully.`);
+        addSystemLog(`Dossier data compiled successfully.`);
     }
 
     if(btn_skip) { btn_skip.addEventListener('click', () => { playSound(sfx.click); finishEncryption(); }); }
@@ -229,9 +287,8 @@ function setupSubmitControls() {
                 reports: reports_arr.length > 0 ? reports_arr : [{ title: "INITIAL LOG", content: "No data provided." }]
             };
 
-            const json_str = JSON.stringify(dossier_data, null, 0); 
-            const encrypted_str = encryptData(json_str);
-            pending_hash = `"${encrypted_str}",`;
+            const json_str = JSON.stringify(dossier_data, null, 4); 
+            pending_hash = json_str + ",\n";
             
             if(output_hash) output_hash.value = "";
             if(enc_overlay) {
@@ -246,9 +303,9 @@ function setupSubmitControls() {
             const steps = [
                 "> COMPILING BIOMETRICS...",
                 "> GENERATING IDENT-TAGS...",
-                "> ENCRYPTING DATA PACKETS...",
+                "> FORMATTING DATA PACKETS...",
                 "> PACKAGING LOG SECTORS...",
-                "> FINALIZING DOSSIER HASH..."
+                "> FINALIZING DOSSIER EXPORT..."
             ];
             let step_idx = 0;
 
@@ -260,7 +317,7 @@ function setupSubmitControls() {
                     if(anim_status) {
                         anim_status.innerText = steps[step_idx];
                         anim_status.setAttribute('data-val', steps[step_idx]);
-                        scrambleText([anim_status]);
+                        // Убран scrambleText, теперь текст появляется чисто
                     }
                     step_idx++;
                 }
@@ -275,7 +332,7 @@ function setupSubmitControls() {
             if(!output_hash || !output_hash.value) return;
             navigator.clipboard.writeText(output_hash.value).then(() => {
                 playSound(sfx.click);
-                addSystemLog('Dossier hash copied to clipboard');
+                addSystemLog('Dossier data copied to clipboard');
                 const original_text = btn_copy.innerText;
                 btn_copy.innerText = "[ COPIED TO CLIPBOARD ]";
                 setTimeout(() => { btn_copy.innerText = original_text; }, 2000);
