@@ -133,15 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function unlockTerminal() {
         const boot_text = document.getElementById('boot-text');
-        const lines = ["> CREDENTIALS ACCEPTED...", "> CONNECTING TO NETWORK...", "> DECRYPTING SECURE ARCHIVES...", "> ACCESS GRANTED."];
+        const lines = ["> CREDENTIALS ACCEPTED...", "> CONNECTING TO NETWORK...", "> SYNCING DATABANKS...", "> ACCESS GRANTED."];
         
-        if (typeof encrypted_dossiers !== 'undefined') {
-            encrypted_dossiers.forEach(enc_str => {
-                const decoded = decryptData(enc_str);
-                if(decoded) { try { dossiers.push(JSON.parse(decoded)); } catch(e) {} }
-            });
-        }
-
         if (typeof encrypted_lore !== 'undefined') {
             encrypted_lore.forEach(enc_data => {
                 const full_str = Array.isArray(enc_data) ? enc_data.join('').replace(/\s/g, '') : enc_data.replace(/\s/g, '');
