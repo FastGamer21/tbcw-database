@@ -18,12 +18,23 @@ function populateDistricts() {
 function parseLogText(text) {
     if (!text) return "";
     
+    // --- НОВЫЕ ФИЧИ ---
+    // 1. Заголовки (начинаются с # )
     text = text.replace(/^#\s+(.*)$/gm, '<div class="text-sm font-bold theme-text mt-4 mb-2 border-b theme-border pb-1 uppercase tracking-widest">$1</div>');
+    
+    // 2. Списки (начинаются с - )
     text = text.replace(/^-\s+(.*)$/gm, '<div class="flex gap-2 mb-1"><span class="theme-text font-bold">></span><span class="text-gray-300">$1</span></div>');
+    
+    // 3. Блок кода (многострочный)
     text = text.replace(/\[code\]([\s\S]*?)\[\/code\]/gi, '<pre class="bg-[#020302] border border-gray-800 p-3 font-mono-custom text-[10px] text-gray-400 overflow-x-auto my-3 shadow-inner leading-relaxed">$1</pre>');
+    
+    // 4. Мигающий текст
     text = text.replace(/\[blink\](.*?)\[\/blink\]/gi, '<span class="theme-text font-bold animate-pulse uppercase tracking-wider" style="text-shadow: 0 0 8px currentColor;">$1</span>');
+    
+    // 5. Инлайн-теги (плашки)
     text = text.replace(/\[tag\](.*?)\[\/tag\]/gi, '<span class="bg-gray-900 border border-gray-700 text-gray-300 px-1.5 py-0.5 rounded-[2px] text-[9px] font-mono-custom uppercase tracking-wider mx-1">$1</span>');
 
+    // --- СТАРЫЕ ФИЧИ ---
     text = text.replace(/\|\|(.*?)\|\|/g, '<span class="log-redacted">$1</span>');
     text = text.replace(/^!\s+(.*)$/gm, '<div class="log-warning">⚠ WARNING: $1</div>');
     text = text.replace(/^>\s+(.*)$/gm, '<div class="log-quote">$1</div>');
@@ -90,12 +101,7 @@ function renderCards() {
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
         });
         
-        // ФИКС АУДИО: Ищем аудиозаписи в самом досье или внутри его репортов
-        let hasAudio = false;
-        if (person.audio_log && person.audio_log.length > 5) hasAudio = true;
-        if (person.reports && person.reports.some(r => r.audio && r.audio.length > 5)) hasAudio = true;
-        
-        const hasAudioIcon = hasAudio ? `<span class="theme-text text-[10px] font-bold theme-text-shadow">[ AUDIO ]</span>` : '';
+        const hasAudioIcon = (person.audio_log && person.audio_log.length > 5) ? `<span class="theme-text text-[10px] font-bold theme-text-shadow">[ AUDIO ]</span>` : '';
 
         card.innerHTML = `<div class="flex gap-4 mb-4 relative z-10"><img src="${person.photo}" class="w-16 h-16 object-cover border theme-border grayscale"><div class="flex-1 min-w-0"><div class="text-[10px] font-mono-custom theme-text opacity-50 mb-1 glitch-text flex justify-between" data-val="${person.id}"><span>${person.id}</span> ${hasAudioIcon}</div><h3 class="font-bold text-gray-100 uppercase truncate text-sm glitch-text" data-val="${person.name}">${person.name}</h3><div class="text-xs theme-text opacity-70 truncate font-mono-custom glitch-text" data-val="${person.affiliation}">${person.affiliation}</div></div></div><div class="mt-auto relative z-10 space-y-2"><div class="flex justify-between text-[10px] font-mono-custom theme-text opacity-70 border-t theme-border pt-2"><span class="glitch-text" data-val="${person.district}">${person.district}</span><span class="glitch-text" data-val="${person.grade}">${person.grade}</span></div><div class="text-right"><span class="inline-block px-2 py-1 text-[9px] font-mono-custom uppercase tracking-widest ${conf.bg} ${conf.text} ${conf.border} border glitch-text" data-val="${person.status}">${person.status}</span></div></div>`;
         grid.appendChild(card);
@@ -157,16 +163,9 @@ function openModal(index) {
     btn_play.parentNode.replaceChild(new_btn_play, btn_play);
     new_btn_play.innerText = "[ PLAY ]";
 
-    // ФИКС АУДИО: Достаем ссылку на аудио либо из корня досье, либо из первого подходящего репорта
-    let activeAudioLog = person.audio_log || "";
-    if (!activeAudioLog && person.reports) {
-        const reportWithAudio = person.reports.find(r => r.audio && r.audio.length > 5);
-        if (reportWithAudio) activeAudioLog = reportWithAudio.audio;
-    }
-
-    if (activeAudioLog && activeAudioLog.length > 5) {
+    if (person.audio_log && person.audio_log.length > 5) {
         audio_container.classList.remove('hidden');
-        current_log_audio = new Audio(activeAudioLog);
+        current_log_audio = new Audio(person.audio_log);
         current_log_audio.volume = 0.5;
         
         new_btn_play.addEventListener('click', () => {
@@ -210,6 +209,7 @@ function openModal(index) {
         playSound(sfx.docOpen);
         modalBox.classList.add('window-open-active');
         
+        // РАСШИФРОВКА ТОЛЬКО ПРИ ПЕРВОМ ОТКРЫТИИ
         if (!person.isScrambled) {
             scrambleText(modal.querySelectorAll('.glitch-text:not(#log-time)'));
             person.isScrambled = true;
