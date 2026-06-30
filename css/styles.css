@@ -253,3 +253,75 @@ body:has(#submit-modal:not(.hidden)) {
     aside.hidden-mobile { display: none !important; }
     aside.visible-mobile { display: flex !important; }
 }
+
+/* --- ДОПОЛНЕНИЯ V0.9.8 --- */
+
+/* 1. Переменные для динамической сетки (если их нет) */
+:root { --theme-rgb: 16, 185, 129; }
+body[data-theme="emerald"] { --theme-rgb: 16, 185, 129; }
+body[data-theme="ruby"] { --theme-rgb: 220, 38, 38; }
+body[data-theme="sapphire"] { --theme-rgb: 37, 99, 235; }
+body[data-theme="amber"] { --theme-rgb: 217, 119, 6; }
+
+/* 2. Динамическая сетка фона (меняет цвет под тему) */
+body {
+    background-color: #030504 !important;
+    background-image: radial-gradient(rgba(var(--theme-rgb), 0.15) 1px, transparent 1px) !important;
+    background-size: 24px 24px !important;
+}
+
+/* 3. Цветной CRT-оверлей (мягкий, не бьющий по глазам) */
+.crt-overlay {
+    background: linear-gradient(rgba(var(--theme-rgb), 0.03) 50%, rgba(0, 0, 0, 0.1) 50%) !important;
+    background-size: 100% 4px !important;
+}
+
+/* 4. Фикс огромных пробелов в логах */
+#log-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+#log-list li {
+    margin: 0 !important;
+    padding: 2px 0 !important;
+    line-height: 1.2 !important;
+    border: none !important;
+}
+
+@keyframes powerStruggle {
+    0% { filter: contrast(100%) brightness(1); transform: translate(0px, 0px); }
+    20% { filter: contrast(120%) brightness(0.8); transform: translate(1px, -1px); }
+    40% { filter: contrast(150%) brightness(1.2); transform: translate(-1px, 1px); }
+    60% { filter: contrast(90%) brightness(0.9); transform: translate(1px, 1px); }
+    80% { filter: contrast(120%) brightness(1.1); transform: translate(-1px, -1px); }
+    100% { filter: contrast(100%) brightness(1); transform: translate(0px, 0px); }
+}
+.power-struggle { animation: powerStruggle 0.1s infinite alternate; }
+
+.emergency-state {
+    background-color: #0a0101 !important;
+    background-image: radial-gradient(rgba(239, 68, 68, 0.15) 1px, transparent 1px) !important;
+}
+.emergency-text {
+    color: #ef4444 !important;
+    text-shadow: 0 0 12px rgba(239, 68, 68, 0.9) !important;
+}
+.power-failure {
+    animation: powerCut 0.4s forwards;
+}
+@keyframes powerCut {
+    0% { opacity: 1; filter: brightness(1) contrast(1); }
+    50% { opacity: 0.8; filter: brightness(1.5) contrast(2) invert(0.1); transform: translate(2px, -2px); }
+    100% { opacity: 0; filter: brightness(0); }
+}
+.system-shake {
+    animation: alertShake 0.3s infinite;
+}
+@keyframes alertShake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(2px, -1px); }
+    50% { transform: translate(-2px, 2px); }
+    75% { transform: translate(1px, -2px); }
+}

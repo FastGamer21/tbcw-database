@@ -14,12 +14,31 @@ function populateDistricts() {
     });
 }
 
+// УЛУЧШЕННЫЙ ТЕКСТОВЫЙ ПАРСЕР
 function parseLogText(text) {
     if (!text) return "";
     
+    // --- НОВЫЕ ФИЧИ ---
+    // 1. Заголовки (начинаются с # )
+    text = text.replace(/^#\s+(.*)$/gm, '<div class="text-sm font-bold theme-text mt-4 mb-2 border-b theme-border pb-1 uppercase tracking-widest">$1</div>');
+    
+    // 2. Списки (начинаются с - )
+    text = text.replace(/^-\s+(.*)$/gm, '<div class="flex gap-2 mb-1"><span class="theme-text font-bold">></span><span class="text-gray-300">$1</span></div>');
+    
+    // 3. Блок кода (многострочный)
+    text = text.replace(/\[code\]([\s\S]*?)\[\/code\]/gi, '<pre class="bg-[#020302] border border-gray-800 p-3 font-mono-custom text-[10px] text-gray-400 overflow-x-auto my-3 shadow-inner leading-relaxed">$1</pre>');
+    
+    // 4. Мигающий текст
+    text = text.replace(/\[blink\](.*?)\[\/blink\]/gi, '<span class="theme-text font-bold animate-pulse uppercase tracking-wider" style="text-shadow: 0 0 8px currentColor;">$1</span>');
+    
+    // 5. Инлайн-теги (плашки)
+    text = text.replace(/\[tag\](.*?)\[\/tag\]/gi, '<span class="bg-gray-900 border border-gray-700 text-gray-300 px-1.5 py-0.5 rounded-[2px] text-[9px] font-mono-custom uppercase tracking-wider mx-1">$1</span>');
+
+    // --- СТАРЫЕ ФИЧИ ---
     text = text.replace(/\|\|(.*?)\|\|/g, '<span class="log-redacted">$1</span>');
     text = text.replace(/^!\s+(.*)$/gm, '<div class="log-warning">⚠ WARNING: $1</div>');
     text = text.replace(/^>\s+(.*)$/gm, '<div class="log-quote">$1</div>');
+    
     text = text.replace(/\[STAMP:\s*(APPROVED|DENIED|DECEASED|CLASSIFIED)\]/gi, (match, p1) => {
         const type = p1.toLowerCase();
         return `<div class="log-stamp stamp-${type}">${p1}</div>`;
@@ -31,8 +50,6 @@ function parseLogText(text) {
     });
 
     text = text.replace(/\[h\](.*?)\[\/h\]/gi, '<span class="log-highlight">$1</span>');
-
-    // Настоящий Glitch эффект (VHS Slicing)
     text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<span class="text-glitch-fx font-bold" data-val="$1">$1</span>');
 
     return text;
@@ -191,7 +208,12 @@ function openModal(index) {
         modalBox.classList.remove('opacity-0');
         playSound(sfx.docOpen);
         modalBox.classList.add('window-open-active');
-        scrambleText(modal.querySelectorAll('.glitch-text:not(#log-time)')); 
+        
+        // РАСШИФРОВКА ТОЛЬКО ПРИ ПЕРВОМ ОТКРЫТИИ
+        if (!person.isScrambled) {
+            scrambleText(modal.querySelectorAll('.glitch-text:not(#log-time)'));
+            person.isScrambled = true;
+        }
     }, 10);
 }
 

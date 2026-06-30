@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const crtFlash = document.getElementById('crt-flash');
 
     if (idCard && idSlot) {
-        idCard.addEventListener('dragstart', (e) => {
-            playSound(sfx.hover);
+            idCard.addEventListener('dragstart', (e) => {
+            playSound(sfx.pickItem); 
             e.dataTransfer.setData('text/plain', 'vanguard-id');
             e.dataTransfer.effectAllowed = 'move';
             
@@ -107,7 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!idCard || idCard.style.display === 'none') return;
         
         idCard.style.display = 'none'; 
-        playSound(sfx.click); 
+        playSound(sfx.keycardUse); 
+        // 1. ОСТАВЛЯЕМ ЗВУК СТАРТА ПК ТОЛЬКО ЗДЕСЬ (В САМОМ НАЧАЛЕ)
+        playSound(sfx.terminalStart); 
         
         if (slotLed) {
             slotLed.classList.remove('idle');
@@ -120,47 +122,117 @@ document.addEventListener('DOMContentLoaded', () => {
         
         setTimeout(() => {
             triggerCRTFlash();
-        }, 500);
+        }, 800);
     }
 
     function triggerCRTFlash() {
-        playSound(sfx.docOpen); 
         if(initScreen) initScreen.style.display = 'none';
-        if(crtFlash) crtFlash.classList.add('active');
+        
+        boot_screen.style.display = 'flex';
+        boot_screen.style.opacity = '1';
+        
+        boot_screen.innerHTML = '<div id="boot-text" class="font-mono-custom text-sm w-full max-w-3xl px-6 flex flex-col gap-1 items-start"></div>';
+        
         document.body.classList.add('terminal-active');
-        setTimeout(() => unlockTerminal(), 300);
+        
+        setTimeout(() => unlockTerminal(), 500); 
     }
 
     async function unlockTerminal() {
         const boot_text = document.getElementById('boot-text');
-        const lines = ["> CREDENTIALS ACCEPTED...", "> CONNECTING TO NETWORK...", "> SYNCING DATABANKS...", "> ACCESS GRANTED."];
         
         if (typeof encrypted_lore !== 'undefined') {
             encrypted_lore.forEach(enc_data => {
                 const full_str = Array.isArray(enc_data) ? enc_data.join('').replace(/\s/g, '') : enc_data.replace(/\s/g, '');
                 const decoded = decryptData(full_str);
-                if(decoded) {
-                    try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {}
-                }
+                if(decoded) { try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {} }
             });
         }
-
         if (typeof populateDistricts === 'function') populateDistricts();
 
-        if(boot_text) {
-            for (let line of lines) { 
-                await typeLine(boot_text, line); 
-                await new Promise(r => setTimeout(r, 200)); 
-            }
+        // ФАЗА 1: 6 надписей начальной загрузки
+        const fastLines = [
+            "> HANDSHAKE PROTOCOL INITIATED...",
+            "> KERNEL LOADED. ALLOCATING MEMORY...",
+            "> READING VANGUARD ID...",
+            "> VALIDATING CRYPTOGRAPHIC HASH...",
+            "> BYPASSING SECURITY SECTOR 0x0A...",
+            "> ESTABLISHING SECURE CONNECTION..."
+        ];
+
+        for (let line of fastLines) {
+            await typeLine(boot_text, line, 20, "text-gray-500 opacity-60 text-[10px] md:text-xs font-mono-custom w-full"); 
+            await new Promise(r => setTimeout(r, 200)); 
+        }
+
+        // ФАЗА 2: Отключение питания
+        await new Promise(r => setTimeout(r, 400));
+        boot_screen.classList.add('power-failure');
+        playSound(sfx.click); 
+        
+        await new Promise(r => setTimeout(r, 800)); 
+        boot_screen.classList.remove('power-failure');
+        boot_text.innerHTML = ''; 
+        
+        // ФАЗА 3: Фальшивая тревога
+        boot_screen.classList.add('emergency-state'); 
+        playSound(sfx.scannerUse); 
+        
+        const warning = document.createElement('div');
+        warning.className = "text-red-500 font-bold uppercase tracking-widest my-3 text-sm font-mono-custom border-l-2 border-red-600 pl-3";
+        warning.innerHTML = "CRITICAL WARNING<br><span class='text-[10px] text-red-400 opacity-80'>UNAUTHORIZED ACCESS DETECTED</span>";
+        boot_text.appendChild(warning);
+
+        await new Promise(r => setTimeout(r, 1200));
+        
+        const countdown = document.createElement('div');
+        countdown.className = "text-red-500 font-bold text-xs font-mono-custom mt-2";
+        boot_text.appendChild(countdown);
+        
+        for (let i = 3; i > 0; i--) {
+            countdown.innerText = `> INITIATING PURGE PROTOCOL IN ${i}...`;
+            playSound(sfx.click); 
+            await new Promise(r => setTimeout(r, 1000)); 
+        }
+
+        // ФАЗА 4: Перехват управления (ЗВУК УДАЛЕН ОТСЮДА)
+        boot_screen.classList.remove('emergency-state');
+        boot_text.innerHTML = '';
+        
+        const override = document.createElement('div');
+        override.className = "theme-text font-bold uppercase tracking-widest my-3 text-sm md:text-base font-mono-custom glitch-text border-b border-gray-800 pb-2 w-full";
+        override.setAttribute('data-val', "> OVERRIDE ACCEPTED. WELCOME.");
+        override.innerText = "> OVERRIDE ACCEPTED. WELCOME.";
+        boot_text.appendChild(override);
+        
+        scrambleText([override]); 
+        await new Promise(r => setTimeout(r, 1000)); 
+        
+        // ФИНАЛ: 4 надписи
+        const finalLines = [
+            "> DECRYPTING VANGUARD PROTOCOLS...",
+            "> SYNCING DATABANKS WITH COMMONWEALTH SERVERS...",
+            "> ALL MODULES ONLINE.",
+            "> ACCESS GRANTED."
+        ];
+
+        for (let line of finalLines) { 
+            await typeLine(boot_text, line, 30, "theme-text text-xs md:text-sm font-mono-custom opacity-80 w-full"); 
+            await new Promise(r => setTimeout(r, 300)); 
         }
         
         sfx.ambient.play().catch(() => {});
+        
+        await new Promise(r => setTimeout(r, 1500)); 
         boot_screen.style.opacity = '0'; 
         boot_screen.style.pointerEvents = 'none';
         
         setTimeout(() => {
             boot_screen.style.display = 'none';
             main_ui.classList.remove('hidden');
+            
+            if (typeof fadeOutSound === 'function') { fadeOutSound(sfx.terminalStart, 3000); }
+
             setTimeout(() => { 
                 main_ui.style.opacity = '1'; 
                 renderCards(); 
@@ -180,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (aside) {
                 if (aside.classList.contains('hidden-mobile')) {
                     aside.classList.remove('hidden', 'hidden-mobile');
-                    // ИСПРАВЛЕНИЕ: Добавлены justify-center и items-center для мобилок
                     aside.classList.add('visible-mobile', 'fixed', 'inset-0', 'bg-black/95', 'backdrop-blur-sm', 'z-[90]', 'p-6', 'justify-center', 'items-center');
                     mobileMenuBtn.innerText = '[ CLOSE ]';
                     mobileMenuBtn.classList.add('text-red-500');

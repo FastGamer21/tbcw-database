@@ -1,56 +1,65 @@
 // --- TBCW AUDIO ENGINE ---
 
 const sfx = {
-    hover: new Audio('sfx/hover.mp3'),
-    click: new Audio('sfx/click.mp3'),
-    typing: new Audio('sfx/typing.mp3'),
     ambient: new Audio('sfx/ambient.mp3'),
+    boot: new Audio('sfx/boot.mp3'),
+    click: new Audio('sfx/click.mp3'),
     docOpen: new Audio('sfx/docopen.mp3'),
-    mapOpen: new Audio('sfx/mapclick.mp3'),
-    mapHover: new Audio('sfx/hover.mp3'),
-
-    // --- НОВЫЕ ЗВУКИ ДЛЯ ЭКРАНА ВХОДА (ПОКА ЗАКОММЕНТИРОВАНЫ) ---
-    // Для активации просто раскомментируй строки ниже
-    // pickup: new Audio('sfx/card_pickup.mp3'),
-    // insert: new Audio('sfx/card_insert.mp3'),
-    // granted: new Audio('sfx/access_granted_beep.mp3'),
-    // crt: new Audio('sfx/crt_monitor_power_on.mp3')
+    hover: new Audio('sfx/hover.mp3'),
+    mapClick: new Audio('sfx/mapclick.mp3'),
+    typing: new Audio('sfx/typing.mp3'),
+    voicemes: new Audio('sfx/voicemes.mp3'),
+    
+    // Новые звуки (ОБНОВЛЕННЫЕ ИМЕНА ИЗ ТВОЕЙ ПАПКИ) 
+    terminalStart: new Audio('sfx/terminal_start.mp3'), 
+    scannerUse: new Audio('sfx/ScannerUse2.mp3'),
+    keycardUse: new Audio('sfx/keycardUse.mp3'), // <-- Теперь совпадает 1 в 1
+    pickItem: new Audio('sfx/pickItem.mp3')      // <-- Теперь совпадает 1 в 1
 };
 
-// Задаем базовые настройки, игнорируя закомментированные (undefined) звуки
-Object.values(sfx).forEach(a => { 
-    if(a) {
-        a.volume = 0.2; 
-        a.loop = false; 
-    }
-});
+sfx.ambient.loop = true;
+sfx.ambient.volume = 0.15;
+sfx.typing.loop = true;
+sfx.typing.volume = 0.3;
 
-if(sfx.typing) sfx.typing.loop = true; 
-if(sfx.ambient) sfx.ambient.loop = true;
+sfx.boot.volume = 0.5;
+sfx.click.volume = 0.3;
+sfx.docOpen.volume = 0.4;
+sfx.hover.volume = 0.05;
+sfx.mapClick.volume = 0.4;
+sfx.voicemes.volume = 0.5;
 
-function playSound(audioObj) {
-    try {
-        if(!audioObj) return; // Защита от краша при вызове закомментированного звука
-        if(audioObj.readyState > 0) audioObj.currentTime = 0;
-        audioObj.play().catch(() => {});
-    } catch (e) {}
+sfx.terminalStart.volume = 0.6;
+sfx.scannerUse.volume = 0.8; 
+sfx.keycardUse.volume = 1.0; 
+sfx.pickItem.volume = 1.0; 
+
+function playSound(sound) {
+    if (!sound) return;
+    sound.currentTime = 0; 
+    sound.play().catch(e => console.log("Audio play prevented: ", e));
 }
 
-function stopSound(audioObj) {
-    try {
-        if(!audioObj) return;
-        audioObj.pause();
-        audioObj.currentTime = 0;
-    } catch (e) {}
+function stopSound(sound) {
+    if (!sound) return;
+    sound.pause();
+    sound.currentTime = 0;
+}
+
+function fadeOutSound(sound, duration = 2000) {
+    if (!sound || sound.paused) return;
+    const step = sound.volume / (duration / 50);
+    const fade = setInterval(() => {
+        if (sound.volume - step > 0) {
+            sound.volume -= step;
+        } else {
+            sound.volume = 0;
+            sound.pause();
+            clearInterval(fade);
+        }
+    }, 50);
 }
 
 function initGlobalSounds() {
-    document.querySelectorAll('.ui-element, input, select, .dossier-card').forEach(el => {
-        el.addEventListener('mouseenter', () => playSound(sfx.hover));
-        if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
-            el.addEventListener('focus', () => playSound(sfx.click));
-        } else {
-            el.addEventListener('click', () => playSound(sfx.click));
-        }
-    });
+    playSound(sfx.ambient);
 }

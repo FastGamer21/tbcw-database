@@ -51,8 +51,9 @@ function scrambleText(elements) {
     setTimeout(() => stopSound(sfx.typing), 800);
 }
 
-async function typeLine(container, textStr, speed = 35) {
+async function typeLine(container, textStr, speed = 35, cssClass = "") {
     const p = document.createElement('p'); 
+    if (cssClass) p.className = cssClass; // Добавлена поддержка кастомных стилей!
     container.appendChild(p); 
     playSound(sfx.typing);
     for (let char of textStr) { 

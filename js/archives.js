@@ -1,5 +1,7 @@
 // --- TBCW LORE ARCHIVES MODULE (DRAG AND DROP / CLICK) ---
 
+let archiveListScrambled = false; // Флаг: список архивов глитчит только 1 раз за сессию
+
 function applyClassifiedRedaction(text) {
     const secretWords = ["Lobotomy Corporation", "White Nights", "Black Days", "Singularity", "The Head", "The Eye", "The Claw", "NEIN", "Distortions", "Eldritch Whales"];
     let redactedText = text;
@@ -23,56 +25,73 @@ function setupArchiveControls() {
 
     if(document.getElementById('btn-open-archives')) {
         document.getElementById('btn-open-archives').addEventListener('click', () => {
-            playSound(sfx.click);
+            playSound(sfx.click)
             addSystemLog('Accessing secure lore archives');
             
             if(archive_list && archive_list.children.length === 0 && typeof lore_chapters !== 'undefined') {
-                lore_chapters.forEach((chapter) => {
-                    const li = document.createElement('li');
-                    li.className = "cursor-grab active:cursor-grabbing group relative bg-[#050505] border border-gray-800 p-2 hover:theme-border transition-colors ui-element flex items-center gap-3";
-                    li.draggable = true;
-                    li.dataset.id = chapter.id; 
+                
+                const categories = {
+                    "branch": ">> BRANCHES & FACTIONS",
+                    "lore": ">> GENERAL ARCHIVES"
+                };
+
+                Object.keys(categories).forEach(cat => {
+                    const items = lore_chapters.filter(c => c.category === cat || (!c.category && cat === "lore"));
                     
-                    li.innerHTML = `
-                        <div class="w-12 h-16 shrink-0 lore-drive flex flex-col relative group-hover:theme-border transition-colors pointer-events-none">
-                            <div class="ml-2 flex-1 flex flex-col w-full bg-[#050505]/50">
-                                <div class="h-2 w-full border-b border-gray-800 flex justify-end items-center px-1 pt-1">
-                                    <div class="w-1 h-1 rounded-full drive-led idle"></div>
+                    if (items.length > 0) {
+                        const header = document.createElement('div');
+                        header.className = "text-[10px] theme-text font-bold mt-5 mb-2 border-b theme-border pb-1 uppercase tracking-widest opacity-80 pointer-events-none";
+                        if (archive_list.children.length === 0) header.classList.remove('mt-5');
+                        header.innerText = categories[cat];
+                        archive_list.appendChild(header);
+
+                        items.forEach((chapter) => {
+                            const li = document.createElement('li');
+                            li.className = "cursor-grab active:cursor-grabbing group relative bg-[#050505] border border-gray-800 p-2 hover:theme-border transition-colors ui-element flex items-center gap-3";
+                            li.draggable = true;
+                            li.dataset.id = chapter.id; 
+                            
+                            li.innerHTML = `
+                                <div class="w-12 h-16 shrink-0 lore-drive flex flex-col relative group-hover:theme-border transition-colors pointer-events-none">
+                                    <div class="ml-2 flex-1 flex flex-col w-full bg-[#050505]/50">
+                                        <div class="h-2 w-full border-b border-gray-800 flex justify-end items-center px-1 pt-1">
+                                            <div class="w-1 h-1 rounded-full drive-led idle"></div>
+                                        </div>
+                                        <div class="flex-1 flex items-center justify-center pr-2">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-4 h-4 theme-text opacity-40 group-hover:opacity-100 transition-opacity">
+                                                <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M6 18h12M6 14h12M6 10h12" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="drive-serial font-mono-custom">SN-${Math.floor(1000 + Math.random()*9000)}</div>
                                 </div>
-                                <div class="flex-1 flex items-center justify-center pr-2">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-4 h-4 theme-text opacity-40 group-hover:opacity-100 transition-opacity">
-                                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M6 18h12M6 14h12M6 10h12" />
-                                    </svg>
+                                <div class="flex-1 min-w-0 pointer-events-none pl-1">
+                                    <div class="text-[9px] theme-text font-mono-custom mb-0.5 glitch-text" data-val="${chapter.id}">${chapter.id}</div>
+                                    <div class="text-xs text-gray-300 font-bold truncate font-mono-custom glitch-text" data-val="${chapter.title}">${chapter.title}</div>
                                 </div>
-                            </div>
-                            <div class="drive-serial font-mono-custom">SN-${Math.floor(1000 + Math.random()*9000)}</div>
-                        </div>
-                        <div class="flex-1 min-w-0 pointer-events-none pl-1">
-                            <div class="text-[9px] theme-text font-mono-custom mb-0.5 glitch-text" data-val="${chapter.id}">${chapter.id}</div>
-                            <div class="text-xs text-gray-300 font-bold truncate font-mono-custom glitch-text" data-val="${chapter.title}">${chapter.title}</div>
-                        </div>
-                    `;
-                    
-                    li.addEventListener('mouseenter', () => playSound(sfx.hover));
-                    
-                    // Старый драг-н-дроп
-                    li.addEventListener('dragstart', (e) => {
-                        playSound(sfx.hover);
-                        e.dataTransfer.setData('text/plain', chapter.id);
-                        e.dataTransfer.effectAllowed = 'move';
-                        setTimeout(() => li.classList.add('opacity-40'), 0);
-                    });
+                            `;
+                            
+                            li.addEventListener('mouseenter', () => playSound(sfx.hover));
+                            
+                            // ЗВУК ДРАГА SCP (PickItem)
+                            li.addEventListener('dragstart', (e) => {
+                                playSound(sfx.pickItem);
+                                e.dataTransfer.setData('text/plain', chapter.id);
+                                e.dataTransfer.effectAllowed = 'move';
+                                setTimeout(() => li.classList.add('opacity-40'), 0);
+                            });
 
-                    li.addEventListener('dragend', () => {
-                        li.classList.remove('opacity-40');
-                    });
+                            li.addEventListener('dragend', () => { li.classList.remove('opacity-40'); });
+                            
+                            // ЗВУК КЛИКА SCP (PickItem)
+                            li.addEventListener('click', () => { 
+                                playSound(sfx.pickItem);
+                                processDriveInsertion(chapter); 
+                            });
 
-                    // ИСПРАВЛЕНИЕ: Добавлен клик для мобилок и ПК
-                    li.addEventListener('click', () => {
-                        processDriveInsertion(chapter);
-                    });
-
-                    archive_list.appendChild(li);
+                            archive_list.appendChild(li);
+                        });
+                    }
                 });
             }
             
@@ -81,7 +100,12 @@ function setupArchiveControls() {
                 archive_modal.classList.remove('opacity-0');
                 if(archive_box) archive_box.classList.add('window-open-active');
                 playSound(sfx.docOpen);
-                if(archive_list) scrambleText(archive_list.querySelectorAll('.glitch-text'));
+                
+                // ГЛИТЧИМ СПИСОК ТОЛЬКО ОДИН РАЗ
+                if (archive_list && !archiveListScrambled) {
+                    scrambleText(archive_list.querySelectorAll('.glitch-text'));
+                    archiveListScrambled = true;
+                }
             }, 10);
         });
     }
@@ -106,9 +130,7 @@ function setupArchiveControls() {
             const drive_id = e.dataTransfer.getData('text/plain');
             const chapter = lore_chapters.find(c => c.id === drive_id);
 
-            if(chapter) {
-                processDriveInsertion(chapter);
-            }
+            if(chapter) { processDriveInsertion(chapter); }
         });
     }
 
@@ -153,11 +175,14 @@ function setupArchiveControls() {
             document.getElementById('archive-id').innerText = chapter.id;
             document.getElementById('archive-id').setAttribute('data-val', chapter.id);
 
-            document.getElementById('archive-content').innerHTML = applyClassifiedRedaction(decrypted_content);
+            document.getElementById('archive-content').innerHTML = typeof applyClassifiedRedaction === 'function' ? applyClassifiedRedaction(typeof parseLogText === 'function' ? parseLogText(decrypted_content) : decrypted_content) : decrypted_content;
 
+            // Расшифровка флешки работает ВСЕГДА
             scrambleText([document.getElementById('archive-title'), document.getElementById('archive-id')]);
             
+            // Звук ОШИБКИ (ScannerUse) для ERROR_404
             if (chapter.id === "ERROR_404") {
+                playSound(sfx.scannerUse); 
                 addSystemLog(`Decryption failed. Data purged.`, true);
             } else {
                 addSystemLog(`Decryption successful.`);
@@ -181,6 +206,6 @@ function setupArchiveControls() {
                     led.className = "w-1 h-1 rounded-full drive-led idle";
                 });
             }, 300);
-        });
+        }); 
     }
 }
