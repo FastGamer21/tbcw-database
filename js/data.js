@@ -33,5 +33,30 @@ let dossiers = [
                 "content": "Gideon Cross. Born in the deepest slums of District 23, an area notorious for rampant cannibalism and the culinary atrocities of the Eight O'Clock Circus.\n\nHe currently serves as the Commander of the Vanguard, the primary defense line standing between the Commonwealth's hidden branches and the Eldritch horrors bleeding in from the Ruins.\n[STAMP: CLASSIFIED]"
             }
         ]
+    },
+    {
+        "id": "TBCW-004",
+        "name": "Rossi Leone | The Gunslinger",
+        "age": 25,
+        "district": "District 21",
+        "affiliation": "The Backstreets Commonwealth",
+        "grade": "Grade 1",
+        "status": "Active",
+        "last_update": "2026.06.30 22:19",
+        "photo": "https://i.imgur.com/EbSB9fE.png", 
+        "tags": [
+            "CQB",
+            "Pistols",
+            "Sniper rifles",
+            "Shotguns",
+            "Heavy melee"
+        ],
+        "reports": [
+            {
+                "title": "Let's try this out huh",
+                "audio": "https://files.catbox.moe/nk8g78.mp3",
+                "content": "Bohohohoho"
+            }
+        ]
     }
 ];
