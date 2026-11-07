@@ -2,19 +2,20 @@
 
 const sfx = {
     ambient: new Audio('sfx/ambient.mp3'),
-    boot: new Audio('sfx/boot.mp3'),
     click: new Audio('sfx/click.mp3'),
     docOpen: new Audio('sfx/docopen.mp3'),
     hover: new Audio('sfx/hover.mp3'),
     mapClick: new Audio('sfx/mapclick.mp3'),
+    mapHover: new Audio('sfx/hover.mp3'),
+    mapOpen: new Audio('sfx/docopen.mp3'),
     typing: new Audio('sfx/typing.mp3'),
     voicemes: new Audio('sfx/voicemes.mp3'),
-    
-    // Новые звуки (ОБНОВЛЕННЫЕ ИМЕНА ИЗ ТВОЕЙ ПАПКИ) 
-    terminalStart: new Audio('sfx/terminal_start.mp3'), 
+
+    // Новые звуки (ОБНОВЛЕННЫЕ ИМЕНА ИЗ ТВОЕЙ ПАПКИ)
+    terminalStart: new Audio('sfx/terminal_start.mp3'),
     scannerUse: new Audio('sfx/ScannerUse2.mp3'),
-    keycardUse: new Audio('sfx/keycardUse.mp3'), // <-- Теперь совпадает 1 в 1
-    pickItem: new Audio('sfx/pickItem.mp3')      // <-- Теперь совпадает 1 в 1
+    keycardUse: new Audio('sfx/keycardUse.mp3'),
+    pickItem: new Audio('sfx/pickItem.mp3')
 };
 
 sfx.ambient.loop = true;
@@ -22,11 +23,12 @@ sfx.ambient.volume = 0.15;
 sfx.typing.loop = true;
 sfx.typing.volume = 0.3;
 
-sfx.boot.volume = 0.5;
 sfx.click.volume = 0.3;
 sfx.docOpen.volume = 0.4;
 sfx.hover.volume = 0.05;
 sfx.mapClick.volume = 0.4;
+sfx.mapHover.volume = 0.15;
+sfx.mapOpen.volume = 0.4;
 sfx.voicemes.volume = 0.5;
 
 sfx.terminalStart.volume = 0.6;

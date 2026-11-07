@@ -1,0 +1,24 @@
+{
+    "id": "TBCW-009",
+    "name": "Gideon Cross",
+    "age": 37,
+    "district": "Outskirts Border",
+    "affiliation": "The Backstreets Commonwealth // Vanguard Command",
+    "grade": "Grade 1 Fixer (Color Candidate)",
+    "status": "Active",
+    "last_update": "2026.06.13 04:17",
+    "photo": "https://placehold.co/400x400/0a0a0c/dc2626?text=GC",
+    "tags": [
+        "CQB",
+        "Extreme Combat",
+        "Cybernetics",
+        "Interrogation"
+    ],
+    "reports": [
+        {
+            "title": "SECTION I: EXTENDED BIOGRAPHICAL OVERVIEW",
+            "audio": "",
+            "content": "Gideon Cross. Born in the deepest slums of District 23, an area notorious for rampant cannibalism and the culinary atrocities of the Eight O'Clock Circus.\n\nHe currently serves as the Commander of the Vanguard, the primary defense line standing between the Commonwealth's hidden branches and the Eldritch horrors bleeding in from the Ruins.\n[STAMP: CLASSIFIED]"
+        }
+    ]
+}

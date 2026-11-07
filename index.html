@@ -183,17 +183,6 @@
                     <span id="modal-date" class="text-[10px] font-mono-custom theme-text glitch-text"></span>
                 </div>
 
-                <div id="modal-audio-container" class="hidden mb-6 border theme-border theme-bg-heavy p-3 flex flex-col gap-3 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
-                    <canvas id="audio-visualizer" class="w-full h-12 bg-[#020503] border border-gray-800 opacity-90"></canvas>
-                    <div class="flex items-center gap-4">
-                        <button id="btn-play-log" class="theme-text hover:text-white font-bold tracking-widest font-mono-custom text-xs focus:outline-none transition-colors ui-element w-20 text-left">[ PLAY ]</button>
-                        <div class="flex-1 h-1 bg-black border theme-border relative overflow-hidden">
-                            <div id="log-progress" class="absolute top-0 left-0 h-full theme-bg-heavy w-0 transition-all duration-75"></div>
-                        </div>
-                        <span id="log-time" class="text-[10px] font-mono-custom theme-text w-10 text-right">00:00</span>
-                    </div>
-                </div>
-
                 <div id="modal-reports" class="space-y-8 text-gray-300 leading-relaxed text-sm"></div>
             </div>
         </div>
@@ -337,7 +326,7 @@ His mind is completely ***shattered***. He keeps talking about [h]The Train[/h].
                         </div>
                         <div class="mt-3">
                             <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">PORTRAIT URL (Direct Link to Image)</label>
-                            <input id="sub-photo" type="text" placeholder="e.g. https://i.imgur.com/image.jpg" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                            <input id="sub-photo" type="text" placeholder="img/my-portrait.png or direct link" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
                         </div>
                     </div>
 
@@ -406,15 +395,18 @@ His mind is completely ***shattered***. He keeps talking about [h]The Train[/h].
                             >> GENERATE DOSSIER <<
                         </button>
                         <p class="text-gray-600 text-[10px] mt-4 max-w-sm leading-relaxed">
-                            Clicking will initiate the TBCW_CIPHER algorithm. All entered parameters, log sections, and external audio modules will be compressed into an encrypted hash string.
+                            Clicking will compile all entered parameters, log sections, and audio modules into a standardized Dossier JSON file. Download it and send it to the Administrator.
                         </p>
                     </div>
 
                     <div class="w-full lg:w-96 flex flex-col bg-black p-4 border theme-border relative">
-                        <label class="text-[10px] theme-text block mb-2 glitch-text" data-val="ENCRYPTED_DOSSIER_HASH">ENCRYPTED_DOSSIER_HASH</label>
+                        <label class="text-[10px] theme-text block mb-2 glitch-text" data-val="DOSSIER_JSON // READY FOR UPLOAD">DOSSIER_JSON // READY FOR UPLOAD</label>
                         <textarea id="submit-output" readonly class="w-full flex-1 bg-[#050505] border border-gray-800 text-[10px] theme-text p-3 focus-theme resize-none custom-scrollbar break-all font-mono" placeholder="Awaiting terminal generation sequence..."></textarea>
                         <button id="btn-copy-hash" class="border border-gray-700 text-gray-400 py-3 mt-4 text-xs font-bold tracking-widest hover:text-white hover:border-gray-500 transition-colors uppercase ui-element">
                             [ COPY TO CLIPBOARD ]
+                        </button>
+                        <button id="btn-download-json" class="theme-bg-heavy border theme-border theme-text py-3 mt-2 text-xs font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element">
+                            [ DOWNLOAD .JSON ]
                         </button>
                     </div>
                 </div>
@@ -422,8 +414,8 @@ His mind is completely ***shattered***. He keeps talking about [h]The Train[/h].
             </div>
             
             <div class="mt-4 border-t border-red-900/50 pt-3 text-center shrink-0">
-                <p class="text-red-500 text-[10px] font-bold tracking-widest uppercase glitch-text" data-val="WARNING: Data is temporary and will be lost upon closing the terminal. Copy your Encrypted Hash and send it to the Administrator.">
-                    WARNING: Data is temporary and will be lost upon closing the terminal. Copy your Encrypted Hash and send it to the Administrator.
+                <p class="text-red-500 text-[10px] font-bold tracking-widest uppercase glitch-text" data-val="WARNING: Data is temporary and will be lost upon closing the terminal. Download your Dossier JSON and send it to the Administrator.">
+                    WARNING: Data is temporary and will be lost upon closing the terminal. Download your Dossier JSON and send it to the Administrator.
                 </p>
             </div>
             
@@ -434,6 +426,7 @@ His mind is completely ***shattered***. He keeps talking about [h]The Train[/h].
 
     <div class="crt-overlay"></div>
     <script src="js/data.js"></script>
+    <script src="js/dataload.js"></script>
     <script src="js/mapData.js"></script>
     <script src="js/lore.js"></script>
     <script src="js/audio.js"></script>

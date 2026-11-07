@@ -1,17 +1,5 @@
 // --- TBCW VISUAL EFFECTS & LOGGING ---
 
-function decryptData(encrypted_str) {
-    try {
-        // Жесткая очистка: оставляем ТОЛЬКО валидные символы Base64
-        let clean_str = encrypted_str.replace(/[^A-Za-z0-9+/=]/g, "");
-        let decoded_base = atob(clean_str);
-        return decodeURIComponent(escape(decoded_base));
-    } catch (e) {
-        console.error("CRITICAL ERROR: DATA CORRUPTION.", e);
-        return "";
-    }
-}
-
 function addSystemLog(message, isError = false) {
     const list = document.getElementById('log-list');
     if (!list) return;
@@ -51,23 +39,15 @@ function scrambleText(elements) {
     setTimeout(() => stopSound(sfx.typing), 800);
 }
 
-async function typeLine(container, textStr, speed = 35, cssClass = "") {
-    const p = document.createElement('p'); 
-    if (cssClass) p.className = cssClass; // Добавлена поддержка кастомных стилей!
-    container.appendChild(p); 
+async function typeLine(container, textStr, speed = 35, cssClass = "", shouldStop = null) {
+    const p = document.createElement('p');
+    if (cssClass) p.className = cssClass;
+    container.appendChild(p);
     playSound(sfx.typing);
-    for (let char of textStr) { 
-        p.textContent += char; 
-        await new Promise(r => setTimeout(r, speed)); 
+    for (let char of textStr) {
+        if (shouldStop && shouldStop()) break;
+        p.textContent += char;
+        await new Promise(r => setTimeout(r, speed));
     }
     stopSound(sfx.typing);
-}
-
-function encryptData(raw_str) {
-    try {
-        return btoa(unescape(encodeURIComponent(raw_str)));
-    } catch (e) {
-        console.error("CRITICAL ERROR: ENCRYPTION FAILED.", e);
-        return "";
-    }
 }

@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         boot_screen.style.display = 'flex';
         boot_screen.style.opacity = '1';
         
-        boot_screen.innerHTML = '<div id="boot-text" class="font-mono-custom text-sm w-full max-w-3xl px-6 flex flex-col gap-1 items-start"></div>';
+        boot_screen.innerHTML = '<div id="boot-text" class="font-mono-custom text-sm w-full max-w-3xl px-6 flex flex-col gap-1 items-start"></div>' +
+            '<button id="btn-skip-boot" class="absolute bottom-8 right-8 text-gray-600 hover:theme-text font-mono-custom text-xs tracking-widest ui-element transition-colors">[ SKIP ]</button>';
         
         document.body.classList.add('terminal-active');
         
@@ -140,15 +141,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function unlockTerminal() {
         const boot_text = document.getElementById('boot-text');
-        
-        if (typeof encrypted_lore !== 'undefined') {
-            encrypted_lore.forEach(enc_data => {
-                const full_str = Array.isArray(enc_data) ? enc_data.join('').replace(/\s/g, '') : enc_data.replace(/\s/g, '');
-                const decoded = decryptData(full_str);
-                if(decoded) { try { lore_chapters.push(JSON.parse(decoded)); } catch(e) {} }
-            });
+        const skipBtn = document.getElementById('btn-skip-boot');
+
+        // --- SKIP-МЕХАНИКА: флаг + разблокировка всех ожиданий ---
+        let bootSkipped = false;
+        let bootWaiters = [];
+        const bootWait = (ms) => new Promise(resolve => {
+            if (bootSkipped) { resolve(); return; }
+            const timer = setTimeout(resolve, ms);
+            bootWaiters.push(() => { clearTimeout(timer); resolve(); });
+        });
+        const skipBoot = () => {
+            if (bootSkipped) return;
+            bootSkipped = true;
+            bootWaiters.forEach(w => w());
+            bootWaiters = [];
+        };
+
+        if (skipBtn) {
+            skipBtn.classList.remove('hidden');
+            skipBtn.addEventListener('click', () => { playSound(sfx.click); skipBoot(); });
         }
+
+        if (typeof dataReady !== 'undefined') await dataReady;
         if (typeof populateDistricts === 'function') populateDistricts();
+
+        // --- ФИНАЛЬНЫЙ ЭПИЛОГ: общий путь для обычного бута и SKIP ---
+        const epilogue = async (didSkip) => {
+            boot_screen.classList.remove('power-failure', 'emergency-state');
+            if (didSkip) {
+                stopSound(sfx.typing);
+                boot_text.innerHTML = '';
+
+                const override = document.createElement('div');
+                override.className = "theme-text font-bold uppercase tracking-widest my-3 text-sm md:text-base font-mono-custom glitch-text border-b border-gray-800 pb-2 w-full";
+                override.setAttribute('data-val', "> OVERRIDE ACCEPTED. WELCOME.");
+                override.innerText = "> OVERRIDE ACCEPTED. WELCOME.";
+                boot_text.appendChild(override);
+
+                const granted = document.createElement('div');
+                granted.className = "theme-text text-xs md:text-sm font-mono-custom opacity-80 w-full";
+                granted.innerText = "> ACCESS GRANTED.";
+                boot_text.appendChild(granted);
+
+                scrambleText([override]);
+            }
+            if (skipBtn) skipBtn.classList.add('hidden');
+
+            sfx.ambient.play().catch(() => {});
+
+            await new Promise(r => setTimeout(r, 1500));
+            boot_screen.style.opacity = '0';
+            boot_screen.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                boot_screen.style.display = 'none';
+                main_ui.classList.remove('hidden');
+
+                if (typeof fadeOutSound === 'function') { fadeOutSound(sfx.terminalStart, 3000); }
+
+                setTimeout(() => {
+                    main_ui.style.opacity = '1';
+                    renderCards();
+                    initGlobalSounds();
+                    scrambleText(document.querySelectorAll('#main-ui .glitch-text'));
+                }, 50);
+            }, 500);
+        };
 
         // ФАЗА 1: 6 надписей начальной загрузки
         const fastLines = [
@@ -161,39 +220,46 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         for (let line of fastLines) {
-            await typeLine(boot_text, line, 20, "text-gray-500 opacity-60 text-[10px] md:text-xs font-mono-custom w-full"); 
-            await new Promise(r => setTimeout(r, 200)); 
+            if (bootSkipped) return epilogue(true);
+            await typeLine(boot_text, line, 20, "text-gray-500 opacity-60 text-[10px] md:text-xs font-mono-custom w-full", () => bootSkipped);
+            await bootWait(200);
         }
+        if (bootSkipped) return epilogue(true);
 
         // ФАЗА 2: Отключение питания
-        await new Promise(r => setTimeout(r, 400));
+        await bootWait(400);
+        if (bootSkipped) return epilogue(true);
         boot_screen.classList.add('power-failure');
-        playSound(sfx.click); 
-        
-        await new Promise(r => setTimeout(r, 800)); 
+        playSound(sfx.click);
+
+        await bootWait(800);
         boot_screen.classList.remove('power-failure');
-        boot_text.innerHTML = ''; 
-        
+        boot_text.innerHTML = '';
+        if (bootSkipped) return epilogue(true);
+
         // ФАЗА 3: Фальшивая тревога
-        boot_screen.classList.add('emergency-state'); 
-        playSound(sfx.scannerUse); 
-        
+        boot_screen.classList.add('emergency-state');
+        playSound(sfx.scannerUse);
+
         const warning = document.createElement('div');
         warning.className = "text-red-500 font-bold uppercase tracking-widest my-3 text-sm font-mono-custom border-l-2 border-red-600 pl-3";
         warning.innerHTML = "CRITICAL WARNING<br><span class='text-[10px] text-red-400 opacity-80'>UNAUTHORIZED ACCESS DETECTED</span>";
         boot_text.appendChild(warning);
 
-        await new Promise(r => setTimeout(r, 1200));
+        await bootWait(1200);
+        if (bootSkipped) return epilogue(true);
         
         const countdown = document.createElement('div');
         countdown.className = "text-red-500 font-bold text-xs font-mono-custom mt-2";
         boot_text.appendChild(countdown);
         
         for (let i = 3; i > 0; i--) {
+            if (bootSkipped) return epilogue(true);
             countdown.innerText = `> INITIATING PURGE PROTOCOL IN ${i}...`;
-            playSound(sfx.click); 
-            await new Promise(r => setTimeout(r, 1000)); 
+            playSound(sfx.click);
+            await bootWait(1000);
         }
+        if (bootSkipped) return epilogue(true);
 
         // ФАЗА 4: Перехват управления (ЗВУК УДАЛЕН ОТСЮДА)
         boot_screen.classList.remove('emergency-state');
@@ -205,9 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
         override.innerText = "> OVERRIDE ACCEPTED. WELCOME.";
         boot_text.appendChild(override);
         
-        scrambleText([override]); 
-        await new Promise(r => setTimeout(r, 1000)); 
-        
+        scrambleText([override]);
+        await bootWait(1000);
+        if (bootSkipped) return epilogue(true);
+
         // ФИНАЛ: 4 надписи
         const finalLines = [
             "> DECRYPTING VANGUARD PROTOCOLS...",
@@ -216,30 +283,13 @@ document.addEventListener('DOMContentLoaded', () => {
             "> ACCESS GRANTED."
         ];
 
-        for (let line of finalLines) { 
-            await typeLine(boot_text, line, 30, "theme-text text-xs md:text-sm font-mono-custom opacity-80 w-full"); 
-            await new Promise(r => setTimeout(r, 300)); 
+        for (let line of finalLines) {
+            if (bootSkipped) return epilogue(true);
+            await typeLine(boot_text, line, 30, "theme-text text-xs md:text-sm font-mono-custom opacity-80 w-full", () => bootSkipped);
+            await bootWait(300);
         }
-        
-        sfx.ambient.play().catch(() => {});
-        
-        await new Promise(r => setTimeout(r, 1500)); 
-        boot_screen.style.opacity = '0'; 
-        boot_screen.style.pointerEvents = 'none';
-        
-        setTimeout(() => {
-            boot_screen.style.display = 'none';
-            main_ui.classList.remove('hidden');
-            
-            if (typeof fadeOutSound === 'function') { fadeOutSound(sfx.terminalStart, 3000); }
 
-            setTimeout(() => { 
-                main_ui.style.opacity = '1'; 
-                renderCards(); 
-                initGlobalSounds(); 
-                scrambleText(document.querySelectorAll('#main-ui .glitch-text'));
-            }, 50);
-        }, 500);
+        await epilogue(false);
     }
 
     const mobileMenuBtn = document.getElementById('mobile-menu-toggle');

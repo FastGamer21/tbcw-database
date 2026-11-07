@@ -85,7 +85,7 @@ function addReportSection() {
             <button class="btn-remove-report text-red-700 hover:text-red-400 text-[10px] font-bold transition-colors ui-element">[ REMOVE ]</button>
         </div>
         <input type="text" placeholder="Report Title (e.g. History & Incidents)" class="report-title w-full bg-black border border-gray-800 text-xs theme-text p-2 pr-28 focus-theme transition-colors ui-element">
-        <input type="text" placeholder="Audio Record URL (Catbox.moe / Discord CDN)" class="report-audio w-full bg-black border border-gray-800 text-xs theme-text opacity-80 p-2 focus-theme transition-colors ui-element">
+        <input type="text" placeholder="Audio Record URL (direct link to .mp3 / .ogg)" class="report-audio w-full bg-black border border-gray-800 text-xs theme-text opacity-80 p-2 focus-theme transition-colors ui-element">
         <textarea placeholder="Enter background details or incident report here using formatting protocols..." class="report-content w-full min-h-[140px] bg-black border border-gray-800 text-xs text-gray-300 p-2 focus-theme transition-colors resize-none custom-scrollbar ui-element"></textarea>
     `;
     
@@ -147,6 +147,7 @@ function setupSubmitControls() {
     
     const btn_encrypt = document.getElementById('btn-encrypt-data');
     const btn_copy = document.getElementById('btn-copy-hash');
+    const btn_download = document.getElementById('btn-download-json');
     const output_hash = document.getElementById('submit-output');
     const btn_add = document.getElementById('btn-add-report');
     const container = document.getElementById('reports-container');
@@ -233,7 +234,7 @@ function setupSubmitControls() {
         });
     }
 
-    let pending_hash = "";
+    let pending_json = "";
 
     function finishEncryption() {
         clearTimeout(encryption_timeout);
@@ -241,7 +242,7 @@ function setupSubmitControls() {
         stopSound(sfx.typing);
         playSound(sfx.docOpen);
         if(enc_overlay) enc_overlay.classList.add('hidden');
-        if(output_hash) output_hash.value = pending_hash;
+        if(output_hash) output_hash.value = pending_json;
         addSystemLog(`Dossier data compiled successfully.`);
     }
 
@@ -287,8 +288,8 @@ function setupSubmitControls() {
                 reports: reports_arr.length > 0 ? reports_arr : [{ title: "INITIAL LOG", content: "No data provided." }]
             };
 
-            const json_str = JSON.stringify(dossier_data, null, 4); 
-            pending_hash = json_str + ",\n";
+            const json_str = JSON.stringify(dossier_data, null, 4);
+            pending_json = json_str;
             
             if(output_hash) output_hash.value = "";
             if(enc_overlay) {
@@ -337,6 +338,29 @@ function setupSubmitControls() {
                 btn_copy.innerText = "[ COPIED TO CLIPBOARD ]";
                 setTimeout(() => { btn_copy.innerText = original_text; }, 2000);
             });
+        });
+    }
+
+    if(btn_download) {
+        btn_download.addEventListener('click', () => {
+            if(!output_hash || !output_hash.value) return;
+            playSound(sfx.click);
+
+            const blob = new Blob([output_hash.value], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const id_val = document.getElementById('sub-id') ? document.getElementById('sub-id').value.trim() : '';
+            link.href = url;
+            link.download = (id_val || 'TBCW-XXX') + '.json';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+            addSystemLog('Dossier JSON file generated');
+            const original_text = btn_download.innerText;
+            btn_download.innerText = "[ FILE SAVED ]";
+            setTimeout(() => { btn_download.innerText = original_text; }, 2000);
         });
     }
 }
