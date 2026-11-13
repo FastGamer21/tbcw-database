@@ -5,12 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TBCW // Secure Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=22">
     <style>
-        .sub-tab-btn { cursor: pointer; position: relative; transition: all 0.2s ease; }
-        .sub-tab-btn.tab-active { color: var(--terminal-green, #10b981); background: rgba(16, 185, 129, 0.08); border-bottom: 2px solid var(--terminal-green, #10b981); font-weight: bold; }
-        .sub-tab-btn.tab-inactive { color: #4b5563; }
-        .sub-tab-btn.tab-inactive:hover { color: #9ca3af; background: rgba(255, 255, 255, 0.02); }
     </style>
 </head>
 <body class="p-2 md:p-6 h-screen flex flex-col bg-black">
@@ -55,12 +51,16 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-mono-custom theme-text uppercase tracking-widest theme-blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.9.8">TBCW_DATABANK // PROTOTYPE V.0.9.8</h1>
+                        <h1 class="text-xl md:text-2xl font-mono-custom theme-text uppercase tracking-widest theme-blinking-cursor glitch-text" data-val="TBCW_DATABANK // PROTOTYPE V.0.9.19">TBCW_DATABANK // PROTOTYPE V.0.9.19</h1>
                         <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL">THE BACKSTREETS COMMONWEALTH // SECURE TERMINAL</p>
                     </div>
                 </div>
                 <div class="hidden md:block text-right">
-                    <div class="text-[10px] font-mono-custom text-gray-600 glitch-text" data-val="ENCRYPTION: ACTIVE">ENCRYPTION: ACTIVE</div>
+                    <div class="flex items-center justify-end gap-3">
+                        <span id="auth-badge" class="hidden font-mono-custom text-[9px] tracking-widest text-gray-500"></span>
+                        <button id="btn-logout" class="hidden font-mono-custom text-[9px] font-bold tracking-widest text-gray-600 hover:text-red-400 transition-colors ui-element">[ LOG OUT ]</button>
+                    </div>
+                    <div class="text-[10px] font-mono-custom text-gray-600 glitch-text mt-1" data-val="ENCRYPTION: ACTIVE">ENCRYPTION: ACTIVE</div>
                     <div class="text-[10px] font-mono-custom theme-text glitch-text" data-val="CONNECTION ESTABLISHED">CONNECTION ESTABLISHED</div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
         <main class="w-full flex-1 flex flex-row gap-6 overflow-hidden">
             <aside class="hidden lg:flex w-full max-w-sm lg:w-72 flex-col gap-5 shrink-0 h-full overflow-y-auto pr-2 custom-scrollbar hidden-mobile">
                 
-                <div class="tech-panel p-4 font-mono-custom w-full">
+                <div class="tech-panel p-4 font-mono-custom w-full" id="panel-query">
                     <h2 class="text-xs theme-text mb-4 border-b theme-border pb-1 uppercase glitch-text" data-val="Query Parameters">Query Parameters</h2>
                     <div class="space-y-4">
                         <div>
@@ -110,6 +110,11 @@
                     <p class="relative text-[9px] theme-text mt-1 text-center pointer-events-none glitch-text" data-val="ENCRYPT FIELD DATA">ENCRYPT FIELD DATA</p>
                 </div>
 
+                <div class="tech-panel p-4 font-mono-custom relative overflow-hidden group ui-element cursor-pointer hover:theme-bg-faint transition-all w-full hidden" id="btn-open-admin">
+                    <button class="relative w-full theme-text py-2 text-sm font-bold tracking-widest uppercase pointer-events-none glitch-text flex justify-between" data-val="[ ADMIN ]"><span>[</span><span>ADMIN</span><span>]</span></button>
+                    <p class="relative text-[9px] theme-text mt-1 text-center pointer-events-none glitch-text" data-val="MEMBER REGISTRY">MEMBER REGISTRY</p>
+                </div>
+
                 <div class="tech-panel p-4 font-mono-custom w-full flex-1 overflow-hidden flex flex-col">
                     <h2 class="text-xs theme-text mb-4 border-b theme-border pb-1 uppercase shrink-0 glitch-text" data-val="System Logs">System Logs</h2>
                     <ul id="log-list" class="text-[10px] flex flex-col gap-1 text-gray-500 overflow-y-auto custom-scrollbar flex-1"></ul>
@@ -117,7 +122,19 @@
             </aside>
 
             <div class="flex-1 h-full overflow-y-auto pl-4 pr-2 pb-10 pt-6 custom-scrollbar relative z-10">
-                <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+                    <div id="guest-promo" class="hidden space-y-4">
+                        <div class="tech-panel p-6">
+                            <h2 class="text-lg font-bold theme-text uppercase tracking-widest font-mono-custom mb-3">The Backstreets Commonwealth</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed">A Fixer office deep in the City's back alleys. We take the contracts others lack the guts — or the skill — for, and we come back with results.</p>
+                            <p class="text-gray-500 text-xs leading-relaxed mt-3">Want in? Your access is limited to the guest code. Full clearance is granted by the Administrator after vetting.</p>
+                            <div class="text-[10px] font-mono-custom text-gray-600 tracking-widest mt-4">[ GUEST ACCESS // LIMITED PROTOCOL ]</div>
+                        </div>
+                        <div class="tech-panel p-5">
+                            <h2 class="text-xs theme-text mb-3 border-b theme-border pb-1 uppercase tracking-widest">BRIEF ARCHIVES // PUBLIC SECTION</h2>
+                            <div id="guest-brief" class="space-y-2 text-sm"></div>
+                        </div>
+                    </div>
+                    <div id="dossier-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
             </div>
         </main>
     </div>
@@ -125,7 +142,7 @@
     <div id="map-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden opacity-0 transition-all duration-300">
         <div id="map-backdrop" class="absolute inset-0"></div>
         <button id="btn-close-map" class="absolute top-6 right-6 text-red-600 hover:text-red-400 font-mono-custom text-2xl z-[70] font-bold ui-element">[ CLOSE MAP ]</button>
-        <div id="svg-container" class="w-full max-w-6xl mx-auto aspect-square md:aspect-[4/3] relative flex items-center justify-center z-[65] p-2 md:p-8 transform scale-95 opacity-0 transition-all duration-500">
+        <div id="svg-container" class="w-[min(100%,calc((100vh-120px)*1.3333))] max-w-6xl mx-auto aspect-[4/3] relative flex items-center justify-center z-[65] p-2 md:p-8 transform scale-95 opacity-0 transition-all duration-500">
             <div class="absolute top-8 left-8 font-mono-custom text-red-600 text-xs z-[66]">
                 <p class="font-bold">> CITY SECTOR MAP</p><p class="text-red-800">> TRACKING TBCW BRANCHES...</p>
             </div>
@@ -163,6 +180,7 @@
                         <div class="text-gray-600 glitch-text" data-val="District:">District:</div><div id="modal-district" class="text-gray-300 text-right glitch-text"></div>
                         <div class="text-gray-600 glitch-text" data-val="Affiliation:">Affiliation:</div><div id="modal-affiliation" class="text-gray-300 text-right glitch-text"></div>
                         <div class="text-gray-600 glitch-text" data-val="Grade:">Grade:</div><div id="modal-grade" class="text-gray-300 text-right glitch-text"></div>
+                        <div class="text-gray-600 glitch-text" data-val="Rank:" id="modal-rank-label" style="display:none">Rank:</div><div id="modal-rank" class="text-gray-300 text-right glitch-text" style="display:none"></div>
                     </div>
                     
                     <div class="pt-4 border-t theme-border">
@@ -217,224 +235,243 @@
         </div>
     </div>
 
-    <div id="submit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-all duration-300">
+        <div id="submit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-all duration-300">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
-        <div id="submit-box" class="modal-content relative z-10 w-full max-w-5xl mx-auto p-6 flex flex-col rounded-sm transform scale-95 opacity-0 transition-all duration-500 border theme-border bg-[#030504] h-[90vh] max-h-[95vh]">
+        <div id="submit-box" class="modal-content relative z-10 w-full max-w-6xl mx-auto p-4 md:p-6 flex flex-col rounded-sm transform scale-95 opacity-0 transition-all duration-500 border theme-border bg-[#030504] h-[92vh] max-h-[95vh]">
             <button id="btn-close-submit" class="absolute top-4 right-4 text-gray-500 hover:theme-text transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
-            
+
             <div id="encryption-overlay" class="absolute inset-0 bg-[#050505]/95 backdrop-blur-md z-30 hidden flex-col items-center justify-center transition-opacity duration-300">
                 <div class="w-full max-w-md p-8 bg-black border theme-border flex flex-col relative shadow-[0_0_40px_rgba(16,185,129,0.15)]">
                     <button id="btn-skip-anim" class="absolute top-4 right-4 text-[10px] text-gray-500 hover:theme-text ui-element transition-colors">[ SKIP ]</button>
-                    <p id="anim-status" class="theme-text font-mono-custom text-sm mb-6 glitch-text text-center tracking-widest uppercase" data-val="> INITIATING TBCW_CIPHER...">> INITIATING TBCW_CIPHER...</p>
+                    <p id="anim-status" class="theme-text font-mono-custom text-sm mb-6 glitch-text text-center tracking-widest uppercase" data-val="> COMPILING DOSSIER PACKAGE...">> COMPILING DOSSIER PACKAGE...</p>
                     <div class="w-full h-2 bg-gray-900 border border-gray-800">
                         <div id="anim-progress" class="h-full w-0 transition-all duration-75" style="background-color: var(--terminal-green); box-shadow: 0 0 10px var(--terminal-green);"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="border-b theme-border pb-2 mb-4 shrink-0">
-                <h2 class="text-xl font-bold theme-text uppercase tracking-widest font-mono-custom glitch-text" data-val="HR TERMINAL // OPERATIVE REGISTRATION">HR TERMINAL // OPERATIVE REGISTRATION</h2>
-                <p class="text-xs text-gray-500 font-mono-custom mt-1 glitch-text" data-val="Add new Fixer parameters to the Vanguard Database.">Add new Fixer parameters to the Vanguard Database.</p>
-            </div>
-
-            <div class="flex border-b theme-border mb-4 shrink-0 text-[10px] font-mono-custom overflow-x-auto whitespace-nowrap hide-scrollbar pb-1">
-                <button class="sub-tab-btn tab-active px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-guide">[ 01 // GUIDELINES ]</button>
-                <button class="sub-tab-btn tab-inactive px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-param">[ 02 // PARAMETERS ]</button>
-                <button class="sub-tab-btn tab-inactive px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-logs">[ 03 // SECURE LOGS ]</button>
-                <button class="sub-tab-btn tab-inactive px-4 py-2 border-r theme-border text-center tracking-widest uppercase" data-target="sub-tab-content-preview">[ 04 // PREVIEW ]</button>
-                <button class="sub-tab-btn tab-inactive px-4 py-2 text-center tracking-widest uppercase" data-target="sub-tab-content-crypt">[ 05 // TRANSMISSION ]</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 font-mono-custom text-xs">
-                
-                <div id="sub-tab-content-guide" class="sub-tab-content space-y-4">
-                    <div class="theme-bg-heavy border theme-border p-5">
-                        <h3 class="theme-text text-sm font-bold mb-3 uppercase tracking-wider">> FORMATTING PROTOCOLS EDITOR</h3>
-                        <p class="text-gray-400 text-xs leading-relaxed mb-4">
-                            The terminal supports advanced formatting algorithms. Use these tags to structure your incident reports and dossiers.
-                        </p>
+            <div class="border-b theme-border pb-3 mb-3 shrink-0">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold theme-text uppercase tracking-widest font-mono-custom glitch-text" data-val="HR TERMINAL // OPERATIVE REGISTRATION">HR TERMINAL // OPERATIVE REGISTRATION</h2>
+                        <p class="text-[10px] text-gray-500 font-mono-custom mt-0.5">Fill the steps, download the package, send it to the Administrator.</p>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="border theme-border p-4 bg-black/40">
-                            <span class="theme-text font-bold block mb-3 uppercase tracking-widest">> BASIC MARKUP</span>
-                            <ul class="space-y-2 text-gray-400 leading-relaxed text-[11px]">
-                                <li><code>||text||</code> — <span class="log-redacted px-1">Redaction</span></li>
-                                <li><code>! text</code> — <span class="text-red-400 font-bold">Critical Alert</span></li>
-                                <li><code>&gt; text</code> — <span class="theme-text font-bold border-l-2 theme-border pl-1 italic">Quote</span></li>
-                                <li class="pt-2 border-t border-gray-800">
-                                    <code>[STAMP: TYPE]</code> — <span class="text-gray-300 font-bold">Official Stamp.</span> Types: <span class="theme-text">APPROVED</span>, <span class="text-red-500">DENIED</span>, <span class="text-red-800">DECEASED</span>, <span class="text-amber-500">CLASSIFIED</span>.
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <div class="border theme-border p-4 bg-black/40">
-                            <span class="theme-text font-bold block mb-3 uppercase tracking-widest">> STRUCTURE</span>
-                            <ul class="space-y-2 text-gray-400 leading-relaxed text-[11px]">
-                                <li><code># text</code> — <span class="font-bold theme-text uppercase tracking-widest border-b theme-border">Section Header</span></li>
-                                <li><code>- text</code> — <span class="theme-text">></span> Bullet Point list</li>
-                                <li><code>[tag]ID[/tag]</code> — <span class="bg-gray-800 border border-gray-700 text-gray-300 px-1 py-0.5 rounded-[2px] text-[9px] uppercase">Data Pill</span></li>
-                                <li class="pt-2 border-t border-gray-800">
-                                    <code>[code]...[/code]</code> — <span class="text-gray-300 font-bold">Terminal Block.</span> Creates a dark code background for raw data.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="border theme-border p-4 bg-black/40">
-                            <span class="theme-text font-bold block mb-3 uppercase tracking-widest">> EFFECTS & COLORS</span>
-                            <ul class="space-y-2 text-gray-400 leading-relaxed text-[11px]">
-                                <li><code>[blink]! Alert ![/blink]</code> — <span class="theme-text font-bold animate-pulse" style="text-shadow: 0 0 5px currentColor;">Blinking Text</span></li>
-                                <li><code>[h]text[/h]</code> — <span class="log-highlight">Highlight</span></li>
-                                <li><code>***text***</code> — <span class="text-glitch-fx font-bold" data-val="Glitch">Glitch FX</span></li>
-                                <li class="pt-2 border-t border-gray-800">
-                                    <code>[c:color]text[/c]</code> — Use any color name or HEX. Example: <code class="text-gray-500">[c:red]</code> <span class="text-red-500" style="text-shadow: 0 0 8px red;">Red</span>, <code class="text-gray-500">[c:gold]</code> <span class="text-amber-400" style="text-shadow: 0 0 8px gold;">Amber</span>.
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="border theme-border p-4 bg-black/20 mt-4">
-                        <span class="text-gray-500 block mb-2 uppercase tracking-widest">> IDEAL REPORT TEMPLATE (COPY TO TEST)</span>
-                        <pre class="text-gray-400 bg-black p-3 border border-gray-800 rounded text-[11px] leading-relaxed overflow-x-auto select-all">Subject arrived from [c:#0088ff]W Corp[/c]. Real name is ||John Doe||.
-! Distortion Level: [c:red]Highly dangerous[/c]. Do not engage without backup.
-> "I saw what is behind the train doors..." — audio transcript.
-His mind is completely ***shattered***. He keeps talking about [h]The Train[/h].
-[STAMP: CLASSIFIED]</pre>
+                    <div class="flex gap-2 shrink-0 mr-10 md:mr-12">
+                        <button id="wiz-toggle-preview" class="lg:hidden theme-bg-faint border theme-border theme-text px-3 py-1.5 text-[9px] font-bold tracking-widest ui-element">[ PREVIEW ]</button>
+                        <button id="wiz-reset" class="text-[9px] text-red-700 hover:text-red-400 border border-red-900/50 px-3 py-1.5 font-bold tracking-widest ui-element transition-colors">[ RESET ]</button>
                     </div>
                 </div>
+                <div id="wiz-track" class="flex gap-1 mt-3 font-mono-custom text-[9px] md:text-[10px] tracking-widest uppercase overflow-x-auto hide-scrollbar">
+                    <button class="wiz-step-tab" data-step="0">01 // IDENTITY</button>
+                    <button class="wiz-step-tab" data-step="1">02 // CLASS</button>
+                    <button class="wiz-step-tab" data-step="2">03 // REPORTS</button>
+                    <button class="wiz-step-tab" data-step="3">04 // REVIEW</button>
+                    <button class="wiz-step-tab" data-step="4">05 // PACKAGE</button>
+                </div>
+            </div>
 
-                <div id="sub-tab-content-param" class="hidden space-y-4">
-                    <div class="border theme-border p-4 bg-black/50">
-                        <span class="theme-text text-[10px] uppercase font-bold mb-3 block tracking-widest">> 1. IDENTIFICATION</span>
+            <div class="flex-1 min-h-0 flex gap-4 relative">
+                <div id="wiz-form-col" class="flex-1 min-w-0 overflow-y-auto custom-scrollbar pr-2 font-mono-custom text-xs">
+
+                    <section class="wiz-panel space-y-4" data-panel="0">
+                        <div id="wiz-kind-row" class="border theme-border p-3 bg-black/40">
+                            <label class="text-[9px] text-gray-500 block mb-2 tracking-wider">DOSSIER TYPE</label>
+                            <div id="wiz-kind-buttons" class="flex gap-2 flex-wrap"></div>
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">REGISTRY ID</label>
-                                <input id="sub-id" type="text" placeholder="TBCW-XXX" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">REGISTRY ID (TBCW-000)</label>
+                                <input id="wiz-id" type="text" placeholder="TBCW-013" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                <div id="wiz-id-check" class="text-[9px] mt-1">&nbsp;</div>
                             </div>
                             <div>
                                 <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">FULL NAME</label>
-                                <input id="sub-name" type="text" placeholder="Operative Name" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                <input id="wiz-name" type="text" placeholder="Operative Name" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
                             </div>
                             <div>
                                 <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">AGE</label>
-                                <input id="sub-age" type="number" placeholder="e.g. 25" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                <input id="wiz-age" type="number" placeholder="e.g. 25" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
                             </div>
                             <div>
                                 <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">DISTRICT OF ORIGIN</label>
-                                <input id="sub-district" type="text" placeholder="e.g. District 12 or The Ruins" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                <input id="wiz-district" type="text" placeholder="e.g. District 12 or The Ruins" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
                             </div>
                         </div>
-                        <div class="mt-3">
-                            <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">PORTRAIT URL (Direct Link to Image)</label>
-                            <input id="sub-photo" type="text" placeholder="img/my-portrait.png or direct link" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                        <div class="border theme-border p-3 bg-black/40">
+                            <label class="text-[9px] text-gray-500 block mb-2 tracking-wider">PORTRAIT — PICK A FILE (AUTO-COMPRESSED) OR PASTE A URL</label>
+                            <div class="flex gap-3 items-center">
+                                <img id="wiz-photo-thumb" src="" alt="" class="w-16 h-16 object-cover border theme-border hidden">
+                                <div class="flex-1 space-y-2 min-w-0">
+                                    <div class="flex gap-2 items-center">
+                                        <input id="wiz-photo-file" type="file" accept="image/*" class="hidden">
+                                        <button id="wiz-photo-pick" class="theme-text text-[9px] hover:text-white border theme-border px-3 py-1.5 ui-element font-bold transition-colors">[ PICK FILE ]</button>
+                                        <button id="wiz-photo-clear" class="hidden text-red-700 hover:text-red-400 text-[9px] font-bold">[X]</button>
+                                        <span id="wiz-photo-name" class="text-[9px] text-gray-600 truncate">no file</span>
+                                    </div>
+                                    <input id="wiz-photo-url" type="text" placeholder="img/my-portrait.png or direct link" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="border theme-border p-4 bg-black/50">
-                        <span class="theme-text text-[10px] uppercase font-bold mb-3 block tracking-widest">> 2. COMBAT CLASSIFICATION</span>
+                    <section class="wiz-panel hidden space-y-4" data-panel="1">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">AFFILIATION</label>
-                                <input id="sub-aff" type="text" value="The Backstreets Commonwealth" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                                <input id="wiz-aff" type="text" value="The Backstreets Commonwealth" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
                             </div>
                             <div>
                                 <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">GRADE</label>
-                                <select id="sub-grade" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors cursor-pointer ui-element">
+                                <select id="wiz-grade" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors cursor-pointer ui-element">
                                     <option>Grade 9</option><option>Grade 8</option><option>Grade 7</option><option>Grade 6</option><option>Grade 5</option><option>Grade 4</option><option>Grade 3</option><option>Grade 2</option><option>Grade 1</option><option>Color Fixer</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">STATUS</label>
-                                <select id="sub-status" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors cursor-pointer ui-element">
-                                    <option>Active</option><option>MIA</option><option>Deceased</option><option>Kill on Sight</option>
+                                <select id="wiz-status" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors cursor-pointer ui-element">
+                                    <option>Active</option><option>On Leave</option><option>Missing</option><option>Detained</option><option>Retired</option><option>Deceased</option><option>Kill on Sight</option>
                                 </select>
                             </div>
                         </div>
                         <div class="mt-4">
+                            <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">RANK (optional — office title, if the writer decided so)</label>
+                            <input id="wiz-rank" type="text" placeholder="e.g. Vanguard Commander" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                        </div>
+                        <div id="wiz-arch-cat-row" class="hidden">
+                            <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">ARCHIVE CATEGORY</label>
+                            <select id="wiz-arch-category" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors cursor-pointer ui-element">
+                                <option value="lore">GENERAL ARCHIVE</option>
+                                <option value="branch">BRANCH / FACTION</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">EXPERTISE TAGS (Comma separated)</label>
-                            <input id="sub-tags" type="text" placeholder="e.g. CQB, Espionage, Tech, Heavy Weapons, E.G.O" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
+                            <input id="wiz-tags" type="text" placeholder="e.g. CQB, Espionage, Tech, Heavy Weapons, E.G.O" class="w-full bg-black border border-gray-800 text-xs theme-text p-2 focus-theme transition-colors ui-element">
                         </div>
-                    </div>
-                </div>
+                    </section>
 
-                <div id="sub-tab-content-logs" class="hidden flex-col h-full gap-4">
-                    <div class="theme-bg-faint border border-dashed theme-border p-2 text-[10px] text-gray-400 flex flex-wrap gap-x-4 gap-y-1">
-                        <span class="theme-text font-bold uppercase">Formatting:</span>
-                        <span><code>||Redact||</code></span>
-                        <span><code>! Warning</code></span>
-                        <span><code>&gt; Quote</code></span>
-                        <span><code>[STAMP: APPROVED/DENIED/CLASSIFIED]</code></span>
-                        <span class="text-amber-400">Colors: <code>[c:red]..[/c]</code> <code>[c:gold]..[/c]</code> <code>[c:#hex]..[/c]</code></span>
-                    </div>
-
-                    <div class="border theme-border p-4 bg-black/50 flex flex-col flex-1 min-h-[300px]">
-                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-800">
-                            <span class="theme-text text-[10px] uppercase font-bold tracking-widest">> ADD REPORT SECTIONS</span>
-                            <button id="btn-add-report" class="theme-text text-[9px] hover:text-white border theme-border px-3 py-1 ui-element transition-colors theme-bg-faint hover:theme-bg-heavy font-bold">[+ ADD REPORT SECTION ]</button>
+                    <section class="wiz-panel hidden space-y-3" data-panel="2">
+                        <div class="theme-bg-faint border border-dashed theme-border p-2 text-[10px] text-gray-400 flex flex-wrap gap-x-3 gap-y-1 items-center">
+                            <span><code>||Redact||</code></span>
+                            <span><code>! Warning</code></span>
+                            <span><code>&gt; Quote</code></span>
+                            <span><code>[STAMP: TYPE]</code></span>
+                            <span><code>[c:red]..[/c]</code></span>
+                            <span><code>- List item</code></span>
+                            <button id="wiz-format-toggle" class="theme-text font-bold ml-auto">[ FORMATTING GUIDE ]</button>
                         </div>
-
-                        <div id="reports-container" class="space-y-4 overflow-y-auto custom-scrollbar pr-2 flex-1">
+                        <div id="wiz-format-guide" class="hidden border theme-border p-4 bg-black/40 leading-relaxed text-[11px] text-gray-400 space-y-1">
+                            <p><code># text</code> — section header · <code>- text</code> — bullet list</p>
+                            <p><code>||text||</code> — redaction · <code>! text</code> — critical alert · <code>&gt; text</code> — quote</p>
+                            <p><code>[STAMP: APPROVED / DENIED / DECEASED / CLASSIFIED]</code> — official stamp</p>
+                            <p><code>[tag]ID[/tag]</code> — data pill · <code>[code]...[/code]</code> — terminal block</p>
+                            <p><code>[blink]..[/blink]</code> — blink · <code>[h]..[/h]</code> — highlight · <code>***text***</code> — glitch fx</p>
+                            <p><code>[c:red]text[/c]</code> or <code>[c:#hex]text[/c]</code> — colored text</p>
                         </div>
-                    </div>
+                        <div id="wiz-reports" class="space-y-4"></div>
+                        <button id="wiz-add-report" class="theme-text text-[9px] hover:text-white border theme-border px-3 py-2 ui-element font-bold transition-colors">[+ ADD REPORT SECTION ]</button>
+                    </section>
+
+                    <section class="wiz-panel hidden" data-panel="3">
+                        <div id="wiz-review" class="text-gray-300"></div>
+                    </section>
+
+                    <section class="wiz-panel hidden space-y-4" data-panel="4">
+                        <div class="border theme-border p-4 bg-black/40">
+                            <span class="theme-text text-[10px] uppercase font-bold tracking-widest">> PRE-FLIGHT CHECK</span>
+                            <div id="wiz-validation" class="mt-3 space-y-1 text-[10px]"></div>
+                        </div>
+                        <button id="wiz-build" class="w-full theme-bg-heavy border theme-border theme-text py-4 font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element text-sm">>> BUILD PACKAGE <<</button>
+                        <div class="border theme-border p-3 bg-black/40">
+                            <label class="text-[9px] text-gray-500 block mb-1 tracking-wider">MESSAGE TO ADMIN (optional — questions, notes, lore hooks)</label>
+                            <textarea id="wiz-message" placeholder="Write anything you want to tell the Administrator along with the dossier..." class="w-full min-h-[70px] bg-black border border-gray-800 text-xs text-gray-300 p-2 focus-theme transition-colors resize-none custom-scrollbar ui-element"></textarea>
+                        </div>
+                        <div id="wiz-results" class="hidden space-y-2">
+                            <div id="wiz-pub-status" class="hidden theme-bg-faint border theme-border p-2.5 text-[10px] theme-text font-mono-custom tracking-wider"></div>
+                            <button id="wiz-download" class="w-full theme-bg-heavy border theme-border theme-text py-3 text-xs font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element">[ DOWNLOAD .ZIP ]</button>
+                        </div>
+                    </section>
                 </div>
 
-                <div id="sub-tab-content-preview" class="hidden flex-col h-full gap-4">
-                    <div class="theme-bg-faint border border-dashed theme-border p-2 text-[10px] text-gray-400">
-                        <span class="theme-text font-bold uppercase">> LIVE DOSSIER PREVIEW</span>
-                        <span class="ml-2">Review formatting output before transmission.</span>
-                    </div>
-                    <div class="border theme-border p-6 bg-[#0a0a0c] overflow-y-auto custom-scrollbar flex-1 relative" id="preview-container">
-                        <div class="text-center text-gray-600 mt-10 font-mono-custom text-xs">[ PREVIEW GENERATING... ]</div>
-                    </div>
+                <div id="wiz-preview-col" class="hidden lg:flex w-80 xl:w-96 shrink-0 flex-col border theme-border bg-black/40 overflow-hidden">
+                    <div class="shrink-0 px-3 py-2 border-b theme-border font-mono-custom text-[10px] theme-text tracking-widest uppercase">> LIVE PREVIEW</div>
+                    <div id="wiz-preview" class="flex-1 overflow-y-auto custom-scrollbar p-4 text-sm"></div>
                 </div>
-
-                <div id="sub-tab-content-crypt" class="hidden flex-col lg:flex-row gap-6 h-full items-stretch">
-                    <div class="flex-1 flex flex-col justify-center items-center p-6 border theme-border bg-black/30 text-center">
-                        <span class="text-gray-500 text-[11px] block mb-4 uppercase tracking-widest">Commonwealth Data Compilation Manager</span>
-                        <button id="btn-encrypt-data" class="theme-bg-heavy border theme-border theme-text py-5 px-10 font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element theme-shadow-faint text-sm">
-                            >> GENERATE DOSSIER <<
-                        </button>
-                        <p class="text-gray-600 text-[10px] mt-4 max-w-sm leading-relaxed">
-                            Clicking will compile all entered parameters, log sections, and audio modules into a standardized Dossier JSON file. Download it and send it to the Administrator.
-                        </p>
-                    </div>
-
-                    <div class="w-full lg:w-96 flex flex-col bg-black p-4 border theme-border relative">
-                        <label class="text-[10px] theme-text block mb-2 glitch-text" data-val="DOSSIER_JSON // READY FOR UPLOAD">DOSSIER_JSON // READY FOR UPLOAD</label>
-                        <textarea id="submit-output" readonly class="w-full flex-1 bg-[#050505] border border-gray-800 text-[10px] theme-text p-3 focus-theme resize-none custom-scrollbar break-all font-mono" placeholder="Awaiting terminal generation sequence..."></textarea>
-                        <button id="btn-copy-hash" class="border border-gray-700 text-gray-400 py-3 mt-4 text-xs font-bold tracking-widest hover:text-white hover:border-gray-500 transition-colors uppercase ui-element">
-                            [ COPY TO CLIPBOARD ]
-                        </button>
-                        <button id="btn-download-json" class="theme-bg-heavy border theme-border theme-text py-3 mt-2 text-xs font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element">
-                            [ DOWNLOAD .JSON ]
-                        </button>
-                    </div>
-                </div>
-
             </div>
-            
-            <div class="mt-4 border-t border-red-900/50 pt-3 text-center shrink-0">
-                <p class="text-red-500 text-[10px] font-bold tracking-widest uppercase glitch-text" data-val="WARNING: Data is temporary and will be lost upon closing the terminal. Download your Dossier JSON and send it to the Administrator.">
-                    WARNING: Data is temporary and will be lost upon closing the terminal. Download your Dossier JSON and send it to the Administrator.
+
+            <div class="shrink-0 flex justify-between items-center gap-3 pt-3 mt-3 border-t theme-border">
+                <button id="wiz-back" class="border border-gray-700 text-gray-400 px-5 py-2.5 text-[10px] font-bold tracking-widest hover:text-white hover:border-gray-500 transition-colors uppercase ui-element">[ BACK ]</button>
+                <span id="wiz-step-label" class="text-[10px] text-gray-600 tracking-widest">STEP 1 / 5</span>
+                <button id="wiz-next" class="theme-bg-heavy border theme-border theme-text px-6 py-2.5 text-[10px] font-bold tracking-widest hover:theme-bg-faint transition-colors uppercase ui-element">[ NEXT ]</button>
+            </div>
+
+            <div class="mt-3 border-t border-red-900/50 pt-3 text-center shrink-0">
+                <p class="text-red-500 text-[10px] font-bold tracking-widest uppercase glitch-text" data-val="WARNING: The draft is saved in your browser. Download the ZIP package at the last step and send it to the Administrator.">
+                    WARNING: The draft is saved in your browser. Download the ZIP package at the last step and send it to the Administrator.
                 </p>
             </div>
-            
+
         </div>
     </div>
 
-    <button id="mobile-menu-toggle" class="lg:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-[90] theme-bg-heavy theme-border theme-text px-8 py-3 rounded-full theme-shadow-faint font-mono-custom font-bold tracking-widest backdrop-blur-md">[ MENU ]</button>
+<button id="mobile-menu-toggle" class="lg:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-[90] theme-bg-heavy theme-border theme-text px-8 py-3 rounded-full theme-shadow-faint font-mono-custom font-bold tracking-widest backdrop-blur-md">[ MENU ]</button>
+
+    <div id="admin-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-all duration-300">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-sm"></div>
+        <div id="admin-box" class="modal-content relative z-10 w-full max-w-3xl mx-auto p-6 flex flex-col rounded-sm transform scale-95 opacity-0 transition-all duration-500 border theme-border bg-[#030504] h-[80vh] max-h-[90vh]">
+            <button id="btn-close-admin" class="absolute top-4 right-4 text-gray-500 hover:theme-text transition-colors font-mono-custom text-xl z-20 ui-element">[X]</button>
+            <div class="border-b theme-border pb-3 mb-4 shrink-0">
+                <h2 class="text-lg font-bold theme-text uppercase tracking-widest font-mono-custom">ADMIN // MEMBER REGISTRY</h2>
+                <p class="text-[10px] text-gray-500 font-mono-custom mt-0.5">Codes and roles are issued in the Supabase dashboard → Authentication → Users.</p>
+            </div>
+            <div id="admin-list" class="flex-1 min-h-0 overflow-y-auto custom-scrollbar font-mono-custom text-xs space-y-2"></div>
+            <div class="shrink-0 flex items-center justify-between gap-2 pt-3 mt-3 border-t theme-border">
+                <button id="btn-admin-migrate" class="hidden theme-text text-[9px] font-bold tracking-widest border theme-border px-3 py-2 hover:theme-bg-heavy transition-colors ui-element">[ MIGRATE STATIC CONTENT ]</button>
+                <button id="btn-admin-queue" class="theme-text text-[9px] font-bold tracking-widest border theme-border px-3 py-2 hover:theme-bg-heavy transition-colors ui-element">[ APPROVAL QUEUE ]</button>
+                <button id="btn-admin-registry" class="text-gray-500 text-[9px] font-bold tracking-widest border border-gray-800 px-3 py-2 hover:text-white transition-colors ui-element">[ REGISTRY ]</button>
+            </div>
+            <div id="admin-queue-list" class="hidden flex-1 min-h-0 overflow-y-auto custom-scrollbar font-mono-custom text-xs space-y-2 pt-3"></div>
+        </div>
+    </div>
+
+    <div id="doc-fs" class="fixed inset-0 z-[80] hidden flex-col bg-[#020302]">
+        <div class="shrink-0 flex items-center justify-between gap-3 px-4 py-2.5 border-b theme-border">
+            <span class="font-mono-custom text-[10px] theme-text tracking-widest uppercase">[ DOC MODE // FULLSCREEN EDITOR ]</span>
+            <button id="doc-fs-exit" class="text-red-500 hover:text-red-300 font-mono-custom text-[11px] font-bold tracking-widest ui-element">[ EXIT ]</button>
+        </div>
+        <div class="shrink-0 px-4 py-2 border-b theme-border">
+            <input id="doc-fs-title" type="text" placeholder="Report Title" class="w-full bg-transparent theme-text font-mono-custom text-sm tracking-wider outline-none border-b border-dashed theme-border pb-1">
+        </div>
+        <div class="flex-1 min-h-0 flex flex-col md:flex-row">
+            <div class="flex-1 min-h-0 flex flex-col md:border-r theme-border">
+                <div id="doc-fs-toolbar" class="doc-toolbar shrink-0 px-3 py-1.5 border-b theme-border"></div>
+                <textarea id="doc-fs-editor" class="fs-editor flex-1 min-h-0" spellcheck="false" placeholder="Write the document here — formatting protocols supported..."></textarea>
+            </div>
+            <div class="flex-1 min-h-0 flex flex-col bg-[#030504]">
+                <div class="shrink-0 px-3 py-1.5 border-b theme-border font-mono-custom text-[9px] text-gray-600 tracking-widest">> LIVE PREVIEW</div>
+                <div id="doc-fs-preview" class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-5 text-gray-300 text-sm leading-relaxed"></div>
+            </div>
+        </div>
+    </div>
 
     <div class="crt-overlay"></div>
-    <script src="js/data.js"></script>
-    <script src="js/dataload.js"></script>
-    <script src="js/mapData.js"></script>
-    <script src="js/lore.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/effects.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/dossiers.js"></script>
-    <script src="js/archives.js"></script>
-    <script src="js/submit.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/data.js?v=22"></script>
+    <script src="js/dataload.js?v=22"></script>
+    <script src="js/vendor/supabase.js?v=22"></script>
+    <script src="js/config.js?v=22"></script>
+    <script src="js/auth.js?v=22"></script>
+    <script src="js/db.js?v=22"></script>
+    <script src="js/mapData.js?v=22"></script>
+    <script src="js/lore.js?v=22"></script>
+    <script src="js/audio.js?v=22"></script>
+    <script src="js/effects.js?v=22"></script>
+    <script src="js/map.js?v=22"></script>
+    <script src="js/dossiers.js?v=22"></script>
+    <script src="js/archives.js?v=22"></script>
+    <script src="js/vendor/jszip.min.js?v=22"></script>
+    <script src="js/package.js?v=22"></script>
+    <script src="js/wizard-forms.js?v=22"></script>
+    <script src="js/wizard.js?v=22"></script>
+    <script src="js/main.js?v=22"></script>
 </body>
 </html>

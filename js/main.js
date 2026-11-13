@@ -2,6 +2,10 @@
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+        const doc_fs = document.getElementById('doc-fs');
+        if(doc_fs && !doc_fs.classList.contains('hidden')) { if (typeof wizFsClose === 'function') wizFsClose(); return; }
+        const admin_modal = document.getElementById('admin-modal');
+        if(admin_modal && !admin_modal.classList.contains('hidden')) { if (typeof authCloseAdmin === 'function') authCloseAdmin(); return; }
         const modal = document.getElementById('modal');
         const map_modal = document.getElementById('map-modal');
         const archive_modal = document.getElementById('archive-modal');
@@ -18,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try { buildMap(); } catch(e) {}
     try { setupMapControls(); } catch(e) {}
     try { setupArchiveControls(); } catch(e) {}
-    try { setupSubmitControls(); } catch(e) {}
+    try { setupWizardControls(); } catch(e) {}
     
     const searchInput = document.getElementById('search-input');
     const filterDistrict = document.getElementById('filter-district');
@@ -43,6 +47,54 @@ document.addEventListener('DOMContentLoaded', () => {
             addSystemLog(`UI Protocol shifted to ${e.target.value.toUpperCase()}`);
         });
     }
+
+    // Ролевая видимость: гость видит витрину, члены — терминал целиком.
+    // Инлайн-стили: инлайн бьёт любой CSS (ui-element, lg:flex и пр.)
+    function applyRoleVisibility(role) {
+        const guest = role === 'guest';
+        const set = (id, hide) => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = hide ? 'none' : '';
+        };
+        const grid = document.getElementById('dossier-grid');
+        if (grid) grid.style.display = guest ? 'none' : '';
+        const promo = document.getElementById('guest-promo');
+        if (promo) promo.style.display = guest ? 'block' : 'none';
+        set('panel-query', guest);
+        set('btn-open-archives', guest);
+        set('btn-open-submit', guest);
+        set('btn-open-admin', role !== 'admin');
+        const filesTitle = document.querySelector('.view-title');
+        if (filesTitle) filesTitle.style.display = guest ? 'none' : '';
+    }
+
+    // AUTH: выход + админ-реестр    // AUTH: выход + админ-реестр
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) btnLogout.addEventListener('click', async () => {
+        playSound(sfx.click);
+        await authSignOut();
+        location.reload();
+    });
+    const btnOpenAdmin = document.getElementById('btn-open-admin');
+    if (btnOpenAdmin) btnOpenAdmin.addEventListener('click', () => {
+        if (authProfile && authProfile.role === 'admin') authOpenAdmin();
+        else playSound(sfx.scannerUse);
+    });
+    const btnCloseAdmin = document.getElementById('btn-close-admin');
+    if (btnCloseAdmin) btnCloseAdmin.addEventListener('click', authCloseAdmin);
+    const btnQueue = document.getElementById('btn-admin-queue');
+    const btnRegistry2 = document.getElementById('btn-admin-registry');
+    const setAdminTab = (showQueue) => {
+        const q = document.getElementById('admin-queue-list');
+        const r = document.getElementById('admin-list');
+        if (q) q.classList.toggle('hidden', !showQueue);
+        if (r) r.classList.toggle('hidden', showQueue);
+        if (btnQueue) { btnQueue.classList.toggle('theme-text', showQueue); btnQueue.classList.toggle('theme-border', showQueue); btnQueue.classList.toggle('text-gray-500', !showQueue); btnQueue.classList.toggle('border-gray-800', !showQueue); }
+        if (btnRegistry2) { btnRegistry2.classList.toggle('theme-text', !showQueue); btnRegistry2.classList.toggle('theme-border', !showQueue); btnRegistry2.classList.toggle('text-gray-500', showQueue); btnRegistry2.classList.toggle('border-gray-800', showQueue); }
+    };
+    if (btnQueue) btnQueue.addEventListener('click', () => { playSound(sfx.click); setAdminTab(true); });
+    if (btnRegistry2) btnRegistry2.addEventListener('click', () => { playSound(sfx.click); setAdminTab(false); });
+    if (typeof dbBindAdmin === 'function') dbBindAdmin();
 
     const initScreen = document.getElementById('init-screen');
     const boot_screen = document.getElementById('boot-screen');
@@ -166,6 +218,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof dataReady !== 'undefined') await dataReady;
         if (typeof populateDistricts === 'function') populateDistricts();
 
+        // --- AUTH GATE: идентификация перед доступом к базе ---
+        if (typeof AUTH_ON !== 'undefined' && AUTH_ON) {
+            const sess = await authGetSession();
+            if (!sess) authProfile = await authGateAwait();
+            else if (!authProfile) authProfile = await authFetchProfile();
+            if (authProfile) {
+                authUpdateBadge(authProfile);
+                applyRoleVisibility(authProfile.role);
+                if (typeof dbLoadContent === 'function') {
+                    await dbLoadContent();
+                    if (typeof populateDistricts === 'function') populateDistricts();
+                }
+                const idLine = document.createElement('div');
+                idLine.className = 'theme-text text-xs md:text-sm font-mono-custom opacity-80 w-full';
+                idLine.innerText = `> IDENTITY CONFIRMED: ${(authProfile.callsign || 'unknown').toUpperCase()} [ROLE: ${(authProfile.role || 'base').toUpperCase()}]`;
+                boot_text.appendChild(idLine);
+                await new Promise(r => setTimeout(r, 500));
+            }
+        } else {
+            addSystemLog('AUTH OFFLINE: SUPABASE NOT CONFIGURED', true);
+        }
+
         // --- ФИНАЛЬНЫЙ ЭПИЛОГ: общий путь для обычного бута и SKIP ---
         const epilogue = async (didSkip) => {
             boot_screen.classList.remove('power-failure', 'emergency-state');
@@ -237,8 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
         boot_text.innerHTML = '';
         if (bootSkipped) return epilogue(true);
 
-        // ФАЗА 3: Фальшивая тревога
-        boot_screen.classList.add('emergency-state');
+        // ФАЗА 3: Фальшивая тревога — редкий флёр (дропается с шансом ~15%)
+        if (Math.random() >= 0.15) {
+            boot_screen.classList.remove('emergency-state');
+            boot_text.innerHTML = '';
+        } else boot_screen.classList.add('emergency-state');
         playSound(sfx.scannerUse);
 
         const warning = document.createElement('div');

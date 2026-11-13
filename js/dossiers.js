@@ -123,6 +123,17 @@ function parseLogText(text) {
     text = text.replace(/\[h\](.*?)\[\/h\]/gi, '<span class="log-highlight">$1</span>');
     text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<span class="text-glitch-fx font-bold" data-val="$1">$1</span>');
 
+    // --- ИНСТРУМЕНТЫ V0.9.14 ---
+    text = text.replace(/\[b\](.*?)\[\/b\]/gi, '<strong>$1</strong>');
+    text = text.replace(/\[i\](.*?)\[\/i\]/gi, '<em>$1</em>');
+    text = text.replace(/\[u\](.*?)\[\/u\]/gi, '<u>$1</u>');
+    text = text.replace(/\[s\](.*?)\[\/s\]/gi, '<s>$1</s>');
+    text = text.replace(/\[center\]([\s\S]*?)\[\/center\]/gi, '<div class="text-center">$1</div>');
+    text = text.replace(/\[right\]([\s\S]*?)\[\/right\]/gi, '<div class="text-right">$1</div>');
+    text = text.replace(/\[small\](.*?)\[\/small\]/gi, '<span class="text-[10px] text-gray-500 tracking-wider">$1</span>');
+    text = text.replace(/\[img\]([^\[\]"\s]+?)\[\/img\]/gi, '<img src="$1" alt="" class="w-full border theme-border my-3" loading="lazy">');
+    text = text.replace(/\[hr\]/gi, '<div class="border-t theme-border my-4"></div>');
+
     return text;
 }
 
@@ -184,6 +195,21 @@ function openModal(index) {
         const el = document.getElementById('modal-'+f);
         if(el) { el.innerText = person[f]; el.setAttribute('data-val', person[f]); }
     });
+
+    // Звание — опциональное поле: строка видна только если оно указано
+    const rankLabel = document.getElementById('modal-rank-label');
+    const rankEl = document.getElementById('modal-rank');
+    if (rankLabel && rankEl) {
+        if (person.rank) {
+            rankLabel.style.display = '';
+            rankEl.style.display = '';
+            rankEl.innerText = person.rank;
+            rankEl.setAttribute('data-val', person.rank);
+        } else {
+            rankLabel.style.display = 'none';
+            rankEl.style.display = 'none';
+        }
+    }
     
     document.getElementById('modal-date').innerText = "LAST_MODIFIED: " + person.last_update;
     document.getElementById('modal-date').setAttribute('data-val', "LAST_MODIFIED: " + person.last_update);

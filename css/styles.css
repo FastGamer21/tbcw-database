@@ -65,9 +65,9 @@ select option { background-color: #050505 !important; color: var(--terminal-gree
 }
 
 .tech-panel { position: relative; background: var(--panel-bg); backdrop-filter: blur(4px); border: 1px solid var(--border-color); }
-.tech-panel::before, .tech-panel::after { content: '+'; position: absolute; color: var(--terminal-green); font-size: 14px; line-height: 1; opacity: 0.6; font-family: 'JetBrains Mono', monospace; pointer-events: none; }
-.tech-panel::before { top: -8px; left: -4px; }
-.tech-panel::after { bottom: -8px; right: -4px; }
+.tech-panel::before, .tech-panel::after { content: ''; position: absolute; width: 12px; height: 12px; pointer-events: none; }
+.tech-panel::before { top: -1px; left: -1px; border-top: 2px solid color-mix(in srgb, var(--terminal-green) 55%, transparent); border-left: 2px solid color-mix(in srgb, var(--terminal-green) 55%, transparent); }
+.tech-panel::after { bottom: -1px; right: -1px; border-bottom: 2px solid color-mix(in srgb, var(--terminal-green) 55%, transparent); border-right: 2px solid color-mix(in srgb, var(--terminal-green) 55%, transparent); }
 
 #modal-backdrop, #map-backdrop, #archive-backdrop { background-color: rgba(2, 5, 3, 0.95); backdrop-filter: blur(6px); }
 
@@ -307,3 +307,40 @@ body {
     50% { transform: translate(-2px, 2px); }
     75% { transform: translate(1px, -2px); }
 }
+/* --- HR WIZARD --- */
+.wiz-step-tab {
+    padding: 6px 12px; border: 1px solid rgba(16, 185, 129, 0.25); color: rgba(16, 185, 129, 0.45);
+    background: none; white-space: nowrap; cursor: pointer;
+    transition: all 0.2s ease; font-family: 'JetBrains Mono', monospace;
+}
+.wiz-step-tab:hover { color: var(--text-main); }
+.wiz-step-tab.wiz-done { color: var(--terminal-green); border-color: var(--border-color); }
+.wiz-step-tab.wiz-active { color: #04120b; background: var(--terminal-green); border-color: var(--terminal-green); font-weight: bold; }
+.wiz-panel { animation: techBoot 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+#wiz-preview-col.preview-open {
+    display: flex !important; position: absolute; inset: 0; z-index: 25;
+    background: #030504; width: 100%;
+}
+.wiz-report-preview code { color: #6ee7b7; }
+.wiz-report-preview div { margin: 2px 0; }
+
+/* --- DOC TOOLBAR + FULLSCREEN EDITOR (V0.9.14) --- */
+.doc-toolbar { display: flex; flex-wrap: wrap; gap: 2px; }
+.doc-toolbar button {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: bold;
+    color: var(--ink-dim, #8aa398); padding: 3px 6px;
+    border: 1px solid rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.03);
+    cursor: pointer; transition: all 0.15s ease;
+}
+.doc-toolbar button:hover {
+    color: var(--terminal-green); border-color: var(--border-color);
+    background: rgba(16, 185, 129, 0.07);
+}
+
+#doc-fs .fs-editor {
+    background: #020302; color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+    resize: none; outline: none; width: 100%; height: 100%;
+    border: none; padding: 20px;
+}
+#doc-fs #doc-fs-preview img { max-width: 100%; }
