@@ -1,22 +1,19 @@
 # THE BACKSTREETS COMMONWEALTH DATABASE
-
-A secure-terminal website for the TBCW office (Roblox "Archived"). Members log in with personal access codes; all content lives in a Supabase database.
-
-## For members
-- Log in with your personal access code (`CALLSIGN-CODE`).
-- **HR TERMINAL** → fill the wizard → **PUBLISH TO DATABASE**.
-- Your dossier lands in the approval queue; the Administrator approves it and it goes live.
-- Guests (shared guest code) see only the public promo page and brief archives.
-
-## For the admin
-- **Create a member**: Supabase dashboard → Authentication → Users → Add user
-  (email: `callsign@tbcw.db`, password: the access code you hand out).
-- **Roles**: Table Editor → `profiles` (`guest` / `base` / `extended` / `admin`).
-- **Approve member dossiers**: site → [ ADMIN ] → APPROVAL QUEUE → [ APPROVE ].
-
-## How to run locally
-The site is fully static — any static server works. From the repo root:
-```
-python -m http.server 8080
-```
-Then open http://127.0.0.1:8080 (opening `index.html` via `file://` breaks data loading).
+## Intro
+Basically, it's small project, which is related to real office "The backstreets commonwealth" (further: TBCW) in game called: "Archived" - on Roblox platform. This project containts bunch of documents, which were made by memebers of TBCW.
+## Goal
+I guess, make something interesting and cool for my office members and make people bond to each other even more.
+Most importantly is to make lore for our office and wrap it up in interesting and cool form.
+## Roadmap
+1. Make map of The City. (Done)
+2. Make remangment of HTML files, split them on few files. (Done)
+3. Add SFX for any enteraction on webpage. (Done)
+4. Add more documents. (Done)
+5. Add new VFX. (Done)
+6. Add lore section. (Done)
+7. Encrypt documents so they cannot be easily viewed through the file repository. (Done)
+8. Add guide for members to add their own documents on webpage. (Done)
+9. Add opportunity to add audio files to documents. (Done)
+10. Make redesign of webpage.
+11. Fix bugs.
+12. Release.
