@@ -344,3 +344,11 @@ body {
     border: none; padding: 20px;
 }
 #doc-fs #doc-fs-preview img { max-width: 100%; }
+
+
+/* --- CLOCK BUTTON (V0.9.22) --- */
+#btn-clock.clocked-in {
+    color: #e6a23c;
+    border-color: #e6a23c;
+}
+#btn-clock.clocked-in:hover { color: #f0bc6a; }

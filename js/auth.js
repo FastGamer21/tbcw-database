@@ -144,13 +144,19 @@ async function authOpenAdmin() {
         .order('created_at', { ascending: true });
     if (error) { list.innerHTML = '<div class="text-red-500">✕ ' + error.message + '</div>'; return; }
 
+    const ranks = (typeof dbMemberRanks === 'function') ? await dbMemberRanks() : {};
     list.innerHTML = (data && data.length)
-        ? data.map(p => `
+        ? data.map(p => {
+            const r = ranks[p.id];
+            const rankTxt = r ? `${r.rank} · ${r.days}D` : '—';
+            return `
             <div class="flex justify-between items-center gap-3 border theme-border p-2.5 bg-black/40">
                 <span class="theme-text font-bold tracking-wider">${(p.callsign || '?').toUpperCase()}</span>
                 <span class="text-gray-600 text-[10px]">joined ${p.created_at ? p.created_at.slice(0, 10) : '—'}</span>
+                <span class="text-gray-500 text-[10px] tracking-wider">${rankTxt}</span>
                 <span class="px-2 py-1 border text-[9px] tracking-widest uppercase ${(p.role === 'admin') ? 'text-amber-500 border-amber-800' : 'text-gray-500 border-gray-800'}">${p.role || 'base'}</span>
-            </div>`).join('')
+            </div>`;
+        }).join('')
         : '<div class="text-gray-600">> REGISTRY EMPTY</div>';
 
     // Очередь апрува — только под админом

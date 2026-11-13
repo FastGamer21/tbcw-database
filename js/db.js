@@ -296,3 +296,71 @@ function dbBindAdmin() {
         addSystemLog('MIGRATION: ' + res.message, !res.ok);
     });
 }
+// --- CLOCK IN/OUT + CAREER LADDER ---
+// Ранг растёт от разных дней клока (стаж), не от часов — часы накручиваются вкладкой.
+
+const RANK_LADDER = [
+    [60, 'LEGEND'],
+    [30, 'VETERAN'],
+    [14, 'SENIOR FIXER'],
+    [7, 'FIXER'],
+    [3, 'ROOKIE'],
+    [0, 'RECRUIT']
+];
+
+function dbRankFromDays(days) {
+    for (const [min, name] of RANK_LADDER) if (days >= min) return name;
+    return 'RECRUIT';
+}
+
+async function dbClockStatus(retry = true) {
+    if (!authClient || !authProfile) return null;
+    const { data: last, error } = await authClient.from('clock_events')
+        .select('kind, created_at')
+        .eq('user_id', authProfile.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+    if (error) {
+        console.error('CLOCK STATUS FAILED:', error.message);
+        if (retry) {
+            await new Promise(r => setTimeout(r, 800));
+            return dbClockStatus(false);
+        }
+        return null;
+    }
+
+    const { data: all } = await authClient.from('clock_events')
+        .select('created_at')
+        .eq('user_id', authProfile.id);
+
+    const days = new Set((all || []).map(r => r.created_at.slice(0, 10))).size;
+    const state = (last && last[0]) ? last[0].kind : 'out';
+    return { state, days, rank: dbRankFromDays(days) };
+}
+
+async function dbClockToggle() {
+    if (!authClient || !authProfile) return null;
+    const st = await dbClockStatus();
+    const kind = (st && st.state === 'in') ? 'out' : 'in';
+    const { error } = await authClient.from('clock_events')
+        .insert({ user_id: authProfile.id, kind });
+    if (error) { console.error('CLOCK FAILED:', error.message); return null; }
+    return dbClockStatus();
+}
+
+// Для админ-реестра: { user_id: { days, rank } } по всем событиям
+async function dbMemberRanks() {
+    if (!authClient) return {};
+    const { data } = await authClient.from('clock_events').select('user_id, created_at');
+    const daysByUser = {};
+    (data || []).forEach(r => {
+        const day = r.created_at.slice(0, 10);
+        (daysByUser[r.user_id] = daysByUser[r.user_id] || new Set()).add(day);
+    });
+    const out = {};
+    Object.keys(daysByUser).forEach(uid => {
+        const days = daysByUser[uid].size;
+        out[uid] = { days, rank: dbRankFromDays(days) };
+    });
+    return out;
+}

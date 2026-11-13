@@ -68,7 +68,40 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filesTitle) filesTitle.style.display = guest ? 'none' : '';
     }
 
-    // AUTH: выход + админ-реестр    // AUTH: выход + админ-реестр
+    // CLOCK: кнопка и ранг по состоянию последнего события
+    function applyClockUI(clk) {
+        const btn = document.getElementById('btn-clock');
+        const rank = document.getElementById('rank-badge');
+        if (!btn || !rank) return;
+        if (!clk) {
+            btn.classList.add('hidden');
+            rank.classList.add('hidden');
+            return;
+        }
+        btn.classList.remove('hidden');
+        btn.innerText = clk.state === 'in' ? '[ CLOCK OUT ]' : '[ CLOCK IN ]';
+        btn.classList.toggle('clocked-in', clk.state === 'in');
+        rank.classList.remove('hidden');
+        rank.innerText = `[RANK: ${clk.rank} · ${clk.days}D]`;
+    }
+
+    const btnClock = document.getElementById('btn-clock');
+    if (btnClock) btnClock.addEventListener('click', async () => {
+        playSound(sfx.click);
+        btnClock.disabled = true;
+        const clk = await dbClockToggle();
+        btnClock.disabled = false;
+        if (clk) {
+            applyClockUI(clk);
+            addSystemLog(clk.state === 'in'
+                ? `CLOCKED IN — RANK: ${clk.rank} (${clk.days}D)`
+                : `CLOCKED OUT — RANK: ${clk.rank} (${clk.days}D)`);
+        } else {
+            addSystemLog('CLOCK EVENT FAILED', true);
+        }
+    });
+
+    // AUTH: выход + админ-реестр
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) btnLogout.addEventListener('click', async () => {
         playSound(sfx.click);
@@ -226,6 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (authProfile) {
                 authUpdateBadge(authProfile);
                 applyRoleVisibility(authProfile.role);
+                if (typeof dbClockStatus === 'function') {
+                    const clk = await dbClockStatus();
+                    applyClockUI(clk);
+                }
                 if (typeof dbLoadContent === 'function') {
                     await dbLoadContent();
                     if (typeof populateDistricts === 'function') populateDistricts();
