@@ -330,12 +330,24 @@ async function dbClockStatus(retry = true) {
     }
 
     const { data: all } = await authClient.from('clock_events')
-        .select('created_at')
-        .eq('user_id', authProfile.id);
+        .select('kind, created_at')
+        .eq('user_id', authProfile.id)
+        .order('created_at', { ascending: true });
 
     const days = new Set((all || []).map(r => r.created_at.slice(0, 10))).size;
+
+    // Часы: сумма пар in->out + текущая незакрытая сессия
+    let hoursMs = 0, openStart = null;
+    (all || []).forEach(ev => {
+        const t = new Date(ev.created_at).getTime();
+        if (ev.kind === 'in') openStart = t;
+        else if (ev.kind === 'out' && openStart !== null) { hoursMs += (t - openStart); openStart = null; }
+    });
+    if (openStart !== null) hoursMs += Date.now() - openStart;
+    const hours = Math.floor(hoursMs / 3600000);
+
     const state = (last && last[0]) ? last[0].kind : 'out';
-    return { state, days, rank: dbRankFromDays(days) };
+    return { state, days, hours, rank: dbRankFromDays(days) };
 }
 
 async function dbClockToggle() {
@@ -351,16 +363,31 @@ async function dbClockToggle() {
 // Для админ-реестра: { user_id: { days, rank } } по всем событиям
 async function dbMemberRanks() {
     if (!authClient) return {};
-    const { data } = await authClient.from('clock_events').select('user_id, created_at');
-    const daysByUser = {};
+    const { data } = await authClient.from('clock_events')
+        .select('user_id, kind, created_at')
+        .order('created_at', { ascending: true });
+
+    const daysByUser = {}, hoursByUser = {};
+    let openByUser = {};
     (data || []).forEach(r => {
+        const uid = r.user_id;
+        const t = new Date(r.created_at).getTime();
         const day = r.created_at.slice(0, 10);
-        (daysByUser[r.user_id] = daysByUser[r.user_id] || new Set()).add(day);
+        (daysByUser[uid] = daysByUser[uid] || new Set()).add(day);
+        if (r.kind === 'in') openByUser[uid] = t;
+        else if (r.kind === 'out' && openByUser[uid] !== undefined) {
+            hoursByUser[uid] = (hoursByUser[uid] || 0) + (t - openByUser[uid]);
+            delete openByUser[uid];
+        }
+    });
+    Object.keys(openByUser).forEach(uid => {
+        hoursByUser[uid] = (hoursByUser[uid] || 0) + (Date.now() - openByUser[uid]);
     });
     const out = {};
     Object.keys(daysByUser).forEach(uid => {
         const days = daysByUser[uid].size;
-        out[uid] = { days, rank: dbRankFromDays(days) };
+        const hours = Math.floor((hoursByUser[uid] || 0) / 3600000);
+        out[uid] = { days, hours, rank: dbRankFromDays(days) };
     });
     return out;
 }

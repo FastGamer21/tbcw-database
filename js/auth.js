@@ -140,7 +140,7 @@ async function authOpenAdmin() {
     if (!authClient) { list.innerHTML = '<div class="text-red-500">✕ AUTH OFFLINE</div>'; return; }
     const { data, error } = await authClient
         .from('profiles')
-        .select('callsign, role, created_at')
+        .select('id, callsign, role, created_at')
         .order('created_at', { ascending: true });
     if (error) { list.innerHTML = '<div class="text-red-500">✕ ' + error.message + '</div>'; return; }
 
@@ -148,7 +148,7 @@ async function authOpenAdmin() {
     list.innerHTML = (data && data.length)
         ? data.map(p => {
             const r = ranks[p.id];
-            const rankTxt = r ? `${r.rank} · ${r.days}D` : '—';
+            const rankTxt = r ? `${r.rank} · ${r.days}D · ${r.hours}H` : '—';
             return `
             <div class="flex justify-between items-center gap-3 border theme-border p-2.5 bg-black/40">
                 <span class="theme-text font-bold tracking-wider">${(p.callsign || '?').toUpperCase()}</span>
@@ -158,6 +158,10 @@ async function authOpenAdmin() {
             </div>`;
         }).join('')
         : '<div class="text-gray-600">> REGISTRY EMPTY</div>';
+
+    // Отладочный мост для диагностики (временно)
+    window.__dbMemberRanks = dbMemberRanks;
+    window.__authClient = authClient;
 
     // Очередь апрува — только под админом
     if (authProfile && authProfile.role === 'admin' && typeof dbAdminQueue === 'function') dbAdminQueue();

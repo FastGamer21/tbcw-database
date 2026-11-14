@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.innerText = clk.state === 'in' ? '[ CLOCK OUT ]' : '[ CLOCK IN ]';
         btn.classList.toggle('clocked-in', clk.state === 'in');
         rank.classList.remove('hidden');
-        rank.innerText = `[RANK: ${clk.rank} · ${clk.days}D]`;
+        rank.innerText = `[RANK: ${clk.rank} · ${clk.days}D · ${clk.hours}H]`;
     }
 
     const btnClock = document.getElementById('btn-clock');
